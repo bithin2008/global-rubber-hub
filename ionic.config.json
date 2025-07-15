@@ -1,0 +1,7 @@
+{
+  "name": "global-rubber-hubpp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
