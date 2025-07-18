@@ -10,3 +10,11 @@
 @use './components/buttons';
 @use './components/form';
 @use './project/main';
+
+.validation-error {
+    color: #ff0000;
+    font-size: 12px;
+    margin-bottom: 5px;
+    margin-top: 2px;
+    min-height: 17px;
+}

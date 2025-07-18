@@ -1,0 +1,8 @@
+<div class="toast-modal-container">
+  <div *ngIf="status=='success'"><span> <ion-icon name="checkmark-circle"></ion-icon></span></div>
+  <div *ngIf="status=='warning'"><span class="warning"> <ion-icon name="warning"></ion-icon></span></div>
+  <div *ngIf="status=='error'"><span class="invalid"> <ion-icon name="close-circle"></ion-icon></span></div>
+  <h4>{{message}}</h4>
+  <p>{{submessage}} </p>
+
+</div>
