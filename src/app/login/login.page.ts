@@ -11,6 +11,9 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient } from '@angular/common/http';
 
 import { CommonModule } from '@angular/common';
+import { importProvidersFrom } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -194,7 +197,7 @@ export class LoginPage implements OnInit {
         if (response.code == 200) {
           localStorage.setItem('token', response.access_token);
 
-          this.showToast('success', response.message, '', 1500, '/dashboard');
+          this.showToast('success', response.message, '', 4000, '/dashboard');
          
 
         } else if (response.code == 401) {

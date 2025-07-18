@@ -5,11 +5,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon } from '@ionic/angular/standalone';
+import { provideIonicAngular } from '@ionic/angular/standalone';
+import { importProvidersFrom } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 @Component({
   selector: 'app-toast-modal',
   templateUrl: './toast-modal.component.html',
   styleUrls: ['./toast-modal.component.scss'],
-  imports: [ CommonModule, FormsModule, IonIcon],
+  standalone: true,
+  imports: [ CommonModule, FormsModule, IonIcon, IonicModule ]
 })
 export class ToastModalComponent implements OnInit {
   @Input() status!: string;
@@ -18,7 +22,7 @@ export class ToastModalComponent implements OnInit {
   @Input() timer!: number;
   @Input() redirect!: string;
   defaultLanguage: any = 'beng';
-  constructor(navParams: NavParams, private navCtrl: NavController, public router: Router, public modalController: ModalController,) {
+  constructor(navParams: NavParams, private navCtrl: NavController, public router: Router,private modalController: ModalController ) {
     console.log(navParams.get('status'));
     console.log(navParams.get('message'));
     console.log(navParams.get('submessage'));
