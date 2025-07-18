@@ -1,0 +1,248 @@
+@use './../project/colors' as clr;
+@use './../project/typo' as *;
+@use './../abstracts/mixin' as *;
+
+.form-style {
+  --frmBorder: #868686;
+  --frmFieldClr: #2c2c2c;
+  --initHeight: 8em;
+  --borderRadius: 6rem;
+  --frmFocusBorder: #fff;
+  --hasColor: #54D5FD;
+
+  &.white__theme {
+    --frmFocusBorder: #fff;
+    --frmErrClr: #fdd008;
+  }
+
+  font-size: 0.88rem;
+
+  .form-element {
+    position: relative;
+    margin-bottom: max(1.5vw, 1.5rem);
+
+    &.has-value {
+      .form-field,
+      .form-select {
+        border-color: var(--hasColor);
+      }
+
+      label {
+        color: var(--hasColor);
+        font-size: max(.7vw, .7rem);
+        top: -3px;
+        opacity: 1;
+      }
+    }
+  }
+
+  .form-label {
+    position: absolute;
+    top: 1em;
+    left: 0;
+    pointer-events: none;
+    line-height: normal;
+    font-size: max(1.2vw, 1.2rem);
+    color: white;
+    will-change: top, font-size;
+    transition: 0.2s ease;
+  }
+
+  .form-field {
+    width: 100%;
+    background-color: var(--frmFieldBgClr, transparent);
+    color: var(--frmFieldClr);
+    font-size: inherit;
+    border-radius: 0;
+    line-height: normal;
+    resize: none;
+    border-bottom: 1px solid white;
+    color: white;
+    font-size: max(1.2vw, 1.2rem);
+
+    &:not(.with-placeholder) {
+      padding: max(1.2vw, 1.2rem) 0;
+    }
+
+    &.with-placeholder {
+      padding: max(1.2vw, 1.2rem) 0;
+    }
+
+    &:focus {
+      border-color: var(--frmFocusBorder, #bfcff0);
+    }
+  }
+
+  .form-select {
+    &::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      right: 1rem;
+      top: 38%;
+      transform: rotate(45deg);
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      pointer-events: none;
+    }
+
+    &.focus {
+      .form-field {
+        border: 2px solid transparent;
+        color: white;
+      }
+
+      &::after {
+        content: '';
+        border-right: 2px solid white;
+        border-bottom: 2px solid white;
+      }
+
+      .form-label {
+        color: white;
+      }
+    }
+  }
+
+  .form-checkbox {
+    label {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.8em;
+      cursor: pointer;
+      line-height: normal;
+      color: white;
+    }
+
+    .checkmark {
+      height: 1.2em;
+      width: 1.2em;
+      background-color: transparent;
+      border: 1px solid var(--frmBorderClr, #fff);
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: .21em;
+        left: 0.19em;
+        border-left: 2px solid transparent;
+        border-bottom: 2px solid transparent;
+        transform: rotate(-45deg);
+      }
+    }
+
+    input {
+      position: absolute;
+      opacity: 0;
+      height: 0;
+      width: 0;
+
+      &:checked ~ .checkmark {
+        animation: shrink-bounce 200ms cubic-bezier(.4, .0, .23, 1);
+
+        &::after {
+          width: 0.7em;
+          height: 0.4em;
+          border-color: white;
+        }
+      }
+    }
+  }
+}
+
+.form-style-2 {
+  --frmBorder: #cdcdcd;
+  --frmFieldClr: #323232;
+  --initHeight: 8em;
+
+  &.white__theme {
+    --frmFocusBorder: #fff;
+  }
+
+  font-size: 0.88rem;
+
+  .form-label {
+    position: absolute;
+    top: 1.2em;
+    left: 2.4em;
+    @include clamp('font-size', 16, 18);
+    pointer-events: none;
+    line-height: normal;
+    will-change: top, font-size;
+    transition: 0.2s ease;
+  }
+
+  .form-field {
+    width: 100%;
+    background-color: var(--frmFieldBgClr, transparent);
+    color: var(--frmFieldClr);
+    font-size: inherit;
+    border-radius: 5rem;
+    line-height: normal;
+    resize: none;
+    border: 2px solid var(--frmBorder);
+
+    &:not(.with-placeholder) {
+      padding: 2em var(--padding-right, 4.2em) .6em 2em;
+    }
+
+    &:focus {
+      border-color: var(--frmFocusBorder, #000);
+    }
+  }
+}
+
+.form-style {
+  .form-icon {
+    margin-top: 0.75em;
+    margin-right: 0.5em;
+  }
+}
+
+.form-style input:-webkit-autofill,
+.form-style input:-webkit-autofill:hover,
+.form-style input:-webkit-autofill:focus,
+.form-style textarea:-webkit-autofill,
+.form-style textarea:-webkit-autofill:hover,
+.form-style textarea:-webkit-autofill:focus,
+.form-style select:-webkit-autofill,
+.form-style select:-webkit-autofill:hover,
+.form-style select:-webkit-autofill:focus {
+  opacity: 1 !important;
+  transition: background-color 50000s ease-in-out 0s;
+  -webkit-transition: background-color 50000s ease-in-out 0s;
+  -webkit-text-fill-color: var(--frmFieldClr) !important;
+
+  & ~ .form-label {
+    top: 0.72em;
+    font-size: 13px;
+    opacity: 0.7 !important;
+  }
+}
+
+.form-style input::-webkit-contacts-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+i.error {
+  width: 100%;
+  flex-basis: 100%;
+  display: block;
+  font-style: normal;
+  font-size: 80%;
+  color: var(--frmErrClr, #{clr.color(error)});
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+.iti {
+  width: 100%;
+  border-radius: inherit;
+}

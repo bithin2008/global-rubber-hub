@@ -1,0 +1,136 @@
+@use "./../abstracts/mixin" as *;
+@use "./../abstracts/flex-mixin" as *;
+@use "./colors" as *;
+@use "./typo" as *;
+
+:root {
+  --nospacer: 0;
+  --spacer: 2.5rem;
+  --spacerHalf: calc(var(--spacer) / 2);
+  --footer-offset: 115px;
+  overflow: -moz-scrollbars-none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    width: 0 !important
+  }
+}
+
+
+//********************* CONTAINERS *********************//
+
+[class^="main"][class$="-container"] {
+  width: 100%;
+  max-width: calc(calc(var(--mwidth) * var(--pp-adjust, 1)) + 30px);
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+@media(min-width: 1000px) {
+  :root {
+    --spacer: 5rem;
+  }
+}
+
+@media(min-width: 1200px) {
+  :root {
+    --mwidth: 75vw;
+  }
+
+  // .max-container {
+  //   --mwidth: 60vw;
+  // }
+
+  // .mainX2-container,
+  // .mainX-container {
+  //   --mwidth: 60vw;
+  // }
+
+  // .mainx-container {
+  //   --mwidth: 60vw;
+  // }
+
+  .mainx2-container {
+    --mwidth: 920px;
+  }
+
+  .mainx-container {
+    --mwidth: 60vw;
+  }
+}
+
+// .main-container{
+//     --mwidth: 1430px;
+// }
+
+
+
+@media(min-width: 1800px) {
+  :root {
+    --mwidth: 1400px;
+  }
+
+  .max-container {
+    --mwidth: 1900px;
+  }
+
+  .mainX2-container,
+  .mainX-container {
+    --mwidth: 1200px;
+  }
+
+  .mainX2-container {
+    --mwidth: 1700px;
+  }
+
+  .mainX-container {
+    --mwidth: 1580px;
+  }
+
+  .mainx-container {
+    --mwidth: 1100px;
+  }
+}
+
+@media(min-width: 2560px) {
+  :root {
+    --pp-adjust: 1.25;
+  }
+}
+
+
+//********************* SPACING *********************//
+
+section[class*="bg--"],
+footer[class*="bg--"] {
+  padding-top: var(--spacer);
+  padding-bottom: var(--spacer);
+}
+
+section[class*="bg--"]:not([class*="mb-0"]) {
+  margin-bottom: var(--spacer);
+}
+
+
+// [class*="bgHalf--"] + [class*="bgHalf--"],
+// section[class*="bg--"] + section[class*="bg--"] {
+//   padding-top: 0;
+// }
+
+main>*+*:not([class*="bg--"]):not([class*="pb-0"]) {
+  padding-bottom: var(--spacer);
+}
+
+.inline-block{
+  display: inline-block;
+}
+
+//********************* HEADER *********************//
+
+header{
+
+}

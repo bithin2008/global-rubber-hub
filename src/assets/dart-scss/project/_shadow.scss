@@ -1,0 +1,23 @@
+@mixin shadow($dp) {
+    @if $dp == 2{ 
+        box-shadow: 0px 2px 4px rgba(8, 35, 48, 0.24);
+    }
+    @else if $dp == 4 { 
+        box-shadow: 0px 4px 8px rgba(8, 35, 48, 0.05);
+    }
+    @else if $dp == 8 { 
+        box-shadow: 0px 8px 16px rgba(8, 35, 48, 0.2);
+    }
+    @else if $dp == 16 { 
+        box-shadow: 0px 16px 24px rgba(8, 35, 48, 0.16);
+    }
+    @else if $dp == 24 { 
+        box-shadow: 0px 24px 32px rgba(8, 35, 48, 0.12);
+    }
+    @else if ($dp == 'foot'){
+        box-shadow: 0px -5px 8px rgba(8, 35, 48, 0.02);
+    }
+    @else if ($dp == 'access'){
+        box-shadow: 0px 0px 24px rgba(8, 35, 48, 0.09);
+    }
+}

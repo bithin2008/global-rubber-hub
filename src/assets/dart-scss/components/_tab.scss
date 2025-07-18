@@ -1,0 +1,37 @@
+
+@use './../project/colors' as *; 
+@use './../project/typo' as *; 
+
+.sds-ui--tab-menu{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: #858585;
+
+	> li{
+		font-style: normal;
+		font-weight: 600;
+		font-size: 1rem;
+		cursor: pointer;
+		list-style: none;
+		padding-bottom: 0.8em;
+
+		&:not(:last-child) {
+			margin-right: 30px;
+		}
+		&.tab-menu-active{
+			color: red;
+			cursor: default;
+			position: relative;
+		}
+	}
+}
+
+.sds-ui--tab-content{
+	> *{
+		width: 100%;
+		&:not(.tab-active){
+			display: none;
+		}
+	}
+}

@@ -1,0 +1,287 @@
+@use './../project/colors' as *; 
+@use './../project/typo' as *; 
+
+// accordian
+
+
+.sds-ui--accordian{
+    width: 100%;
+
+    .accordian-btn{
+        display: block;
+        @include fw(sb);
+        padding: 1em 1.5em 1.2em 0;
+        color: color(black);
+        position: relative;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+    }
+
+
+    .accordian-content {
+        font-size: 90%;
+        font-style: normal;
+        @include fw(r);
+        border: none;
+        padding-bottom: 25px;
+
+        & > *{
+            line-height: inherit !important;
+        }
+    }
+
+    .sds-ui--accordian-item{
+        &:not(.accordian-active){
+            .accordian-btn::after{
+                top: 1.3em;
+                transform: rotate(135deg);
+            }
+            .accordian-content {
+                display: none;
+            }
+        }
+    }
+
+
+    &.border-style{
+        .accordian-btn{
+            &::after{
+                content: '';
+                display: inline-block;
+                width: 12px;
+                height: 12px;
+                border-top: 2px solid currentColor;
+                border-right: 2px solid  currentColor;
+                transform: rotate(315deg);
+                transform-origin: center;
+                position: absolute;
+                top: 1.8em;
+                right: 0.15em;
+                transition: transform 600ms cubic-bezier(0.175, 0.885, 0.32, 1);
+            }
+        }
+
+        .sds-ui--accordian-item{
+            border-bottom: 1px solid #b4b4b4;
+            &::after {
+                content: '';
+                display: block;
+                float: left;
+                background-color: #000;
+                width: 0%;
+                height: 1px;
+                -webkit-transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1)
+            }
+            &:hover::after {
+                width: 100%
+            }
+        }
+    }
+
+    &.accord-style--2{
+        overflow: hidden;
+        .accordian-btn{
+            padding: 0;
+            img{
+                max-width: 2em;
+                margin-right: 0.6em;
+                vertical-align: bottom;
+            }
+        }
+
+        .accordian-content {
+            padding-bottom: 0;
+            //max-width: 350px;
+            // figure{
+            //     display: none;
+            // }
+        }
+
+        .sds-ui--accordian-item {
+            padding: 1.5em 2em;
+            // position: relative;
+            border-radius: 0.5em;
+            overflow: hidden;
+            &::before,
+            &::after{
+                content: '';
+                display: inline-block;
+                border-color: red;
+                border-style: solid;
+                // position: absolute;
+                transform: scale(0);
+                transition: 0.3s ease;
+                pointer-events: none;
+                position: relative;
+            }
+            &::before{
+                width: 150px;
+                height: 150px;
+                border-width: 1px 0 0 1px;
+                border-top-left-radius: inherit;
+                transform-origin: left top;
+                float: left;
+                margin-top: -2.5em;
+                margin-bottom: calc(-150px + 2.5em);
+                margin-left: -2em;
+            }
+            &::after{
+                width: 75px;
+                height: 75px;
+                border-width: 0 1px 1px 0;
+                border-bottom-right-radius: inherit;
+                transform-origin: bottom right;
+                float: right;
+                margin-top: calc(-75px + 2.5em);
+                margin-bottom: -2.5em;
+                margin-right: -2em;
+            }
+            &:not(.accordian-active){
+                opacity: 0.3;
+            }
+            &.accordian-active{
+                padding: 2.5em 2em;
+                box-shadow:  9px 12px 24px 0px rgba(0, 0, 0, 0.05);
+                &::before,
+                &::after{
+                    transform: scale(1);
+                    transition-delay: 0.4s;
+                }
+                .accordian-btn{
+                    color: red;
+                    padding: 0 1.5em 1.2em 0;
+                    pointer-events: none;
+                }
+           }
+        }
+    }
+
+    &.accord-style--3{
+        .sds-ui--accordian-item{
+            border-bottom: 1px solid #b4b4b4;
+            position: relative;
+            &:first-child {
+                border-top: 1px solid #b4b4b4
+            }
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                background-color: #000;
+                width: 0%;
+                height: 1px;
+                -webkit-transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1)
+            }
+            &:hover::after {
+                width: 100%
+            }
+            &:not(.accordian-active) .accordian-btn em::before {
+                background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI1NiAyNTYiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI1NiAyNTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJMYXllcl8yIj4NCjwvZz4NCjxnIGlkPSJDYXBhXzEiPg0KCTxnPg0KCQk8Zz4NCgkJCTxwb2x5Z29uIHBvaW50cz0iMzAuMiw1MC45IDAsODEuMSAxMjgsMjA5LjEgMjU2LDgxLjEgMjI1LjgsNTAuOSAxMjgsMTQ4LjcgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==")
+            }
+            &:not(.accordian-active) .accordian-btn em::after {
+                background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI1NiAyNTYiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI1NiAyNTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJMYXllcl8yIj4NCjwvZz4NCjxnIGlkPSJDYXBhXzEiPg0KCTxnPg0KCQk8Zz4NCgkJCTxwb2x5Z29uIGZpbGw9IiNmZmYiIHBvaW50cz0iMzAuMiw1MC45IDAsODEuMSAxMjgsMjA5LjEgMjU2LDgxLjEgMjI1LjgsNTAuOSAxMjgsMTQ4LjcgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==");
+                -webkit-transform: translateY(-35px);
+                transform: translateY(-35px);
+                opacity: 0
+            }
+            &:not(.accordian-active):hover .accordian-btn em {
+                background-color: red;
+            }
+            &:not(.accordian-active):hover .accordian-btn em::before {
+                opacity: 0;
+                -webkit-transform: translateY(50px);
+                transform: translateY(50px);
+                -webkit-transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)
+            }
+            &:not(.accordian-active):hover .accordian-btn em::after {
+                opacity: 1;
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+                -webkit-transition: all 0.5s 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: all 0.5s 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)
+            }
+            &.accordian-active em {
+                background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI1NiAyNTYiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI1NiAyNTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJMYXllcl8yIj4NCjwvZz4NCjxnIGlkPSJDYXBhXzEiPg0KCTxnPg0KCQk8Zz4NCgkJCTxwb2x5Z29uIHBvaW50cz0iMTI4LDExMS4zIDIyNS44LDIwOS4xIDI1NiwxNzguOSAxMjgsNTAuOSAwLDE3OC45IDMwLjIsMjA5LjEgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==")
+            }
+        }
+
+        .accordian-btn{
+            position: relative;
+            padding: 1.5em 1.5em 1.5em 0;
+            
+            -webkit-transition: 0.1s;
+            transition: 0.1s;
+            em {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                position: absolute;
+                top: 1.1em;
+                right: 0;
+                background-color: #efefef;
+                overflow: hidden;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 18px;
+                -webkit-transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+                &::before,
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-repeat: inherit;
+                    background-position: inherit;
+                    background-size: inherit;
+                    -webkit-transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+                    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)
+                }
+            }
+        }
+
+        .accord-target{
+            margin-bottom: 2em;
+        }
+    }
+}
+
+
+@media(min-width: 960px){
+    .fig-position-absolute-left,
+    .fig-position-absolute-right{
+        figure{
+            position: absolute;
+            top: 0;
+            opacity: 0;
+            transition: opacity 0.3s linear;
+        }
+    }
+    .fig-position-absolute-left{
+        figure{
+            width: var(--grid-colL);
+            left: 0;
+            background-color: white;
+        }
+    }
+    
+    .fig-position-absolute-right{
+        figure{
+            width: var(--grid-colR);
+            right: 0;
+            bottom: 0;
+            background-color: color(silver);
+        }
+    }
+    .accordian-active{
+        figure{
+            opacity: 1;
+        }
+    }
+}

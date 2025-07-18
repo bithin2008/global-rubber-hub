@@ -1,0 +1,36 @@
+$fs: 2px;
+
+@mixin d-grid($col, $gap){
+    display: grid;
+    grid-template-columns: repeat($col, 1fr);
+    gap: $gap;
+    grid-gap: $gap;
+}
+
+
+
+// FLEX
+// $flex-direction: (
+//     'r'     :   row,
+//     'rr'    :   row-reverse,
+//     'c'     :   column,
+//     'cr'    :   column-reverse,
+// );
+// $justify-content: (
+//     'fs'    :   flex-start,
+//     'fe'    :   flex-end,
+//     'sb'    :   space-between,
+//     'sc'    :   space-around
+// );
+
+
+// @mixin d-grid($dir, $js, $ai, $wrap: ''){
+//     display: grid;
+//     grid-template-columns: repeat($col, 1fr);
+//     gap: $gap;
+//     grid-gap: $gap;
+//     @if ($wrap != '') {
+//         @include flex-wrap($wrap);
+//     }
+// }
+

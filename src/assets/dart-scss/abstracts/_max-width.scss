@@ -1,0 +1,59 @@
+$sizes: (
+  "xs": 20rem,   // 320px
+  "sm": 24rem,   // 384px
+  "md": 28rem,   // 448px
+  "lg": 32rem,   // 512px
+  "xl": 36rem,   // 576px
+  "2xl": 42rem,  // 672px
+  "3xl": 50vw,  
+  "full": 100%
+);
+
+@each $name, $value in $sizes {
+  .max-w-#{$name} {
+    max-width: $value;
+  }
+}
+
+@each $name, $value in $sizes {
+  .max-w-#{$name} {
+    max-width: $value;
+  }
+
+  @media (min-width: 768px) {
+    .md\:max-w-#{$name} {
+      max-width: $value;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:max-w-#{$name} {
+      max-width: $value;
+    }
+  }
+}
+
+// 4K override sizes (adjust as needed)
+$xl4-sizes: (
+  "xs": 24rem,
+  "sm": 28rem,
+  "md": 32rem,
+  "lg": 36rem,
+  "xl": 42rem,
+  "2xl": 48rem,
+  "3xl": 60vw,
+  "full": 100%,
+  "4xl": 96rem  // 1536px
+);
+
+@media (min-width: 2560px) {
+  @each $name, $value in $xl4-sizes {
+    .max-w-#{$name} {
+      max-width: $value !important;
+    }
+
+    .xl4\:max-w-#{$name} {
+      max-width: $value;
+    }
+  }
+}
