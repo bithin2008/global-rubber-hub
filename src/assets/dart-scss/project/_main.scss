@@ -112,11 +112,13 @@ font-family: var(--ff-body) !important;
         }
       }
 
-      .login-button {
+      .login-button, .register-button {
         --background: #6CA657;
         --border-radius: 10px;
-        font-weight: 600;
+        font-weight: 500;
         margin-top: 0.5rem;
+        height: 48px;
+        text-transform: capitalize;
       }
 
       .divider {
@@ -162,6 +164,9 @@ font-family: var(--ff-body) !important;
         }
       }
     }
+  }
+  .input-wrapper.sc-ion-input-md{
+    padding: 0;
   }
 }
 
