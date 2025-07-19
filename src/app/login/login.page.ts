@@ -19,7 +19,7 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal],
+  imports: [ CommonModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {
@@ -212,6 +212,14 @@ export class LoginPage implements OnInit {
         // this.toastr.error(error);
       }
     );
+  }
+
+  goToLogin(){
+    this.router.navigate(['/login']);
+  }
+
+  goToRegister(){
+    this.router.navigate(['/register']);
   }
 
   async deleteCredential(item:any) {
