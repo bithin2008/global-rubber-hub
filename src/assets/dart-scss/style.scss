@@ -10,3 +10,91 @@
 @use './components/buttons';
 @use './components/form';
 @use './project/main';
+
+.validation-error {
+    color: #ff0000;
+    font-size: 12px;
+    margin-bottom: 5px;
+    margin-top: 2px;
+    min-height: 17px;
+}
+
+
+/*********************************************/
+/* TOAST MODAL */
+/**********************************************/
+.toast-modal {
+    --ion-background-color: rgba(0, 0, 0, 0.5);
+}
+app-toast-modal {
+    background: #fff !important;
+    min-height: 160px;
+    max-height: 0;
+    border-radius: 20px;
+    width: 80%;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    /* transform: translate(-0%, -50%); */
+    z-index: 11;
+    text-align: center;
+    padding: 20px;
+    margin: -115px 0 0 -40%;
+}
+
+.toast-modal .modal-wrapper .ion-page {
+    padding: 20px;
+    display: block;
+}
+
+.toast-modal .modal-wrapper span {
+    display: flex;
+    margin: 0 auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 3px solid rgb(90, 176, 64);
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-modal-container {
+    font-family: "Baloo Tamma 2", cursive;
+}
+
+.toast-modal .modal-wrapper p {
+    margin: 0;
+}
+
+.toast-modal ion-icon {
+    color: rgb(90, 176, 64);
+    font-size: 55px;
+}
+
+.toast-modal span.warning {
+    display: flex;
+    margin: 0 auto;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-modal span.warning ion-icon {
+    color: #ffbe05;
+    font-size: 55px;
+    margin-top: -7px;
+}
+
+.toast-modal span.invalid {
+    width: 35px;
+    height: 35px;
+    border: 3px solid transparent;
+}
+
+.toast-modal span.invalid ion-icon {
+    color: #fd0118;
+    font-size: 55px;
+}

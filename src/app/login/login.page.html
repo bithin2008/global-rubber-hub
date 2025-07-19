@@ -11,24 +11,40 @@
       <button class="tab">Register</button>
     </div>
 
-    <form>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
       <ion-label class="form-label">Email</ion-label>
-      <ion-item lines="none" class="input-field">
-        <ion-input type="email" placeholder="yourname@example.com"></ion-input>
+      <ion-item lines="none" class="input-field ion-no-padding">
+        <ion-input type="email" formControlName="email" name="email" [readonly]="isOpenCredentialModal"
+        autocomplete="email" inputmode="text" (ionFocus)="checkSavedLogin()"></ion-input>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['email'].errors">
+          <div *ngIf="f['email'].errors['required']">Please enter your email address</div>
+          <div *ngIf="f['email'].errors['pattern']">Please enter a valid email address</div>
+        </span>
+      </div>
       <ion-label class="form-label">Password</ion-label>
-      <ion-item lines="none" class="input-field">
-        <ion-input type="password" placeholder="********"></ion-input>
+      <ion-item lines="none" class="input-field ion-no-padding">
+        <ion-input type="password" formControlName="password" #x></ion-input>
         <ion-icon name="eye-outline" slot="end"></ion-icon>
       </ion-item>
-
+      <div class="validation-error mb-0">
+        <span *ngIf="submitted && f['password'].errors">
+          <div *ngIf="f['password'].errors['required']">Please enter your password</div>
+          <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
+          <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
+          <div *ngIf="f['password'].errors['pattern']">
+            Password must containing at least 1 uppercase, 1 lowercase, 1
+            digit, 1 special character </div>
+        </span>
+      </div>
       <div class="options-row">
         <ion-checkbox slot="start"></ion-checkbox>
         <span>Remember me</span>
         <a class="forgot-link" routerLink="/forgot-password">Forgot Password ?</a>
       </div>
 
-      <ion-button expand="block" class="login-button">Log In</ion-button>
+      <ion-button expand="block" class="login-button" type="submit">Log In</ion-button>
 
       <div class="divider">
         <span>Or</span>

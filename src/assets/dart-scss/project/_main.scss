@@ -73,7 +73,6 @@ font-family: var(--ff-body) !important;
       .input-field {
         border: 1px solid #ddd;
         border-radius: 10px;
-        margin-bottom: 1.2rem;
         @include font-size(14);
 
         ion-input {
