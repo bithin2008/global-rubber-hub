@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Global Rubber Hub</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="wallet-outline"></ion-icon>
+        ₹2500.00
+      </ion-button>
+      <ion-button>
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [scrollEvents]="true">
+
+  <h2>Profile</h2>
+
+  <div class="profile-photo-section ion-text-center">
+    <ion-avatar>
+      <img src="assets/img/profile-placeholder.png" alt="Profile Photo" />
+    </ion-avatar>
+    <ion-button fill="clear">
+      <ion-icon name="camera-outline"></ion-icon>
+      Upload Profile Photo
+    </ion-button>
+    <p>Please upload square image, size less than 100kb</p>
+  </div>
+
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked">Name</ion-label>
+      <ion-input value="Sanjay Sharma"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input type="email" value="sanjay@gmail.com"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Phone</ion-label>
+      <ion-input type="tel" value="+91 98765 12305"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Company</ion-label>
+      <ion-input value="Rubber Company PVT. LTD."></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Pan No.</ion-label>
+      <ion-input value="BCGFH5614K"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Select ID</ion-label>
+      <ion-select placeholder="Voter Card">
+        <ion-select-option value="voter-card">Voter Card</ion-select-option>
+        <ion-select-option value="aadhaar-card">Aadhaar Card</ion-select-option>
+        <ion-select-option value="passport">Passport</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Upload ID</ion-label>
+      <input type="file" />
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Country</ion-label>
+      <ion-input value="India"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Address</ion-label>
+      <ion-textarea value="75/B, Canning Street, Lalbazar"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Zip</ion-label>
+      <ion-input value="700001"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="success">
+    <ion-icon name="save-outline"></ion-icon>
+    Save Information
+  </ion-button>
+
+</ion-content>
+
+
+
+
+<ion-tabs>
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button (click)="goToDashboard($event)" >
+      <ion-icon name="grid-outline"></ion-icon>
+      <ion-label>Dashboard</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="my-items">
+      <ion-icon name="pricetags-outline"></ion-icon>
+      <ion-label>My Items</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="live-bid">
+      <ion-icon name="flash-outline"></ion-icon>
+      <ion-label>Live Bid</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="bid-request">
+      <ion-icon name="send-outline"></ion-icon>
+      <ion-label>Bid Request</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="bid-history">
+      <ion-icon name="time-outline"></ion-icon>
+      <ion-label>Bid History</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+
+</ion-tabs>
+
