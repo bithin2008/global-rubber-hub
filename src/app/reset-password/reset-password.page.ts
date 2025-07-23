@@ -7,19 +7,19 @@ import { AuthService } from '../services/auth.service';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { IonicModule } from '@ionic/angular';
+import { MustMatch } from '../_helper/must-match.validator';
 
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.page.html',
-  styleUrls: ['./forgot-password.page.scss'],
+  selector: 'app-reset-password',
+  templateUrl: './reset-password.page.html',
+  styleUrls: ['./reset-password.page.scss'],
   standalone: true,
   imports: [ IonicModule,RouterModule, FormsModule, ReactiveFormsModule, CommonModule ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ForgotPasswordPage implements OnInit {
+export class ResetPasswordPage implements OnInit {
 
   public enableLoader: boolean = false;
-  public forgotPasswordForm!: FormGroup;
+  public resetPasswordForm!: FormGroup;
   public submitted: boolean = false;
   public loginType = 'company'
   constructor(
@@ -42,8 +42,12 @@ export class ForgotPasswordPage implements OnInit {
   //amaleshdebnath68394@gmail.com
   //Amalesh@goo2022
   ngOnInit() {    
-    this.forgotPasswordForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]]
+    this.resetPasswordForm = this.formBuilder.group({
+      
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(30), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)]],
+      confirmPassword: ['', Validators.required],
+    }, {
+      validator: MustMatch('password', 'confirmPassword')
     });
   }
 
@@ -60,27 +64,27 @@ export class ForgotPasswordPage implements OnInit {
     });
   }
 
-  get f() { return this.forgotPasswordForm.controls; }
+  get f() { return this.resetPasswordForm.controls; }
 
 
 
-  forgotPassword() {
+  resetPassword() {
     this.submitted = true;
-    if (this.forgotPasswordForm.invalid) {
+    if (this.resetPasswordForm.invalid) {
       return;
     }
     let data = {
-      email: this.f['email'].value
+      email: localStorage.getItem('email'),
+      new_password: this.f['password'].value,
+      new_password_confirmation: this.f['confirmPassword'].value,
     };
-
     this.enableLoader = true;
-    let url = 'auth/forgot-password';
+    let url = 'auth/reset-password';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {         
-          localStorage.setItem('email',this.f['email'].value);
-          this.showToast('success', response.message, '', 2000, '/forgot-password-otp');
+          this.showToast('success', response.message, '', 2000, '/login');
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');
         } else if (response.code == 423) {
@@ -117,5 +121,4 @@ export class ForgotPasswordPage implements OnInit {
     });
     return await modal.present();
   }
-
 }

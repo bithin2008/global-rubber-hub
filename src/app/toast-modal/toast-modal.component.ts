@@ -13,7 +13,7 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './toast-modal.component.html',
   styleUrls: ['./toast-modal.component.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule, IonIcon, IonicModule ]
+  imports: [ CommonModule, FormsModule,  IonicModule ]
 })
 export class ToastModalComponent implements OnInit {
   @Input() status!: string;

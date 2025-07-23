@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/c
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController } from '@ionic/angular/standalone';
 import { AlertController, MenuController } from '@ionic/angular';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
@@ -19,7 +19,7 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent],
+  imports: [ CommonModule, RouterModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {

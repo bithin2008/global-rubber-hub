@@ -30,4 +30,12 @@ export const routes: Routes = [
     path: 'profile',
     loadComponent: () => import('./profile/profile.page').then( m => m.ProfilePage)
   },
+  {
+    path: 'forgot-password-otp',
+    loadComponent: () => import('./forgot-password-otp/forgot-password-otp.page').then( m => m.ForgotPasswordOtpPage)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./reset-password/reset-password.page').then( m => m.ResetPasswordPage)
+  },
 ];

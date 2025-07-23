@@ -53,7 +53,7 @@ export class AuthService {
 
   checkUserIsLoggedin(): Observable<any> {
     return this.http
-      .get(environment.API_ENDPOINT + 'user/profile', this.getHeader())
+      .get(environment.API_ENDPOINT + 'profile', this.getHeader())
       .pipe(catchError(this.handleError));
   }
   logOut(){
