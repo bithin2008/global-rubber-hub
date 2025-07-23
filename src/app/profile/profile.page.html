@@ -28,66 +28,68 @@
     <p>Please upload square image, size less than 100kb</p>
   </div>
 
-  <ion-list>
-    <ion-item>
-      <ion-label position="stacked">Name</ion-label>
-      <ion-input value="Sanjay Sharma"></ion-input>
-    </ion-item>
+  <form [formGroup]="profileForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Name</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Email</ion-label>
-      <ion-input type="email" value="sanjay@gmail.com"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Phone</ion-label>
-      <ion-input type="tel" value="+91 98765 12305"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Phone</ion-label>
+        <ion-input type="tel" formControlName="phone"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Company</ion-label>
-      <ion-input value="Rubber Company PVT. LTD."></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Company</ion-label>
+        <ion-input formControlName="company"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Pan No.</ion-label>
-      <ion-input value="BCGFH5614K"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Pan No.</ion-label>
+        <ion-input formControlName="pan"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Select ID</ion-label>
-      <ion-select placeholder="Voter Card">
-        <ion-select-option value="voter-card">Voter Card</ion-select-option>
-        <ion-select-option value="aadhaar-card">Aadhaar Card</ion-select-option>
-        <ion-select-option value="passport">Passport</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Select ID</ion-label>
+        <ion-select placeholder="Voter Card" formControlName="idType">
+          <ion-select-option value="voter-card">Voter Card</ion-select-option>
+          <ion-select-option value="aadhaar-card">Aadhaar Card</ion-select-option>
+          <ion-select-option value="passport">Passport</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Upload ID</ion-label>
-      <input type="file" />
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Upload ID</ion-label>
+        <input type="file" (change)="profileForm.get('idFile')?.setValue($event.target.files[0])" />
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Country</ion-label>
-      <ion-input value="India"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Country</ion-label>
+        <ion-input formControlName="country"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Address</ion-label>
-      <ion-textarea value="75/B, Canning Street, Lalbazar"></ion-textarea>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Address</ion-label>
+        <ion-textarea formControlName="address"></ion-textarea>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Zip</ion-label>
-      <ion-input value="700001"></ion-input>
-    </ion-item>
-  </ion-list>
+      <ion-item>
+        <ion-label position="stacked">Zip</ion-label>
+        <ion-input formControlName="zip"></ion-input>
+      </ion-item>
+    </ion-list>
 
-  <ion-button expand="block" color="success">
-    <ion-icon name="save-outline"></ion-icon>
-    Save Information
-  </ion-button>
+    <ion-button expand="block" color="success">
+      <ion-icon name="save-outline"></ion-icon>
+      Save Information
+    </ion-button>
+  </form>
 
 </ion-content>
 
