@@ -7,8 +7,8 @@
 
   <div class="card">
     <div class="toggle-tabs">
-      <button class="tab active">Log In</button>
-      <button class="tab">Register</button>
+      <button class="tab active" (click)="goToLogin()">Log In</button>
+      <button class="tab" (click)="goToRegister()">Register</button>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="login()">

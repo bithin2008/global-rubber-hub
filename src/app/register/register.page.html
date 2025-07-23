@@ -7,29 +7,85 @@
 
   <div class="card">
     <div class="toggle-tabs">
-      <button class="tab">Log In</button>
-      <button class="tab active">Register</button>
+      <button class="tab" (click)="goToLogin()">Log In</button>
+      <button class="tab active" (click)="goToRegister()">Register</button>
     </div>
 
-    <form>
-      <ion-label class="form-label">Name</ion-label>
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+      <ion-label class="form-label">First Name</ion-label>
       <ion-item lines="none" class="input-field">
-        <ion-input type="Name" placeholder="John Doe"></ion-input>
+        <ion-input type="text" formControlName="firstName" placeholder="John" ></ion-input>      </ion-item>
+
+      <div class="validation-error">
+        <span *ngIf="submitted && f['firstName'].errors">
+          <div *ngIf="f['firstName'].errors['required']">Please enter First Name</div>
+        </span>
+      </div>
+      <ion-label class="form-label">Last Name</ion-label>
+      <ion-item lines="none" class="input-field">
+        <ion-input type="text" placeholder="Doe" formControlName="lastName"></ion-input>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['lastName'].errors">
+          <div *ngIf="f['lastName'].errors['required']">Please enter Last Name</div>
+        </span>
+      </div>
       <ion-label class="form-label">Email</ion-label>
       <ion-item lines="none" class="input-field">
-        <ion-input type="text" placeholder="yourname@example.com"></ion-input>
+        <ion-input type="text" placeholder="yourname@example.com" formControlName="email"></ion-input>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['email'].errors">
+          <div *ngIf="f['email'].errors['required']">Please enter email</div>
+          <div *ngIf="f['email'].errors['pattern']">Please enter valid email</div>
+        </span>
+      </div>
       <ion-label class="form-label">Phone</ion-label>
       <ion-item lines="none" class="input-field">
-        <ion-input type="Number" placeholder="+919030053123"></ion-input>
+        <ion-input type="Number" placeholder="+919030053123"  formControlName="phone"></ion-input>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['phone'].errors">
+          <div *ngIf="f['phone'].errors['required']">Please enter phone</div>
+          <div *ngIf="f['phone'].errors['pattern']">Please enter valid phone number</div>
+        </span>
+      </div>
       <ion-label class="form-label">Password</ion-label>
       <ion-item lines="none" class="input-field">
-        <ion-input type="password" placeholder="********"></ion-input>
+        <ion-input type="password" placeholder="********" formControlName="password"></ion-input>
         <ion-icon name="eye-outline" slot="end"></ion-icon>
       </ion-item>
-      <ion-button expand="block" class="register-button">Register</ion-button>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['password'].errors">
+          <div *ngIf="f['password'].errors['required']">Please enter your password</div>
+          <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
+          <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
+          <div *ngIf="f['password'].errors['pattern']">
+            Password must containing at least 1 uppercase, 1 lowercase, 1
+            digit, 1 special character </div>
+        </span>
+      </div>
+      <ion-label class="form-label">Confirm Password</ion-label>
+      <ion-item lines="none" class="input-field">
+        <ion-input type="password" placeholder="********" formControlName="confirmPassword"></ion-input>
+        <ion-icon name="eye-outline" slot="end"></ion-icon>
+      </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['confirmPassword'].errors">
+          <div *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</div>
+          <div *ngIf="f['confirmPassword'].errors['mustMatch']">Confirm password not matched</div>
+        </span>
+      </div>
+      <ion-button expand="block" class="register-button" type="submit">Register</ion-button>
     </form>
   </div>
 </ion-content>
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/register-logo.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->
