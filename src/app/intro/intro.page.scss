@@ -1,4 +1,29 @@
-.swiper-pagination-bullet{
-  width: 5px !important;
-  height: 2px !important;
+swiper-container::part(pagination) {
+  --swiper-pagination-color: #fff;
+  --swiper-pagination-bullet-inactive-color: #959595a6;
+  --swiper-pagination-bullet-width: 15px;
+  --swiper-pagination-bullet-height: 6px;
+  --swiper-pagination-bullet-horizontal-gap: 5px;
+  --swiper-pagination-bullet-border-radius: 50px;
+  --swiper-pagination-bullet-inactive-opacity: 1 !important;
+  --swiper-pagination-bullet-opacity-active: 1 !important;
+  bottom: auto;
+  top: 80px;
+  width: auto;
+  left: 30px;
+}
+ion-button.skip{
+  position: fixed;
+  right: 30px;
+  top: 71px;
+  font-size: 16px;
+  z-index: 9;
+  --background: transparent;
+  --color: #fff;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --box-shadow: none;
+  --ion-box-shadow: none;
 }
