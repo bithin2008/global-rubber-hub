@@ -250,3 +250,242 @@ font-family: var(--ff-body) !important;
   font-size: 14px;
   font-weight: 300;
 }
+.appHeader{
+  background-color: #1A8135;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .title{
+    text-align: left;
+    position: static;
+    transform: none;
+    color: #fff;
+    font-size: 20px;
+  } 
+  .btn{
+    &:not(:last-child){
+      margin-right: 12px;
+    }
+  }
+  .account{
+    background-color: #FB7805;
+    padding: 1px 2px;
+    border-radius: 5px;
+  }
+}
+
+.profile-page {
+  .profile-container {
+    padding: 30px;
+    .profileTitle{
+      font-size: 16px;
+      font-weight: 600;
+      position: static;
+      text-align: left;
+      margin-bottom: 25px;
+    }
+    .profile-photo {
+      background: #D9D9D9;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      p{
+
+      }
+      
+      .camera{
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          width: 35px;
+          height: 35px;
+          background-color: #FB7805;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .item-divider-inner{
+            width: 100% !important;
+            padding-right: 0 !important;
+            
+          }
+          .item-divider-wrapper{
+            width: 100% !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+          img{
+            pointer-events: none;
+
+          }
+          input{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            left:0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            z-index: 9;
+          }
+        }
+      .profilePhoto {
+        width: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto;
+      }
+      .profileimg{
+        width: 100px;
+        height: 100px;
+        position: relative;
+        background-color: #D9D9D9;
+      }
+      .right{
+        padding-left: 15px;
+      }
+
+      .lgdesc{
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .photo-note {
+        font-size: 10px;
+        color: #000;
+      }
+    }
+
+    ion-list {
+      margin-top: 16px;
+
+      ion-item {
+        --background: #fff;
+        --border-radius: 12px;
+        margin-bottom: 12px;
+      }
+    }
+
+    .file-upload {
+      margin-top: 10px;
+      margin-left: 8px;
+    }
+
+    ion-button {
+      margin-top: 20px;
+      --border-radius: 12px;
+    }
+  }
+  .form{
+    margin-top: 30px;
+  }
+}
+ion-item.no-style {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  --highlight-color-focused: transparent;
+  --min-height: auto;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --detail-icon-opacity: 0;
+  --color: #000;
+  --ripple-color: transparent;
+}
+.custom-inner {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  position: relative;
+  margin-top: 18px;
+  
+  ion-input.form-field {
+    @include font-size(14);
+    --padding-start: 0.875rem;
+    --padding-end: 0.875rem;
+  }
+  ion-select.form-field{
+     @include font-size(14);
+    --padding-start: 0.875rem;
+    --padding-end: 0.875rem;
+  }
+
+  ion-label.formlebel{
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6C7278;
+  }
+  &.multifield{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    ion-input.form-field{
+      --padding-start: 0rem;
+    }
+  }
+  &.selectId{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .uploadfile{
+    background-color: #FB7805;
+    position: relative;
+    width: 100px;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 7px 0;
+    margin-right: 4px;
+
+    .field-file{
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      z-index: 1;
+    }
+  }
+}
+form{
+  ion-item.no-style{
+    margin-bottom: 20px;
+  }
+}
+ion-button.btn{
+  &.no-style{
+  --padding-start: 0;
+    --padding-end: 0;
+    --border-radius: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --background: transparent;
+    --box-shadow: none;
+    --color: #000;
+    --ripple-color: transparent;
+    --transition: none;
+    font-weight: normal;
+  }
+  &.btn-grn{
+    background-color: #1A8135;
+    color: #fff;
+  }
+  font-size: 14px;
+  border-radius: 10px;
+  .btntextimg{
+    margin-right: 15px;
+  }
+}
