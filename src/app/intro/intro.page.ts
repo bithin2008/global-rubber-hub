@@ -24,6 +24,9 @@ export class IntroPage implements OnInit {
     // setTimeout(() => {
     //   this.router.navigate(['/dashboard'])
     // }, 4000);
+ 
   }
-
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
 }

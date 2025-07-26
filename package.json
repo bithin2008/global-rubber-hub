@@ -28,8 +28,9 @@
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
-    "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
+    "@ionic-native/google-plus": "^5.36.0",
     "@ionic/angular": "^8.0.0",
+    "cordova-plugin-googleplus": "^8.5.2",
     "cordova-sqlite-storage": "^7.0.0",
     "ionicons": "^7.0.0",
     "ng-otp-input": "^2.0.8",
@@ -81,7 +82,8 @@
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "@codetrix-studio/capacitor-google-auth": {}
     },
     "platforms": [
       "android"
