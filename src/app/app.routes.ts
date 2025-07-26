@@ -42,4 +42,12 @@ export const routes: Routes = [
     path: 'account',
     loadComponent: () => import('./account/account.page').then( m => m.AccountPage)
   },
+  {
+    path: 'item-list',
+    loadComponent: () => import('./item-list/item-list.page').then( m => m.ItemListPage)
+  },
+  {
+    path: 'item-add',
+    loadComponent: () => import('./item-add/item-add.page').then( m => m.ItemAddPage)
+  },
 ];
