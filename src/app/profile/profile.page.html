@@ -26,19 +26,31 @@
       
     </div>
 
-    <form class="form"  [formGroup]="profileForm">
+    <form class="form"  [formGroup]="profileForm" (ngSubmit)="updateProfile()">
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Name</ion-label>
           <ion-input class="form-field" formControlName="full_name" type="text"></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['full_name'].errors">
+          <div *ngIf="f['full_name'].errors['required']">Please enter name</div>
+          <div *ngIf="f['full_name'].errors['pattern']">Please enter valid name</div>
+        </span>
+      </div>
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Email</ion-label>
           <ion-input class="form-field" formControlName="email" type="text"></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['email'].errors">
+          <div *ngIf="f['email'].errors['required']">Please enter email address</div>
+          <div *ngIf="f['email'].errors['pattern']">Please enter valid email address</div>
+        </span>
+      </div>
 
       
       <ion-item class="no-style">
@@ -53,13 +65,24 @@
           <ion-input type="tel" formControlName="phone" class="form-field"></ion-input>
         </div>
       </ion-item>
-
+      <div class="validation-error">
+        <span *ngIf="submitted && f['phone'].errors">
+          <div *ngIf="f['phone'].errors['required']">Please enter phone</div>
+          <div *ngIf="f['phone'].errors['pattern']">Please enter valid phone number</div>
+        </span>
+      </div>
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Company</ion-label>
           <ion-input class="form-field" formControlName="company" type="text"></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['company'].errors">
+          <div *ngIf="f['company'].errors['required']">Please enter company name</div>
+          <div *ngIf="f['company'].errors['pattern']">Please enter valid company name</div>
+        </span>
+      </div>
 
       <ion-item class="no-style">
         <div class="custom-inner">
@@ -67,7 +90,12 @@
           <ion-input class="form-field" formControlName="pan" type="text"></ion-input>
         </div>
       </ion-item>
-
+      <div class="validation-error">
+        <span *ngIf="submitted && f['pan'].errors">
+          <div *ngIf="f['pan'].errors['required']">Please enter pan name</div>
+          <div *ngIf="f['pan'].errors['pattern']">Please enter valid pan number</div>
+        </span>
+      </div>
       <ion-item class="no-style">
         <div class="custom-inner selectId">
           <ion-label class="formlebel">Select ID</ion-label>
@@ -89,6 +117,11 @@
           <ion-input class="form-field" formControlName="country" type="text"></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['country'].errors">
+          <div *ngIf="f['country'].errors['required']">Please enter country name</div>
+        </span>
+      </div>
 
       <ion-item class="no-style">
         <div class="custom-inner">
@@ -99,10 +132,12 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Zip</ion-label>
-          <ion-input class="form-field"  formControlName="zip" type="text"></ion-input>
+          <ion-input class="form-field"  formControlName="zip" type="number" autocomplete="off" [minlength]="5"
+          [maxlength]="5" 
+          (input)="onInputChange($event)" ></ion-input>
         </div>
       </ion-item>
-      <ion-button class="btn btn-grn no-style" expand="block"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
+      <ion-button class="btn btn-grn no-style" expand="block" type="submit"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
     </form>
 
   </div>

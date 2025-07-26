@@ -17,26 +17,26 @@ export class ProfilePage implements OnInit {
   profileForm!: FormGroup;
   public type: any;
   public enableLoader: boolean = false;
-  public loggedInUseData: any
+  public submitted: boolean = false;
   constructor( public router: Router, private formBuilder: FormBuilder, private commonService: CommonService, public modalController: ModalController, ) { }
 
   ngOnInit() {
     this.getProfileData()
     this.profileForm = this.formBuilder.group({
-      full_name: ['', Validators.required],
+      full_name: ['', Validators.required,Validators.maxLength(60)],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      company: [''],
-      pan: [''],
+      company: ['',[Validators.required,Validators.minLength(3),Validators.maxLength(40)]],
+      pan: ['',[Validators.required,Validators.maxLength(12)]],
       id_proof_type: [''],
       idFile: [null],
-      country: [''],
-      address: [''],
-      zip: ['']
+      country: ['',[Validators.required,Validators.minLength(5),Validators.maxLength(20)]],
+      address: ['',[Validators.required,Validators.minLength(5),Validators.maxLength(50)]],
+      zip: ['',[Validators.required,Validators.minLength(5),Validators.maxLength(5)]]
     });
   }
 
-  
+  get f() { return this.profileForm.controls; }
  
 
   getProfileData() {
@@ -65,9 +65,22 @@ export class ProfilePage implements OnInit {
     
   }
 
+  onInputChange(event: any) {
+    let inputValue: any = event.target.value;
+    inputValue = inputValue.replace(/[^0-9]/g, '');
+    inputValue = inputValue.slice(0, 6);
+  }
+
   goToDashboard(event: Event) {
     event.preventDefault(); // prevent default tab switch
     this.router.navigateByUrl('/dashboard');
+  }
+
+  updateProfile() {
+    this.submitted = true;
+    if (this.profileForm.invalid) {
+      return;
+    }
   }
 
   async showToast(

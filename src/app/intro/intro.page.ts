@@ -21,9 +21,7 @@ export class IntroPage implements OnInit {
   constructor(  public router: Router,) { }
 
   ngOnInit() {
-    // setTimeout(() => {
-    //   this.router.navigate(['/dashboard'])
-    // }, 4000);
+    
  
   }
   goToLogin() {

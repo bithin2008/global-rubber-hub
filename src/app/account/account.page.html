@@ -26,17 +26,17 @@
       
     </div>
 
-    <form class="form"  [formGroup]="profileForm">
+    <form class="form" >
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Name</ion-label>
-          <ion-input class="form-field" formControlName="full_name" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Email</ion-label>
-          <ion-input class="form-field" formControlName="email" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
 
@@ -50,28 +50,28 @@
             <ion-select-option value="+44">+44</ion-select-option>
             <ion-select-option value="+61">+61</ion-select-option>
           </ion-select>
-          <ion-input type="tel" formControlName="phone" class="form-field"></ion-input>
+          <ion-input type="tel"  class="form-field"></ion-input>
         </div>
       </ion-item>
 
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Company</ion-label>
-          <ion-input class="form-field" formControlName="company" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
 
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Pan No.</ion-label>
-          <ion-input class="form-field" formControlName="pan" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
 
       <ion-item class="no-style">
         <div class="custom-inner selectId">
           <ion-label class="formlebel">Select ID</ion-label>
-          <ion-select interface="popover" placeholder="Voter Card" formControlName="id_proof_type" class="form-field" slot="start">
+          <ion-select interface="popover" placeholder="Voter Card"  class="form-field" slot="start">
             <ion-select-option value="voter">Voter Card</ion-select-option>
             <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
             <ion-select-option value="passport">Passport</ion-select-option>
@@ -86,20 +86,20 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Country</ion-label>
-          <ion-input class="form-field" formControlName="country" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
 
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Address</ion-label>
-          <ion-input class="form-field"  formControlName="address" type="text"></ion-input>
+          <ion-input class="form-field"  type="text"></ion-input>
         </div>
       </ion-item>
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Zip</ion-label>
-          <ion-input class="form-field"  formControlName="zip" type="text"></ion-input>
+          <ion-input class="form-field"   type="text"></ion-input>
         </div>
       </ion-item>
       <ion-button class="btn btn-grn no-style" expand="block"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
