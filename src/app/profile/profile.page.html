@@ -1,130 +1,110 @@
-<ion-header>
-  <ion-toolbar color="success">
-    <ion-title>Global Rubber Hub</ion-title>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="wallet-outline"></ion-icon>
-        ₹2500.00
-      </ion-button>
-      <ion-button>
-        <ion-icon name="person-circle-outline"></ion-icon>
-      </ion-button>
+<ion-header class="appHeader">
+    <ion-title class="title">Global Rubber Hub</ion-title>
+    <ion-buttons>
+      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+      <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
     </ion-buttons>
-  </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [scrollEvents]="true">
+<ion-content class="profile-page">
+  <div class="profile-container">
+    <ion-title class="profileTitle">Profile</ion-title>
+    <div class="profile-photo">
+      <div class="profileimg">
+        <img class="profilePhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
+        
+        <div class="camera">
+          <input type="file" class="file-upload" />
+          <img src="assets/img/icons/camera.svg" alt="" title="">
+        </div>
+      </div>
+      <div class="right">
+        <p class="lgdesc">Upload Profile Photo</p>
+        <p class="photo-note">Please upload square image,size less than 100kb</p>
+      </div>
+      
+    </div>
 
-  <h2>Profile</h2>
+    <form class="form">
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Name</ion-label>
+          <ion-input class="form-field" value="Sanjay Sharma" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Email</ion-label>
+          <ion-input class="form-field" value="sanjay@gmail.com" type="text"></ion-input>
+        </div>
+      </ion-item>
 
-  <div class="profile-photo-section ion-text-center">
-    <ion-avatar>
-      <img src="assets/img/profile-placeholder.png" alt="Profile Photo" />
-    </ion-avatar>
-    <ion-button fill="clear">
-      <ion-icon name="camera-outline"></ion-icon>
-      Upload Profile Photo
-    </ion-button>
-    <p>Please upload square image, size less than 100kb</p>
+      
+      <ion-item class="no-style">
+        <div class="custom-inner multifield">
+          <ion-label class="formlebel">Phone</ion-label>
+          <ion-select interface="popover" placeholder="+91" class="form-field country-code-select" slot="start">
+            <ion-select-option value="+91">+91</ion-select-option>
+            <ion-select-option value="+1">+1</ion-select-option>
+            <ion-select-option value="+44">+44</ion-select-option>
+            <ion-select-option value="+61">+61</ion-select-option>
+          </ion-select>
+          <ion-input type="tel" value="9876512305" class="form-field"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Company</ion-label>
+          <ion-input class="form-field" value="Rubber Company PVT. LTD." type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Pan No.</ion-label>
+          <ion-input class="form-field" value="BCFGH5614K" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner selectId">
+          <ion-label class="formlebel">Select ID</ion-label>
+          <ion-select interface="popover" placeholder="Voter Card" class="form-field" slot="start">
+            <ion-select-option value="voter">Voter Card</ion-select-option>
+            <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
+            <ion-select-option value="passport">Passport</ion-select-option>
+          </ion-select>
+          <div class="uploadfile">
+            <ion-input class="field-file" type="file"></ion-input>
+            Choose file
+          </div>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Country</ion-label>
+          <ion-input class="form-field" value="India" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Address</ion-label>
+          <ion-input class="form-field" value="75/B, Canning Street, Lalbazar" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Zip</ion-label>
+          <ion-input class="form-field" value="700001" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-button class="btn btn-grn no-style" expand="block"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
+    </form>
+
   </div>
-
-  <form [formGroup]="profileForm">
-    <ion-list>
-      <ion-item>
-        <ion-label position="stacked">Name</ion-label>
-        <ion-input formControlName="name"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Email</ion-label>
-        <ion-input type="email" formControlName="email"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Phone</ion-label>
-        <ion-input type="tel" formControlName="phone"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Company</ion-label>
-        <ion-input formControlName="company"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Pan No.</ion-label>
-        <ion-input formControlName="pan"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Select ID</ion-label>
-        <ion-select placeholder="Voter Card" formControlName="idType">
-          <ion-select-option value="voter-card">Voter Card</ion-select-option>
-          <ion-select-option value="aadhaar-card">Aadhaar Card</ion-select-option>
-          <ion-select-option value="passport">Passport</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Upload ID</ion-label>
-        <input type="file"  />
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Country</ion-label>
-        <ion-input formControlName="country"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Address</ion-label>
-        <ion-textarea formControlName="address"></ion-textarea>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Zip</ion-label>
-        <ion-input formControlName="zip"></ion-input>
-      </ion-item>
-    </ion-list>
-
-    <ion-button expand="block" color="success">
-      <ion-icon name="save-outline"></ion-icon>
-      Save Information
-    </ion-button>
-  </form>
-
 </ion-content>
-
-
-
-
-<ion-tabs>
-
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button (click)="goToDashboard($event)" >
-      <ion-icon name="grid-outline"></ion-icon>
-      <ion-label>Dashboard</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="my-items">
-      <ion-icon name="pricetags-outline"></ion-icon>
-      <ion-label>My Items</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="live-bid">
-      <ion-icon name="flash-outline"></ion-icon>
-      <ion-label>Live Bid</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="bid-request">
-      <ion-icon name="send-outline"></ion-icon>
-      <ion-label>Bid Request</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="bid-history">
-      <ion-icon name="time-outline"></ion-icon>
-      <ion-label>Bid History</ion-label>
-    </ion-tab-button>
-
-  </ion-tab-bar>
-
-</ion-tabs>
 
