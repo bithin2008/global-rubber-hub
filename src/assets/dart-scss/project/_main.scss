@@ -489,3 +489,55 @@ ion-button.btn{
     margin-right: 15px;
   }
 }
+
+.my-slide {
+  width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-content {
+  --overflow: visible;
+  overflow: visible;
+}
+.introslider{
+  swiper-slide.my-slide{
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    padding: 80px 30px 50px;
+    justify-content: flex-start;
+    align-items: flex-end;
+    img{
+      width: 100px;
+      border-radius: 20px;
+    }
+    ion-title{
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      position: static;
+      text-align: left;
+      line-height: 1.4;
+      margin: 25px 0;
+    }
+    .lgdesc{
+      font-size: 14px;
+      color: #fff;
+    }
+    &.slide1{
+      background-image: url('../../img/intro/intro-1.jpg');
+    }
+    &.slide2{
+      background-image: url('../../img/intro/intro-2.jpg');
+    }
+    &.slide3{
+      background-image: url('../../img/intro/intro-3.jpg');
+    }
+  }
+  
+}

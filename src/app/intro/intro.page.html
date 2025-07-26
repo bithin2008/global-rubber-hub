@@ -1,6 +1,40 @@
-<swiper-container pagination="true">
-  <swiper-slide>Slide 1</swiper-slide>
-  <swiper-slide>Slide 2</swiper-slide>
-  <swiper-slide>
-    <ion-button expand="block" class="login-button" type="button" (click)="goToLogin()">GO To Login </ion-button></swiper-slide>
+<swiper-container
+  pagination="true"
+  slides-per-view="1"
+  centered-slides="true"
+  space-between="12"
+  style="overflow: visible;"
+  class="introslider"
+  id="customSwiper"
+>
+  <swiper-slide class="my-slide slide1">
+    <div class="content">
+      <img src="assets/img/logo.png" alt="Global Rubber Hub">
+      <ion-title>
+        Connect to the World<br> of Rubber Trade
+      </ion-title>
+      <p class="lgdesc">Discover a powerful platform where buyers and<br> sellers meet, trade, and grow across the globe.</p>
+    </div>
+  </swiper-slide>
+  <swiper-slide class="my-slide slide2">
+    <div class="content">
+      <img src="assets/img/logo.png" alt="Global Rubber Hub">
+      <ion-title>
+        Bid Live.<br> 
+        Win Smart.
+      </ion-title>
+      <p class="lgdesc">Experience fast, transparent, and competitive<br> rubber bidding, all in real-time, from anywhere.</p>
+    </div>
+  </swiper-slide>
+  <swiper-slide class="my-slide slide3">
+    <div class="content">
+      <img src="assets/img/logo.png" alt="Global Rubber Hub">
+      <ion-title>
+        Track, <br>
+        Trade & Grow
+      </ion-title>
+      <p class="lgdesc">Monitor prices, manage orders, and stay ahead<br> with insights tailored for the rubber industry.</p>
+    </div>
+  </swiper-slide>
 </swiper-container>
+<ion-button [href]="" class="skip" expand="full">Skip</ion-button>
