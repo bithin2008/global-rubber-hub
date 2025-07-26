@@ -4,5 +4,5 @@
     "capacitor": {},
     "cordova": {}
   },
-  "type": "angular-standalone"
+  "type": "angular"
 }
