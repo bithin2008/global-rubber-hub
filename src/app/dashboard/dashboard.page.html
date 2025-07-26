@@ -1,7 +1,10 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dashboard</ion-title>
-  </ion-toolbar>
+<ion-header class="appHeader">
+  <ion-title class="title">Global Rubber Hub</ion-title>
+  <ion-buttons>
+    <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+    <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+    <ion-button class="btn account" (click)="goToProfile()"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
+  </ion-buttons>
 </ion-header>
 
 <ion-content [fullscreen]="true">

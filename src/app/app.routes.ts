@@ -22,7 +22,10 @@ export const routes: Routes = [
     path: 'forgot-password',
     loadComponent: () => import('./forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
   },
-
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard.page').then( m => m.DashboardPage)
+  },
   {
     path: 'profile',
     loadComponent: () => import('./profile/profile.page').then( m => m.ProfilePage)
@@ -34,5 +37,9 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     loadComponent: () => import('./reset-password/reset-password.page').then( m => m.ResetPasswordPage)
+  },
+  {
+    path: 'account',
+    loadComponent: () => import('./account/account.page').then( m => m.AccountPage)
   },
 ];
