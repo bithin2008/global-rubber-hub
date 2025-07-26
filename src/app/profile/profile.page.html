@@ -12,9 +12,9 @@
     <ion-title class="profileTitle">Profile</ion-title>
     <div class="profile-photo">
       <div class="profileimg">
-        <img class="profilePhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
+                 <img class="profilePhoto" [src]="profileImage" alt="Profile Photo" />
         
-        <div class="camera">
+        <div class="camera" (click)="openCamera()">
           <input type="file" class="file-upload" />
           <img src="assets/img/icons/camera.svg" alt="" title="">
         </div>
@@ -36,7 +36,7 @@
       <div class="validation-error">
         <span *ngIf="submitted && f['full_name'].errors">
           <div *ngIf="f['full_name'].errors['required']">Please enter name</div>
-          <div *ngIf="f['full_name'].errors['pattern']">Please enter valid name</div>
+          <div *ngIf="f['full_name'].errors['maxlength']">Please enter valid name</div>
         </span>
       </div>
       <ion-item class="no-style">
@@ -80,9 +80,19 @@
       <div class="validation-error">
         <span *ngIf="submitted && f['company'].errors">
           <div *ngIf="f['company'].errors['required']">Please enter company name</div>
-          <div *ngIf="f['company'].errors['pattern']">Please enter valid company name</div>
+          <div *ngIf="f['company'].errors['minlength']">Please enter valid company name</div>
         </span>
       </div>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Country</ion-label>
+          <ion-select interface="modal" placeholder="Select Country" formControlName="country" class="form-field">
+            <ion-select-option *ngFor="let country of countries" [value]="country.name">
+              {{ country.name }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+      </ion-item>
 
       <ion-item class="no-style">
         <div class="custom-inner">
@@ -92,7 +102,7 @@
       </ion-item>
       <div class="validation-error">
         <span *ngIf="submitted && f['pan'].errors">
-          <div *ngIf="f['pan'].errors['required']">Please enter pan name</div>
+          <div *ngIf="f['pan'].errors['required']">Please enter pan number</div>
           <div *ngIf="f['pan'].errors['pattern']">Please enter valid pan number</div>
         </span>
       </div>
@@ -111,32 +121,37 @@
         </div>
       </ion-item>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Country</ion-label>
-          <ion-input class="form-field" formControlName="country" type="text"></ion-input>
-        </div>
-      </ion-item>
+      
       <div class="validation-error">
         <span *ngIf="submitted && f['country'].errors">
-          <div *ngIf="f['country'].errors['required']">Please enter country name</div>
+          <div *ngIf="f['country'].errors['required']">Please select a country</div>
         </span>
       </div>
 
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Address</ion-label>
-          <ion-input class="form-field"  formControlName="address" type="text"></ion-input>
+          <ion-input class="form-field"  formControlName="company_address" type="text"></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['company_address'].errors">
+          <div *ngIf="f['company_address'].errors['required']">Please enter address</div>
+        </span>
+      </div>
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Zip</ion-label>
-          <ion-input class="form-field"  formControlName="zip" type="number" autocomplete="off" [minlength]="5"
-          [maxlength]="5" 
-          (input)="onInputChange($event)" ></ion-input>
+          <ion-input class="form-field"  formControlName="zip" type="text" autocomplete="off" [minlength]="6"
+          [maxlength]="6" (input)="onInputChange($event)" ></ion-input>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['zip'].errors">
+          <div *ngIf="f['zip'].errors['required']">Please enter zip</div>
+          <div *ngIf="f['zip'].errors['minlength']">Please enter valid zip</div>
+        </span>
+      </div>
       <ion-button class="btn btn-grn no-style" expand="block" type="submit"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
     </form>
 
