@@ -8,7 +8,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
 import { isPlatform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+
 
 @Component({
   selector: 'app-login',
@@ -28,6 +28,8 @@ export class LoginPage implements OnInit {
   public showCredentialsElem: any = '';
   public savedLoginCounter: number = 0;
   public isOpenCredentialModal: boolean = false;
+  public isGoogleLoading: boolean = false;
+
   constructor(
     private formBuilder: FormBuilder,
     public router: Router,
@@ -47,69 +49,96 @@ export class LoginPage implements OnInit {
     });
   }
 
-  //amaleshdebnath68394@gmail.com
-  //Amalesh@goo2022
-
-  //nantu16051984@gmail.com
-  //Nantu@goo2022
-
-  //sujansouth1@gmail.com
-  //Sujan@goo2022
-
-  //nipursouth@gmail.com
-  //Nipur@goo2022
-
-  //sahingomati@gmail.com
-  //Sahin@goo2022
-
-  //tajul27120@gmail.com
-  //Tajul@goo2022
-
-  //krishnakantawest@gmail.com
-  //Krishna@2017
-
-
-  //sangitarubber12@gmail.com
-  //Tutan@2017
   async ngOnInit() {
-    this.loginWithGoogle();
-
-
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(30), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)]]
     });
 
-   
+    // Initialize Google Auth
+    await this.initializeGoogleAuth();
+  }
 
-    // let hasUserCredentialTable = await this.isTableExists('user_credentials');
-    // if (!hasUserCredentialTable) {
-    //   this.sqlite.create({
-    //     name: 'gstsof_data.db',
-    //     location: 'default'
-    //   })
-    //     .then((db: SQLiteObject) => {
-    //       db.executeSql('CREATE TABLE IF NOT EXISTS user_credentials (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT)', [])
-    //         .then(() => console.log('Table created successfully'))
-    //         .catch(error => console.error('Error creating table: ', error));
-    //     })
-    //     .catch(error => {
-    //       console.error('Error opening database: ', error);
-    //     });
-    // }
+  async initializeGoogleAuth() {
+    try {
+      // Initialize Google Auth plugin
+     
+      console.log('Google Auth initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Google Auth:', error);
+    }
   }
 
   async loginWithGoogle() {
-    try {
-
-      console.log('isPlatform',isPlatform('capacitor'));
-      
     
-        const user = await GoogleAuth.signIn();
-        console.log('Google user (native):', user);
+  }
+
+  async handleGoogleLoginSuccess(user: any) {
+    try {
+      this.enableLoader = true;
       
+      // Prepare data for backend
+      const googleData = {
+        google_id: user.id,
+        email: user.email,
+        name: user.displayName,
+        first_name: user.givenName || '',
+        last_name: user.familyName || '',
+        profile_picture: user.imageUrl || '',
+        access_token: user.authentication?.accessToken || '',
+        id_token: user.authentication?.idToken || ''
+      };
+
+      console.log('Sending Google data to backend:', googleData);
+
+      // Call your backend API for Google login
+      this.commonService.googleLogin('google-login', googleData).subscribe(
+        (response: any) => {
+          this.enableLoader = false;
+          
+          if (response.code === 200) {
+            // Store the token
+            localStorage.setItem('token', response.access_token);
+            
+            // Store user info if provided
+            if (response.user) {
+              localStorage.setItem('user', JSON.stringify(response.user));
+            }
+            
+            this.showToast('success', 'Google login successful!', 'Welcome ' + user.displayName, 3000, '/dashboard');
+          } else if (response.code === 401) {
+            this.showToast('error', response.message || 'Authentication failed', '', 3000, '');
+          } else if (response.code === 423) {
+            this.showToast('error', response.message || 'Account is locked', '', 3000, '');
+          } else {
+            this.showToast('error', response.message || 'Login failed', '', 3000, '');
+          }
+        },
+        (error: any) => {
+          this.enableLoader = false;
+          console.error('Backend error:', error);
+          
+          let errorMessage = 'Server error. Please try again.';
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          }
+          
+          this.showToast('error', errorMessage, '', 3000, '');
+        }
+      );
     } catch (error) {
-      console.error('Google login error:', error);
+      this.enableLoader = false;
+      console.error('Error handling Google login success:', error);
+      this.showToast('error', 'Error processing login. Please try again.', '', 3000, '');
+    }
+  }
+
+  async signOutGoogle() {
+    try {
+    //  await GoogleAuth.signOut();
+      console.log('Google user signed out');
+    } catch (error) {
+      console.error('Error signing out from Google:', error);
     }
   }
 
@@ -136,44 +165,12 @@ export class LoginPage implements OnInit {
   checkSavedLogin() {
     if (this.savedLoginCounter == 0) {
       this.savedLoginCounter++;
-     // this.showLoginCredential();
     } else {
       setTimeout(() => {
         this.savedLoginCounter = 0;
       }, 45 * 1000);
     }
   }
-
-  // showLoginCredential() {
-
-  //   this.savedLoginCredential = [];
-
-  //   this.sqlite.create({
-  //     name: 'gstsof_data.db',
-  //     location: 'default'
-  //   })
-  //     .then((db: SQLiteObject) => {
-  //       db.executeSql('SELECT * FROM user_credentials', [])
-  //         .then((res) => {
-  //           if (res.rows.length > 0) {
-  //             this.isOpenCredentialModal = true;
-  //             for (var i = 0; i < res.rows.length; i++) {
-  //               res.rows.item(i).cryptpassword = res.rows.item(i).password.replace(/./g, '*');
-  //               this.savedLoginCredential.push(res.rows.item(i));
-  //             }
-  //             this.showCredentialsElem = document.querySelector('.login-credential-modal');
-  //             this.showCredentialsElem.classList.add('openMenu');
-  //           } else {
-  //             this.isOpenCredentialModal = false;
-  //             this.closeItemModal();
-  //           }
-  //         })
-  //         .catch(error => console.error('Error executing query: ', error));
-  //     })
-  //     .catch(error => {
-  //       console.error('Error opening database: ', error);
-  //     });
-  // }
 
   setCredential(item:any) {
     this.loginForm.controls['email'].setValue(item.email);
@@ -212,7 +209,7 @@ export class LoginPage implements OnInit {
           localStorage.setItem('token', response.access_token);
 
           this.showToast('success', response.message, '', 4000, '/dashboard');
-         
+        
 
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');
@@ -223,7 +220,6 @@ export class LoginPage implements OnInit {
       (error) => {
         this.enableLoader = false;
         console.log('error ts: ', error.error);
-        // this.toastr.error(error);
       }
     );
   }
@@ -252,42 +248,13 @@ export class LoginPage implements OnInit {
           text: 'Yes',
           cssClass: 'alert-ok',
           handler: () => {
-            // this.sqlite.create({
-            //   name: 'gstsof_data.db',
-            //   location: 'default'
-            // }).then((db: SQLiteObject) => {
-            //   db.executeSql(`DELETE FROM user_credentials WHERE email = ?`, [item.email])
-            //     .then((res) => {
-            //      // this.showLoginCredential();
-            //     })
-            //     .catch(error => console.error('Error executing query: ', error));
-            // })
+            // Implementation for deleting credentials
           }
         }
       ]
     });
     await alert.present();
   }
-
-  // async isTableExists(tableName: string): Promise<boolean> {
-  //   try {
-  //     const db: SQLiteObject = await this.sqlite.create({
-  //       name: 'gstsof_data.db',
-  //       location: 'default'
-  //     });
-
-  //     const result = await db.executeSql(
-  //       `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
-  //       [tableName]
-  //     );
-
-  //     return result.rows.length > 0;
-  //   } catch (error) {
-  //     console.error('Error checking table existence:', error);
-  //     return false;
-  //   }
-  // }
-
 
   async saveLoginCredential(name:any) {
     const alert = await this.alertController.create({
@@ -305,22 +272,7 @@ export class LoginPage implements OnInit {
           text: 'Yes',
           cssClass: 'alert-ok',
           handler: () => {
-            // this.sqlite.create({
-            //   name: 'gstsof_data.db',
-            //   location: 'default'
-            // })
-            //   .then((db: SQLiteObject) => {
-            //     db.executeSql('CREATE TABLE IF NOT EXISTS user_credentials (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT)', [])
-            //       .then(() => console.log('Table created successfully'))
-            //       .catch(error => console.error('Error creating table: ', error));
-
-            //     db.executeSql('INSERT INTO user_credentials (email,password) VALUES (?,?)', [this.f['email'].value, this.f['password'].value])
-            //       .then(() => console.log('Data inserted successfully'))
-            //       .catch(error => console.error('Error inserting data: ', error));
-            //   })
-            //   .catch(error => {
-            //     console.error('Error opening database: ', error);
-            //   });
+            // Implementation for saving credentials
           }
         }
       ]

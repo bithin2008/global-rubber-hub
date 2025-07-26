@@ -50,9 +50,10 @@
         <span>Or</span>
       </div>
 
-      <button type="button" class="google-signin" (click)="loginWithGoogle()">
+      <button type="button" class="google-signin" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
         <img src="assets/img/google.svg" />
-        Sign up with Google
+        <span *ngIf="!isGoogleLoading">Sign up with Google</span>
+        <span *ngIf="isGoogleLoading">Signing in...</span>
       </button>
     </form>
   </div>
