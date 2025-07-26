@@ -7,16 +7,15 @@ import { AuthService } from '../services/auth.service';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { IonicModule } from '@ionic/angular';
-
+import { NgOtpInputComponent } from 'ng-otp-input';
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.page.html',
-  styleUrls: ['./forgot-password.page.scss'],
+  selector: 'app-forgot-password-otp',
+  templateUrl: './forgot-password-otp.page.html',
+  styleUrls: ['./forgot-password-otp.page.scss'],
   standalone: true,
-  imports: [ IonicModule,RouterModule, FormsModule, ReactiveFormsModule, CommonModule ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [ IonicModule,RouterModule, FormsModule, ReactiveFormsModule, CommonModule, NgOtpInputComponent ],
 })
-export class ForgotPasswordPage implements OnInit {
+export class ForgotPasswordOtpPage implements OnInit {
 
   public enableLoader: boolean = false;
   public forgotPasswordForm!: FormGroup;
@@ -43,7 +42,7 @@ export class ForgotPasswordPage implements OnInit {
   //Amalesh@goo2022
   ngOnInit() {    
     this.forgotPasswordForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]]
+      emailOTP: ['', [Validators.required]]
     });
   }
 
@@ -62,7 +61,9 @@ export class ForgotPasswordPage implements OnInit {
 
   get f() { return this.forgotPasswordForm.controls; }
 
-
+  onOtpChange(ev:any){
+    this.forgotPasswordForm.patchValue({emailOTP:ev})
+  }
 
   forgotPassword() {
     this.submitted = true;
@@ -70,17 +71,16 @@ export class ForgotPasswordPage implements OnInit {
       return;
     }
     let data = {
-      email: this.f['email'].value
+      email: localStorage.getItem('email'),
+      otp:this.f['emailOTP'].value,
     };
-
     this.enableLoader = true;
-    let url = 'auth/forgot-password';
+    let url = 'auth/verify-otp';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {         
-          localStorage.setItem('email',this.f['email'].value);
-          this.showToast('success', response.message, '', 2000, '/forgot-password-otp');
+          this.showToast('success', response.message, '', 2000, '/reset-password');
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');
         } else if (response.code == 423) {
@@ -117,5 +117,6 @@ export class ForgotPasswordPage implements OnInit {
     });
     return await modal.present();
   }
+
 
 }

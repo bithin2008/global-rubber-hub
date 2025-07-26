@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicSlides} from '@ionic/angular/standalone';
 import { register } from 'swiper/element/bundle';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
 
 register();
 
@@ -17,9 +18,12 @@ register();
 })
 export class IntroPage implements OnInit {
   swiperModules = [IonicSlides];
-  constructor() { }
+  constructor(  public router: Router,) { }
 
   ngOnInit() {
+    setTimeout(() => {
+      this.router.navigate(['/dashboard'])
+    }, 4000);
   }
 
 }

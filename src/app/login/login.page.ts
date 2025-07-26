@@ -2,24 +2,20 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/c
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController } from '@ionic/angular/standalone';
 import { AlertController, MenuController } from '@ionic/angular';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
-import { HttpClientModule } from '@angular/common/http';
-import { provideIonicAngular } from '@ionic/angular/standalone';
-import { provideHttpClient } from '@angular/common/http';
-
+import { isPlatform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { importProvidersFrom } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent],
+  imports: [ CommonModule, RouterModule, FormsModule, ReactiveFormsModule, IonInput, IonButton, IonContent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {
@@ -76,11 +72,15 @@ export class LoginPage implements OnInit {
   //sangitarubber12@gmail.com
   //Tutan@2017
   async ngOnInit() {
-    this.menu.enable(false);
+    this.loginWithGoogle();
+
+
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(30), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)]]
     });
+
+   
 
     // let hasUserCredentialTable = await this.isTableExists('user_credentials');
     // if (!hasUserCredentialTable) {
@@ -97,6 +97,20 @@ export class LoginPage implements OnInit {
     //       console.error('Error opening database: ', error);
     //     });
     // }
+  }
+
+  async loginWithGoogle() {
+    try {
+
+      console.log('isPlatform',isPlatform('capacitor'));
+      
+    
+        const user = await GoogleAuth.signIn();
+        console.log('Google user (native):', user);
+      
+    } catch (error) {
+      console.error('Google login error:', error);
+    }
   }
 
   alreadyLoggedIn() {
