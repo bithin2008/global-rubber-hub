@@ -1,13 +1,111 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>account</ion-title>
-  </ion-toolbar>
+<ion-header class="appHeader">
+    <ion-title class="title">Global Rubber Hub</ion-title>
+    <ion-buttons>
+      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+      <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
+    </ion-buttons>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">account</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="profile-page">
+  <div class="profile-container">
+    <ion-title class="profileTitle">Profile</ion-title>
+    <div class="profile-photo">
+      <div class="profileimg">
+        <img class="profilePhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
+        
+        <div class="camera">
+          <input type="file" class="file-upload" />
+          <img src="assets/img/icons/camera.svg" alt="" title="">
+        </div>
+      </div>
+      <div class="right">
+        <p class="lgdesc">Upload Profile Photo</p>
+        <p class="photo-note">Please upload square image,size less than 100kb</p>
+      </div>
+      
+    </div>
+
+    <form class="form"  [formGroup]="profileForm">
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Name</ion-label>
+          <ion-input class="form-field" formControlName="full_name" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Email</ion-label>
+          <ion-input class="form-field" formControlName="email" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      
+      <ion-item class="no-style">
+        <div class="custom-inner multifield">
+          <ion-label class="formlebel">Phone</ion-label>
+          <ion-select interface="popover" placeholder="+91" class="form-field country-code-select" slot="start">
+            <ion-select-option value="+91">+91</ion-select-option>
+            <ion-select-option value="+1">+1</ion-select-option>
+            <ion-select-option value="+44">+44</ion-select-option>
+            <ion-select-option value="+61">+61</ion-select-option>
+          </ion-select>
+          <ion-input type="tel" formControlName="phone" class="form-field"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Company</ion-label>
+          <ion-input class="form-field" formControlName="company" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Pan No.</ion-label>
+          <ion-input class="form-field" formControlName="pan" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner selectId">
+          <ion-label class="formlebel">Select ID</ion-label>
+          <ion-select interface="popover" placeholder="Voter Card" formControlName="id_proof_type" class="form-field" slot="start">
+            <ion-select-option value="voter">Voter Card</ion-select-option>
+            <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
+            <ion-select-option value="passport">Passport</ion-select-option>
+          </ion-select>
+          <div class="uploadfile">
+            <ion-input class="field-file" type="file"></ion-input>
+            Choose file
+          </div>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Country</ion-label>
+          <ion-input class="form-field" formControlName="country" type="text"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Address</ion-label>
+          <ion-input class="form-field"  formControlName="address" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Zip</ion-label>
+          <ion-input class="form-field"  formControlName="zip" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-button class="btn btn-grn no-style" expand="block"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
+    </form>
+
+  </div>
 </ion-content>
+
+
