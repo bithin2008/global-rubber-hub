@@ -4,7 +4,6 @@ import { ModalController } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon } from '@ionic/angular/standalone';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
@@ -13,19 +12,26 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './toast-modal.component.html',
   styleUrls: ['./toast-modal.component.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule,  IonicModule ]
+  imports: [ CommonModule, FormsModule, IonicModule ]
 })
 export class ToastModalComponent implements OnInit {
-  @Input() status!: string;
-  @Input() message!: string;
-  @Input() submessage!: string;
-  @Input() timer!: number;
-  @Input() redirect!: string;
+  status!: string;
+  message!: string;
+  submessage!: string;
+  timer!: number;
+  redirect!: string;
   defaultLanguage: any = 'beng';
   constructor(navParams: NavParams, private navCtrl: NavController, public router: Router,private modalController: ModalController ) {
-    console.log(navParams.get('status'));
-    console.log(navParams.get('message'));
-    console.log(navParams.get('submessage'));
+    // Get values from componentProps
+    this.status = navParams.get('status') || '';
+    this.message = navParams.get('message') || '';
+    this.submessage = navParams.get('submessage') || '';
+    this.timer = navParams.get('timer') || 3000;
+    this.redirect = navParams.get('redirect') || '';
+    
+    console.log('Status:', this.status);
+    console.log('Message:', this.message);
+    console.log('Submessage:', this.submessage);
   }
 
   ngOnInit() {

@@ -14,8 +14,7 @@
       <div class="profileimg">
                  <img class="profilePhoto" [src]="profileImage" alt="Profile Photo" />
         
-        <div class="camera" (click)="openCamera()">
-          <input type="file" class="file-upload" />
+        <div class="camera" (click)="openCamera()">          
           <img src="assets/img/icons/camera.svg" alt="" title="">
         </div>
       </div>
@@ -36,7 +35,8 @@
       <div class="validation-error">
         <span *ngIf="submitted && f['full_name'].errors">
           <div *ngIf="f['full_name'].errors['required']">Please enter name</div>
-          <div *ngIf="f['full_name'].errors['maxlength']">Please enter valid name</div>
+          <div *ngIf="f['full_name'].errors['minlength']">Name should be at least 3 characters</div>
+          <div *ngIf="f['full_name'].errors['maxlength']">Name should be less than 60 characters</div>
         </span>
       </div>
       <ion-item class="no-style">
@@ -80,7 +80,8 @@
       <div class="validation-error">
         <span *ngIf="submitted && f['company'].errors">
           <div *ngIf="f['company'].errors['required']">Please enter company name</div>
-          <div *ngIf="f['company'].errors['minlength']">Please enter valid company name</div>
+          <div *ngIf="f['company'].errors['minlength']">Company name should be at least 3 characters</div>
+          <div *ngIf="f['company'].errors['maxlength']">Company name should be less than 40 characters</div>
         </span>
       </div>
       <ion-item class="no-style">
@@ -93,14 +94,19 @@
           </ion-select>
         </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['country'].errors">
+          <div *ngIf="f['country'].errors['required']">Please select a country</div>
+        </span>
+      </div>
 
-      <ion-item class="no-style">
+      <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
         <div class="custom-inner">
           <ion-label class="formlebel">Pan No.</ion-label>
           <ion-input class="form-field" formControlName="pan" type="text"></ion-input>
         </div>
       </ion-item>
-      <div class="validation-error">
+      <div class="validation-error" *ngIf="f['country'].value === 'India'">
         <span *ngIf="submitted && f['pan'].errors">
           <div *ngIf="f['pan'].errors['required']">Please enter pan number</div>
           <div *ngIf="f['pan'].errors['pattern']">Please enter valid pan number</div>
@@ -114,19 +120,59 @@
             <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
             <ion-select-option value="passport">Passport</ion-select-option>
           </ion-select>
-          <div class="uploadfile">
-            <ion-input class="field-file" type="file"></ion-input>
-            Choose file
-          </div>
+         
         </div>
       </ion-item>
-
-      
+      <div class="file-upload-container">
+        <div class="file-upload-area" 
+             (click)="fileInput.click()" 
+            >
+                     <div class="upload-icon">
+             <ion-icon name="cloud-upload-outline" style="font-size: 48px; color: #007bff;"></ion-icon>
+           </div>
+          <p><strong>Click to upload</strong></p>
+          <p class="file-info">Image (Max file size 2MB)</p>
+          <input #fileInput 
+                 type="file" 
+                 multiple 
+                 accept="image/*,.pdf,.doc,.docx" 
+                 (change)="onFileSelected($event)" 
+                 style="display: none;">
+        </div>
+        
+        <div class="uploaded-files" *ngIf="uploadedFiles.length > 0">
+          <h4>Uploaded Files ({{ uploadedFiles.length }})</h4>
+          <div class="file-item" *ngFor="let file of uploadedFiles; let i = index">
+            <div class="file-preview" *ngIf="file.type.startsWith('image/')">
+              <img [src]="file.preview" class="file-thumbnail" alt="Preview">
+            </div>
+            <div class="file-preview" *ngIf="!file.type.startsWith('image/')">
+              <ion-icon name="document-outline" class="file-icon"></ion-icon>
+            </div>
+            <div class="file-info">
+              <div class="file-details">
+                <p class="file-name">{{ file.name }}</p>
+                <p class="file-size">{{ formatFileSize(file.size) }}</p>
+              </div>
+            </div>
+            <ion-button fill="clear" 
+                       color="danger" 
+                       class="remove-btn" 
+                       (click)="removeFile(i)">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
       <div class="validation-error">
-        <span *ngIf="submitted && f['country'].errors">
-          <div *ngIf="f['country'].errors['required']">Please select a country</div>
+        <span *ngIf="submitted && f['id_proof_image'].errors">
+          <div *ngIf="f['id_proof_image'].errors['required']">Please upload at least one file</div>
+          <div *ngIf="f['id_proof_image'].errors['minlength']">Please upload at least one file</div>
         </span>
       </div>
+
+      
+      
 
       <ion-item class="no-style">
         <div class="custom-inner">
@@ -137,6 +183,34 @@
       <div class="validation-error">
         <span *ngIf="submitted && f['company_address'].errors">
           <div *ngIf="f['company_address'].errors['required']">Please enter address</div>
+          <div *ngIf="f['company_address'].errors['minlength']">Address should be at least 5 characters</div> 
+          <div *ngIf="f['company_address'].errors['maxlength']">Address should be less than 50 characters</div>
+        </span>
+      </div>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">City</ion-label>
+          <ion-input class="form-field"  formControlName="city" type="text" autocomplete="off"></ion-input>
+        </div>
+      </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['city'].errors">
+          <div *ngIf="f['city'].errors['required']">Please enter city</div>
+          <div *ngIf="f['city'].errors['minlength']">City name should be at least 3 characters</div>
+          <div *ngIf="f['city'].errors['maxlength']">City name should be less than 25 characters</div>
+        </span>
+      </div>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">State</ion-label>
+          <ion-input class="form-field"  formControlName="state" type="text" autocomplete="off"></ion-input>
+        </div>
+      </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['state'].errors">
+          <div *ngIf="f['state'].errors['required']">Please enter state</div>
+          <div *ngIf="f['state'].errors['minlength']">state name should be at least 3 characters</div>
+          <div *ngIf="f['state'].errors['maxlength']">state name should be less than 25 characters</div>
         </span>
       </div>
       <ion-item class="no-style">

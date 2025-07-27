@@ -11,6 +11,30 @@ swiper-container::part(pagination) {
   top: 80px;
   width: auto;
   left: 30px;
+  z-index: 1000;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+swiper-container::part(pagination-bullet) {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+swiper-container::part(pagination-bullet-active) {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+// Ensure the swiper container allows proper interaction
+.introslider {
+  position: relative;
+  z-index: 1;
+}
+
+// Make sure pagination is above other elements
+swiper-container {
+  --swiper-pagination-clickable: true;
 }
 ion-button.skip{
   position: fixed;
