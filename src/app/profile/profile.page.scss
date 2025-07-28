@@ -1,0 +1,217 @@
+.country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.country-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.country-option:hover {
+  background-color: #f5f5f5;
+}
+
+.country-option:last-child {
+  border-bottom: none;
+}
+
+.custom-inner {
+  position: relative;
+}
+
+.no-results {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}
+
+// File Upload Styles
+.file-upload-container {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.uploadfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  
+  .field-file {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    background: #f9f9f9;
+  }
+}
+
+.file-upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+  margin-bottom: 15px;
+
+  &:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+  }
+
+  .upload-icon {
+    font-size: 48px;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
+
+  .file-info {
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+.uploaded-files {
+  h4 {
+    margin: 15px 0 10px 0;
+    color: #333;
+    font-size: 14px;
+  }
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .file-preview {
+    margin-right: 10px;
+
+    .file-thumbnail {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    .file-icon {
+      font-size: 24px;
+      color: #007bff;
+      margin-right: 10px;
+    }
+
+    .file-details {
+      flex: 1;
+
+      .file-name {
+        margin: 0;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .file-size {
+        margin: 0;
+        font-size: 12px;
+        color: #666;
+      }
+    }
+  }
+
+  .remove-btn {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    min-width: auto;
+    height: 32px;
+  }
+}
+
+// Drag and drop styles
+.file-upload-area.dragover {
+  border-color: #007bff;
+  background: #e3f2fd;
+  transform: scale(1.02);
+}
+
+// Additional styling for better UX
+.file-upload-area {
+  .upload-icon {
+    ion-icon {
+      font-size: 48px;
+      color: #007bff;
+    }
+  }
+}
+
+.file-item {
+  .file-preview {
+    .file-icon {
+      font-size: 24px;
+      color: #007bff;
+    }
+  }
+  
+  .remove-btn {
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .file-upload-area {
+    padding: 15px;
+    
+    .upload-icon ion-icon {
+      font-size: 36px;
+    }
+    
+    p {
+      font-size: 14px;
+    }
+  }
+  
+  .file-item {
+    padding: 8px;
+    
+    .file-preview .file-thumbnail {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}

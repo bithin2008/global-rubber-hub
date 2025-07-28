@@ -15,7 +15,7 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(
-      IonicModule.forRoot(),   // ✅ THIS
+      IonicModule.forRoot(),
     ),
   ],
 });
