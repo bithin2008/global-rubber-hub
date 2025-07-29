@@ -696,6 +696,7 @@ ion-content {
       font-size: 14px;
       font-weight: 600;
       margin: 0;
+      margin-bottom: 5px;
     }
 
     ion-label p {
@@ -726,3 +727,69 @@ ion-item.no-style {
   --ripple-color: transparent;
 }
 
+.rubber-card {
+  ion-img {
+    height: 160px;
+    object-fit: cover;
+  }
+
+  .title-text {
+    h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+  }
+
+  .location-date {
+    p {
+      font-size: 0.85rem;
+      margin: 0;
+    }
+
+    .dot {
+      font-weight: bold;
+      margin: 0 6px;
+    }
+
+    .date {
+      font-weight: 500;
+    }
+  }
+
+  .price-volume {
+    margin-top: 12px;
+
+    .label {
+      display: block;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #000;
+    }
+  }
+
+  .footer-grid {
+    margin-top: 12px;
+
+    .company-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .company-role {
+      font-size: 0.75rem;
+    }
+
+    ion-button {
+      --border-radius: 20px;
+      font-weight: 600;
+      padding: 0 14px;
+    }
+  }
+}
