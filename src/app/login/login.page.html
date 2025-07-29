@@ -42,7 +42,7 @@
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <ion-label class="form-label">Email</ion-label>
         <ion-item lines="none" class="input-field">
-          <ion-input type="email" formControlName="email" name="email" [readonly]="isOpenCredentialModal"
+          <ion-input type="email" formControlName="email" placeholder="yourname@example.com" name="email" [readonly]="isOpenCredentialModal"
           autocomplete="email" inputmode="text" (ionFocus)="checkSavedLogin()"></ion-input>
         </ion-item>
         <div class="validation-error">
@@ -53,7 +53,7 @@
         </div>
         <ion-label class="form-label">Password</ion-label>
         <ion-item lines="none" class="input-field">
-          <ion-input type="{{showLoginPassword ? 'text' : 'password'}}" formControlName="password" #x></ion-input>
+          <ion-input type="{{showLoginPassword ? 'text' : 'password'}}" placeholder="********"   formControlName="password" #x></ion-input>
           <ion-icon name="{{showLoginPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleLoginPassword()"></ion-icon>
         </ion-item>
         <div class="validation-error mb-0">
@@ -171,7 +171,7 @@
           </span>
         </div>     
         <ion-button expand="block" class="login-button" type="submit">Get New Password</ion-button>
-        <a (click)="backToLogin()"><b>Back to Login</b></a>
+        <a class="back-link" (click)="backToLogin()"><b>Back to Login</b></a>
       </form>
     </div>
 
@@ -186,7 +186,7 @@
           </span>
         </div>     
         <ion-button expand="block" class="login-button" type="submit">Submit</ion-button>
-        <a (click)="backToForgotPassword()"><b>Back to Forgot Password</b></a>
+        <a class="back-link" (click)="backToForgotPassword()"><b>Back to Forgot Password</b></a>
       </form>
     </div>
 
@@ -220,7 +220,7 @@
           </span>
         </div>   
         <ion-button expand="block" class="login-button" type="submit">Reset</ion-button>
-        <a (click)="backToLogin()"><b>Back to Login</b></a>
+        <a class="back-link" (click)="backToLogin()"><b>Back to Login</b></a>
       </form>
     </div>
   </div>

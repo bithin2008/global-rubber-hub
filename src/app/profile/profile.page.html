@@ -12,7 +12,12 @@
     <ion-title class="profileTitle">Profile</ion-title>
     <div class="profile-photo">
       <div class="profileimg">
-                 <img class="profilePhoto" [src]="profileImage" alt="Profile Photo" />
+        <div class="profilePhoto" *ngIf="profileImage && !showPlaceholder">
+          <img [src]="profileImage" alt="Profile Photo" (error)="onImageError($event)" />
+        </div>
+        <div class="profilePhoto placeholder" *ngIf="showPlaceholder || !profileImage">
+          <ion-icon name="person" class="user-icon"></ion-icon>
+        </div>
         
         <div class="camera" (click)="openCamera()">          
           <img src="assets/img/icons/camera.svg" alt="" title="">

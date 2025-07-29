@@ -49,7 +49,6 @@ declare global {
     IonLabel, 
     IonItem, 
     IonIcon, 
-    IonCheckbox,
     NgOtpInputComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -474,7 +473,7 @@ export class LoginPage implements OnInit {
       password: this.loginForm.get('password')?.value,
     };
     this.enableLoader = true;
-    let url = 'login';
+    let url = 'auth/login';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
@@ -510,13 +509,13 @@ export class LoginPage implements OnInit {
       password: this.registerForm.get('password')?.value
     };
     this.enableLoader = true;
-    let url = 'registration';
+    let url = 'auth/registration';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 201) {
-          this.showToast('success', response.message, '', 2500, '/login');
           localStorage.setItem('token', response.access_token);
+          this.showToast('success', response.message, '', 4000, '/dashboard');
         } else if (response.code == 423) {
           this.showToast('error', response.message, '', 2500, '');
         } else {

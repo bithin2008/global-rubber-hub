@@ -18,7 +18,8 @@ export class ProfilePage implements OnInit {
   public type: any;
   public enableLoader: boolean = false;
   public submitted: boolean = false;
-  public profileImage: string = 'assets/img/profile-placeholder.jpg';
+  public profileImage: string = '';
+  public showPlaceholder: boolean = true;
   public countries: any[] = [];
   public filteredCountries: any[] = [];
   public showCountryDropdown: boolean = false;
@@ -128,6 +129,14 @@ export class ProfilePage implements OnInit {
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
+          // Set profile image if available, otherwise show placeholder
+          if (response.user.profile_image && response.user.profile_image.trim() !== '') {
+            this.profileImage = response.user.profile_image;
+            this.showPlaceholder = false;
+          } else {
+            this.profileImage = '';
+            this.showPlaceholder = true;
+          }
           this.profileForm.patchValue(response.user)
         } else {
           this.showToast('error', response.message, '', 3500, '');
@@ -314,6 +323,7 @@ export class ProfilePage implements OnInit {
       if (image.webPath) {
         // Store the image URI directly in the variable
         this.profileImage = image.webPath;
+        this.showPlaceholder = false; // Hide placeholder
 
         // Convert to PNG format using canvas
         const canvas = document.createElement('canvas');
@@ -352,10 +362,12 @@ export class ProfilePage implements OnInit {
                           this.showToast('success', responseData.message, '', 2500, '');
                         } else {
                           this.showToast('error', responseData.message, '', 2500, '');
+                          this.getProfileData()
                         }
                       } catch (e) {
                         console.error('Error parsing blob response:', e);
                         this.showToast('error', 'Invalid response format', '', 2500, '');
+                        this.getProfileData()
                       }
                     };
                     reader.readAsText(res);
@@ -367,12 +379,14 @@ export class ProfilePage implements OnInit {
                     } else {
                       this.showToast('error', responseData.message, '', 2500, '');
                     }
+                    this.getProfileData()
                   }
                 },
                 (error) => {
                   this.enableLoader = false;
                   console.log('error ts: ', error.error);
                   this.showToast('error', 'Upload failed', '', 2500, '');
+                  this.getProfileData()
                 }
               );
             }
@@ -384,6 +398,11 @@ export class ProfilePage implements OnInit {
       console.error('Error taking picture:', error);
       this.showToast('error', 'Failed to capture image', '', 3000, '');
     }
+  }
+
+  onImageError(event: Event) {
+    this.profileImage = ''; // Clear the image source
+    this.showPlaceholder = true; // Show placeholder
   }
 
   updateProfile() {
