@@ -7,103 +7,141 @@
     </ion-buttons>
 </ion-header>
 
-<ion-content class="profile-page">
-  <div class="profile-container">
-    <ion-title class="profileTitle">Profile</ion-title>
-    <div class="profile-photo">
+<ion-content class="account-page">
+  <div class="account-container">
+    <ion-title class="accountTitle">Account</ion-title>
+    <ion-button class="btn no-style back"><img src="assets/img/icons/arrow_forward.svg" alt="" title="">Back</ion-button>
+
+    <div class="accountInfo">
       <div class="profileimg">
-        <img class="profilePhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
-        
-        <div class="camera">
-          <input type="file" class="file-upload" />
-          <img src="assets/img/icons/camera.svg" alt="" title="">
+        <img class="accountPhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
+      </div>
+      <div class="content">
+        <ion-title class="name">Sanjay Sharma</ion-title>
+        <div class="addressCall">
+            <p class="address"><img src="assets/img/icons/location_on.svg" alt="" title="">Karimganj, Assam</p>
+            <ion-button class="btn no-style"><img src="assets/img/icons/mobile.svg" alt="" title="">9876543210</ion-button>
         </div>
+        <ion-button class="btn no-style editprofile">Edit Profile</ion-button>
+
       </div>
-      <div class="right">
-        <p class="lgdesc">Upload Profile Photo</p>
-        <p class="photo-note">Please upload square image,size less than 100kb</p>
-      </div>
-      
     </div>
+    <ion-list class="no-style card">
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/alarm_on.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Call / Chat</h3>
+          <p><span>7 Sellers and 1 Buyers Left</span> (Plan 10 free calls/chats monthly)</p>
+        </ion-label>
+      </ion-item> 
 
-    <form class="form" >
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Name</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
-      </ion-item>
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Email</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/legend_toggle.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Mandi Pro</h3>
+          <p>No Active Plan</p>
+        </ion-label>
+        <ion-button class="btn no-style subscribe">Subscribe</ion-button>
       </ion-item>
 
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/gpp_maybe.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Trusted Seller</h3>
+          <p>No Active Plan</p>
+        </ion-label>
+        <ion-button class="btn no-style subscribe">Subscribe</ion-button>
+      </ion-item>
       
-      <ion-item class="no-style">
-        <div class="custom-inner multifield">
-          <ion-label class="formlebel">Phone</ion-label>
-          <ion-select interface="popover" placeholder="+91" class="form-field country-code-select" slot="start">
-            <ion-select-option value="+91">+91</ion-select-option>
-            <ion-select-option value="+1">+1</ion-select-option>
-            <ion-select-option value="+44">+44</ion-select-option>
-            <ion-select-option value="+61">+61</ion-select-option>
-          </ion-select>
-          <ion-input type="tel"  class="form-field"></ion-input>
-        </div>
-      </ion-item>
+    </ion-list>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Company</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
-      </ion-item>
+    <ion-list class="no-style card">
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/language.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Choose Language</h3>
+        </ion-label>
+        <ion-radio-group name="language">
+          <div class="language-select-container">
+            <label class="language-option">
+              <ion-radio value="english" class="custom-radio"></ion-radio>
+              <span>English</span>
+            </label>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Pan No.</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
-      </ion-item>
-
-      <ion-item class="no-style">
-        <div class="custom-inner selectId">
-          <ion-label class="formlebel">Select ID</ion-label>
-          <ion-select interface="popover" placeholder="Voter Card"  class="form-field" slot="start">
-            <ion-select-option value="voter">Voter Card</ion-select-option>
-            <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
-            <ion-select-option value="passport">Passport</ion-select-option>
-          </ion-select>
-          <div class="uploadfile">
-            <ion-input class="field-file" type="file"></ion-input>
-            Choose file
+            <label class="language-option">
+              <ion-radio value="hindi" class="custom-radio"></ion-radio>
+              <span>Hindi</span>
+            </label>
           </div>
-        </div>
+        </ion-radio-group>
+
       </ion-item>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Country</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/database.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>My Commodities</h3>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Address</ion-label>
-          <ion-input class="form-field"  type="text"></ion-input>
-        </div>
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/person.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Verify Now!</h3>
+          <p>To increase your creditability</p>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Zip</ion-label>
-          <ion-input class="form-field"   type="text"></ion-input>
-        </div>
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/shield_person.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Trusted Seller <ion-icon name="star" class="crown-mark"></ion-icon></h3>
+          <p>To get more calls/chats</p>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>
-      <ion-button class="btn btn-grn no-style" expand="block"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
-    </form>
+
+    </ion-list>
+
+
+    <ion-list class="no-style card">
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/help.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>How to use the app</h3>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item> 
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/circles_ext.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Share with Friends</h3>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item>
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/headphones.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Help and Support</h3>
+          <p>connect@globalrubberhub.com</p>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item>
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/kid_star.svg" alt="" title=""></div>
+        <ion-label>
+          <h3>Rate us</h3>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item>
+    </ion-list>
+    <ion-button class="btn btn-grn no-style logout" expand="block" type="submit"><img class="btntextimg" src="assets/img/icons/chip_extraction.svg">Save Information</ion-button>
+
 
   </div>
 </ion-content>
