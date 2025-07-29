@@ -162,6 +162,13 @@ export class LoginPage implements OnInit {
   onTabChange(event: any) {
     this.selectedTab = event.detail.value;
     this.resetFormStates();
+    
+    // Re-render Google button for the new active tab
+    if (window.google && window.google.accounts) {
+      setTimeout(() => {
+        this.renderGoogleButtonOnLoad();
+      }, 100);
+    }
   }
 
   // Navigation methods
@@ -277,6 +284,10 @@ export class LoginPage implements OnInit {
     script.onload = () => {
       console.log('Google Identity Services loaded');
       this.initializeGoogleSignInWeb();
+      // Render the Google button immediately after initialization
+      setTimeout(() => {
+        this.renderGoogleButtonOnLoad();
+      }, 100);
     };
     script.onerror = () => {
       console.error('Failed to load Google Identity Services');
@@ -322,35 +333,41 @@ export class LoginPage implements OnInit {
       });
 
       console.log('Google Identity Services initialized successfully');
+      
+      // Render the Google buttons immediately after initialization
+      setTimeout(() => {
+        this.renderGoogleButtonOnLoad();
+      }, 100);
     } catch (error) {
       console.error('Error initializing Google Identity Services:', error);
     }
   }
 
-  private triggerGoogleWebSignIn() {
-    if (!window.google || !window.google.accounts) {
-      this.showToast('error', 'Google services not available', 'Please refresh the page and try again', 3000, '');
-      this.isGoogleLoading = false;
-      return;
-    }
-
+  private renderGoogleButtonOnLoad() {
     try {
-      // Replace the current button with Google's official button
-      this.renderGoogleButtonInPlace();
-    } catch (error) {
-      console.error('Error triggering Google sign-in:', error);
-      this.isGoogleLoading = false;
-      this.showToast('error', 'Failed to start Google sign-in', 'Please try again', 3000, '');
-    }
-  }
-
-  private renderGoogleButtonInPlace() {
-    try {
-      // Find the current Google sign-in button
-      const currentButton = document.querySelector('.google-signin') as HTMLElement;
-      if (currentButton) {
+      // Clean up any existing Google buttons first
+      this.cleanupExistingGoogleButtons();
+      
+      // Only render Google button for the currently active tab
+      let targetSelector = '';
+      
+      if (this.selectedTab === 'login' && !this.showForgotPassword && !this.showOtpVerification && !this.showResetPassword) {
+        // Login tab is active
+        targetSelector = '.google-signin';
+      } else if (this.selectedTab === 'register' && !this.showForgotPassword && !this.showOtpVerification && !this.showResetPassword) {
+        // Register tab is active
+        targetSelector = '.google-signin';
+      } else {
+        // Other tabs (forgot password, OTP, etc.) - don't render Google button
+        return;
+      }
+      
+      // Find the Google sign-in button for the active tab
+      const googleButton = document.querySelector(targetSelector) as HTMLElement;
+      
+      if (googleButton) {
         // Hide the current button
-        currentButton.style.display = 'none';
+        googleButton.style.display = 'none';
         
         // Create a container for the Google button
         const googleContainer = document.createElement('div');
@@ -359,7 +376,7 @@ export class LoginPage implements OnInit {
         googleContainer.style.marginTop = '20px';
         
         // Insert the container after the current button
-        currentButton.parentNode?.insertBefore(googleContainer, currentButton.nextSibling);
+        googleButton.parentNode?.insertBefore(googleContainer, googleButton.nextSibling);
         
         // Render the Google button
         window.google.accounts.id.renderButton(googleContainer, {
@@ -371,11 +388,64 @@ export class LoginPage implements OnInit {
           logo_alignment: 'left',
           width: '100%'
         });
+        
+        console.log('Google button rendered for active tab:', this.selectedTab);
       }
     } catch (error) {
-      console.error('Error rendering Google button in place:', error);
+      console.error('Error rendering Google button on load:', error);
+    }
+  }
+
+  private cleanupExistingGoogleButtons() {
+    try {
+      // Remove existing Google button containers
+      const existingContainers = document.querySelectorAll('#google-signin-container');
+      existingContainers.forEach(container => {
+        container.remove();
+      });
+      
+      // Show all custom Google buttons again
+      const customButtons = document.querySelectorAll('.google-signin');
+      customButtons.forEach(button => {
+        (button as HTMLElement).style.display = 'flex';
+      });
+    } catch (error) {
+      console.error('Error cleaning up existing Google buttons:', error);
+    }
+  }
+
+  private triggerGoogleWebSignIn() {
+    if (!window.google || !window.google.accounts) {
+      this.showToast('error', 'Google services not available', 'Please refresh the page and try again', 3000, '');
       this.isGoogleLoading = false;
-      this.showToast('error', 'Unable to load Google sign-in', 'Please refresh the page and try again', 3000, '');
+      return;
+    }
+
+    try {
+      // The Google button is already rendered, so we can trigger the sign-in
+      // Find the Google button and simulate a click
+      const googleButton = document.querySelector('[data-testid="google-signin-button"]') as HTMLElement;
+      if (googleButton) {
+        googleButton.click();
+      } else {
+        // Fallback: try to find any Google button
+        const googleButtons = document.querySelectorAll('[role="button"]');
+        const googleSignInButton = Array.from(googleButtons).find(button => 
+          button.textContent?.includes('Sign in with Google') || 
+          button.getAttribute('aria-label')?.includes('Sign in with Google')
+        ) as HTMLElement;
+        
+        if (googleSignInButton) {
+          googleSignInButton.click();
+        } else {
+          console.log('Google button not found, user needs to click manually');
+          this.isGoogleLoading = false;
+        }
+      }
+    } catch (error) {
+      console.error('Error triggering Google sign-in:', error);
+      this.isGoogleLoading = false;
+      this.showToast('error', 'Failed to start Google sign-in', 'Please try again', 3000, '');
     }
   }
 
