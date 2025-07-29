@@ -6,12 +6,15 @@ const config: CapacitorConfig = {
   webDir: 'www',
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1000,
+      launchShowDuration: 2000,
       launchAutoHide: true,
       backgroundColor: "#ffffff",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
       showSpinner: false,
-      splashFullScreen: false,
-      splashImmersive: false
+      splashFullScreen: true,
+      splashImmersive: true,
+      layoutName: "launch_screen",
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],

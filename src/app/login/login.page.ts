@@ -24,10 +24,21 @@ declare global {
           initialize: (config: any) => void;
           renderButton: (element: HTMLElement | null, options: any) => void;
           disableAutoSelect: () => void;
+          prompt: (callback?: (notification: any) => void) => void;
+          cancel: () => void;
+          revoke: (hint: string, callback?: () => void) => void;
         };
       };
     };
   }
+}
+
+// Google notification interface
+interface GoogleNotification {
+  isNotDisplayed(): boolean;
+  isSkippedMoment(): boolean;
+  getNotDisplayedReason(): string;
+  getSkippedReason(): string;
 }
 
 @Component({
@@ -106,9 +117,7 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
     this.initializeForms();
-    // Temporarily disable Google Auth to test if it's causing the black screen
-    // await this.initializeGoogleAuth();
-    console.log('Login page initialized without Google Auth');
+    await this.initializeGoogleAuth();
   }
 
   initializeForms() {
@@ -245,12 +254,35 @@ export class LoginPage implements OnInit {
         });
         console.log('Google Auth initialized successfully for native platform');
       } else {
-        // For web platform, you might need to load the Google API script
-        console.log('Google Auth initialized for web platform');
+        // For web platform, load Google Identity Services
+        this.loadGoogleIdentityServices();
       }
     } catch (error) {
       console.error('Error initializing Google Auth:', error);
     }
+  }
+
+  private loadGoogleIdentityServices() {
+    // Check if Google Identity Services is already loaded
+    if (window.google && window.google.accounts) {
+      this.initializeGoogleSignInWeb();
+      return;
+    }
+
+    // Load Google Identity Services script
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      console.log('Google Identity Services loaded');
+      this.initializeGoogleSignInWeb();
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google Identity Services');
+      this.showToast('error', 'Failed to load Google services', 'Please check your internet connection', 3000, '');
+    };
+    document.head.appendChild(script);
   }
 
   async loginWithGoogle() {
@@ -262,8 +294,8 @@ export class LoginPage implements OnInit {
         const user = await GoogleAuth.signIn();
         await this.handleGoogleLoginSuccess(user);
       } else {
-        // Web platform - using Google Identity Services
-        this.initializeGoogleSignInWeb();
+        // Web platform - trigger Google sign-in
+        this.triggerGoogleWebSignIn();
       }
     } catch (error) {
       this.isGoogleLoading = false;
@@ -273,48 +305,90 @@ export class LoginPage implements OnInit {
   }
 
   private initializeGoogleSignInWeb() {
-    // Load Google Identity Services script
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        this.renderGoogleSignInButton();
-      };
-      document.head.appendChild(script);
-    } else {
-      this.renderGoogleSignInButton();
+    if (!window.google || !window.google.accounts) {
+      console.error('Google Identity Services not available');
+      return;
     }
-  }
 
-  private renderGoogleSignInButton() {
-    if (window.google && window.google.accounts) {
+    try {
+      // Initialize Google Identity Services
       window.google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: (response: any) => {
           this.handleGoogleWebSignIn(response);
-        }
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true
       });
 
-      window.google.accounts.id.renderButton(
-        document.getElementById('google-signin-button'),
-        { 
-          theme: 'outline', 
+      console.log('Google Identity Services initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Google Identity Services:', error);
+    }
+  }
+
+  private triggerGoogleWebSignIn() {
+    if (!window.google || !window.google.accounts) {
+      this.showToast('error', 'Google services not available', 'Please refresh the page and try again', 3000, '');
+      this.isGoogleLoading = false;
+      return;
+    }
+
+    try {
+      // Replace the current button with Google's official button
+      this.renderGoogleButtonInPlace();
+    } catch (error) {
+      console.error('Error triggering Google sign-in:', error);
+      this.isGoogleLoading = false;
+      this.showToast('error', 'Failed to start Google sign-in', 'Please try again', 3000, '');
+    }
+  }
+
+  private renderGoogleButtonInPlace() {
+    try {
+      // Find the current Google sign-in button
+      const currentButton = document.querySelector('.google-signin') as HTMLElement;
+      if (currentButton) {
+        // Hide the current button
+        currentButton.style.display = 'none';
+        
+        // Create a container for the Google button
+        const googleContainer = document.createElement('div');
+        googleContainer.id = 'google-signin-container';
+        googleContainer.style.width = '100%';
+        googleContainer.style.marginTop = '20px';
+        
+        // Insert the container after the current button
+        currentButton.parentNode?.insertBefore(googleContainer, currentButton.nextSibling);
+        
+        // Render the Google button
+        window.google.accounts.id.renderButton(googleContainer, {
+          type: 'standard',
+          theme: 'outline',
           size: 'large',
-          width: '100%',
-          text: 'signin_with'
-        }
-      );
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left',
+          width: '100%'
+        });
+      }
+    } catch (error) {
+      console.error('Error rendering Google button in place:', error);
+      this.isGoogleLoading = false;
+      this.showToast('error', 'Unable to load Google sign-in', 'Please refresh the page and try again', 3000, '');
     }
   }
 
   private async handleGoogleWebSignIn(response: any) {
     try {
-      this.isGoogleLoading = true;
+      console.log('Google web sign-in response received');
       
+      if (!response.credential) {
+        throw new Error('No credential received from Google');
+      }
+
       // Decode the JWT token to get user info
-      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      const payload = this.decodeJwtToken(response.credential);
       
       const user = {
         id: payload.sub,
@@ -329,11 +403,26 @@ export class LoginPage implements OnInit {
         }
       };
       
+      console.log('Google user data:', user);
       await this.handleGoogleLoginSuccess(user);
     } catch (error) {
       this.isGoogleLoading = false;
       console.error('Error handling web Google sign-in:', error);
       this.showToast('error', 'Google sign-in failed', 'Please try again', 3000, '');
+    }
+  }
+
+  private decodeJwtToken(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+      throw new Error('Invalid token format');
     }
   }
 

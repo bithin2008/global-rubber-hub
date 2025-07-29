@@ -77,9 +77,9 @@
           <span>Or</span>
         </div>
 
-        <button type="button" class="google-signin" id="google-signin-button" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
-          <img src="assets/img/google.svg" />
-          <span *ngIf="!isGoogleLoading">Sign up with Google</span>
+        <button type="button" class="google-signin" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
+          <img src="assets/img/google.svg" alt="Google" />
+          <span *ngIf="!isGoogleLoading">Sign in with Google</span>
           <span *ngIf="isGoogleLoading">Signing in...</span>
         </button>
       </form>
@@ -153,6 +153,16 @@
           </span>
         </div>
         <ion-button expand="block" class="register-button" type="submit">Register</ion-button>
+        
+        <div class="divider">
+          <span>Or</span>
+        </div>
+
+        <button type="button" class="google-signin" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
+          <img src="assets/img/google.svg" alt="Google" />
+          <span *ngIf="!isGoogleLoading">Sign up with Google</span>
+          <span *ngIf="isGoogleLoading">Signing up...</span>
+        </button>
       </form>
     </div>
 
