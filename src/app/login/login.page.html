@@ -6,55 +6,231 @@
   </div>
 
   <div class="card">
-    <div class="toggle-tabs">
-      <button class="tab active" (click)="goToLogin()">Log In</button>
-      <button class="tab" (click)="goToRegister()">Register</button>
+    <!-- Main Authentication Tabs -->
+    <ion-segment [(ngModel)]="selectedTab" class="toggle-tabs" (ionChange)="onTabChange($event)" *ngIf="!showForgotPassword && !showOtpVerification && !showResetPassword">
+      <ion-segment-button value="login" class="tab">
+        <ion-label>Log In</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="register" class="tab">
+        <ion-label>Register</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Forgot Password Tab -->
+    <ion-segment [(ngModel)]="selectedTab" (ionChange)="onTabChange($event)" *ngIf="showForgotPassword && !showOtpVerification && !showResetPassword">
+      <ion-segment-button value="forgot-password">
+        <ion-label>Forgot Password</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- OTP Verification Tab -->
+    <ion-segment [(ngModel)]="selectedTab" (ionChange)="onTabChange($event)" *ngIf="showOtpVerification && !showResetPassword">
+      <ion-segment-button value="otp-verification">
+        <ion-label>OTP Verification</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Reset Password Tab -->
+    <ion-segment [(ngModel)]="selectedTab" (ionChange)="onTabChange($event)" *ngIf="showResetPassword">
+      <ion-segment-button value="reset-password">
+        <ion-label>Reset Password</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Login Form -->
+    <div *ngIf="selectedTab === 'login' && !showForgotPassword && !showOtpVerification && !showResetPassword">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <ion-label class="form-label">Email</ion-label>
+        <ion-item lines="none" class="input-field ion-no-padding">
+          <ion-input type="email" formControlName="email" name="email" [readonly]="isOpenCredentialModal"
+          autocomplete="email" inputmode="text" (ionFocus)="checkSavedLogin()"></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['email'].errors">
+            <div *ngIf="f['email'].errors['required']">Please enter your email address</div>
+            <div *ngIf="f['email'].errors['pattern']">Please enter a valid email address</div>
+          </span>
+        </div>
+        <ion-label class="form-label">Password</ion-label>
+        <ion-item lines="none" class="input-field ion-no-padding">
+          <ion-input type="{{showLoginPassword ? 'text' : 'password'}}" formControlName="password" #x></ion-input>
+          <ion-icon name="{{showLoginPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleLoginPassword()"></ion-icon>
+        </ion-item>
+        <div class="validation-error mb-0">
+          <span *ngIf="submitted && f['password'].errors">
+            <div *ngIf="f['password'].errors['required']">Please enter your password</div>
+            <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
+            <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
+            <div *ngIf="f['password'].errors['pattern']">
+              Password must containing at least 1 uppercase, 1 lowercase, 1
+              digit, 1 special character </div>
+          </span>
+        </div>
+        <div class="options-row">
+         
+          <a class="forgot-link" (click)="showForgotPasswordForm()">Forgot Password ?</a>
+        </div>
+
+        <ion-button expand="block" class="login-button" type="submit">Log In</ion-button>
+
+        <div class="divider">
+          <span>Or</span>
+        </div>
+
+        <button type="button" class="google-signin" id="google-signin-button" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
+          <img src="assets/img/google.svg" />
+          <span *ngIf="!isGoogleLoading">Sign up with Google</span>
+          <span *ngIf="isGoogleLoading">Signing in...</span>
+        </button>
+      </form>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-      <ion-label class="form-label">Email</ion-label>
-      <ion-item lines="none" class="input-field ion-no-padding">
-        <ion-input type="email" formControlName="email" name="email" [readonly]="isOpenCredentialModal"
-        autocomplete="email" inputmode="text" (ionFocus)="checkSavedLogin()"></ion-input>
-      </ion-item>
-      <div class="validation-error">
-        <span *ngIf="submitted && f['email'].errors">
-          <div *ngIf="f['email'].errors['required']">Please enter your email address</div>
-          <div *ngIf="f['email'].errors['pattern']">Please enter a valid email address</div>
-        </span>
-      </div>
-      <ion-label class="form-label">Password</ion-label>
-      <ion-item lines="none" class="input-field ion-no-padding">
-        <ion-input type="password" formControlName="password" #x></ion-input>
-        <ion-icon name="eye-outline" slot="end"></ion-icon>
-      </ion-item>
-      <div class="validation-error mb-0">
-        <span *ngIf="submitted && f['password'].errors">
-          <div *ngIf="f['password'].errors['required']">Please enter your password</div>
-          <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
-          <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
-          <div *ngIf="f['password'].errors['pattern']">
-            Password must containing at least 1 uppercase, 1 lowercase, 1
-            digit, 1 special character </div>
-        </span>
-      </div>
-      <div class="options-row">
-        <ion-checkbox slot="start"></ion-checkbox>
-        <span>Remember me</span>
-        <a class="forgot-link" [routerLink]="['/forgot-password']">Forgot Password ?</a>
-      </div>
+    <!-- Register Form -->
+    <div *ngIf="selectedTab === 'register' && !showForgotPassword && !showOtpVerification && !showResetPassword">
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <ion-label class="form-label">First Name</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="text" formControlName="firstName" placeholder="John" ></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['firstName'].errors">
+            <div *ngIf="f['firstName'].errors['required']">Please enter First Name</div>
+          </span>
+        </div>
+        <ion-label class="form-label">Last Name</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="text" placeholder="Doe" formControlName="lastName"></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['lastName'].errors">
+            <div *ngIf="f['lastName'].errors['required']">Please enter Last Name</div>
+          </span>
+        </div>
+        <ion-label class="form-label">Email</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="text" placeholder="yourname@example.com" formControlName="email"></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['email'].errors">
+            <div *ngIf="f['email'].errors['required']">Please enter email</div>
+            <div *ngIf="f['email'].errors['pattern']">Please enter valid email</div>
+          </span>
+        </div>
+        <ion-label class="form-label">Phone</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="Number" placeholder="+919030053123"  formControlName="phone"></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['phone'].errors">
+            <div *ngIf="f['phone'].errors['required']">Please enter phone</div>
+            <div *ngIf="f['phone'].errors['pattern']">Please enter valid phone number</div>
+          </span>
+        </div>
+        <ion-label class="form-label">Password</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="{{showRegisterPassword ? 'text' : 'password'}}" placeholder="********" formControlName="password"></ion-input>
+          <ion-icon name="{{showRegisterPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleRegisterPassword()"></ion-icon>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['password'].errors">
+            <div *ngIf="f['password'].errors['required']">Please enter your password</div>
+            <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
+            <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
+            <div *ngIf="f['password'].errors['pattern']">
+              Password must containing at least 1 uppercase, 1 lowercase, 1
+              digit, 1 special character </div>
+          </span>
+        </div>
+        <ion-label class="form-label">Confirm Password</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="{{showConfirmPassword ? 'text' : 'password'}}" placeholder="********" formControlName="confirmPassword"></ion-input>
+          <ion-icon name="{{showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleConfirmPassword()"></ion-icon>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['confirmPassword'].errors">
+            <div *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</div>
+            <div *ngIf="f['confirmPassword'].errors['mustMatch']">Confirm password not matched</div>
+          </span>
+        </div>
+        <ion-button expand="block" class="register-button" type="submit">Register</ion-button>
+      </form>
+    </div>
 
-      <ion-button expand="block" class="login-button" type="submit">Log In</ion-button>
+    <!-- Forgot Password Form -->
+    <div *ngIf="showForgotPassword && !showOtpVerification && !showResetPassword">
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="forgotPassword()">
+        <ion-label class="form-label">Email</ion-label>
+        <ion-item lines="none" class="input-field ion-no-padding">
+          <ion-input type="email" formControlName="email" name="email" 
+          autocomplete="email" inputmode="text" ></ion-input>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['email'].errors">
+            <div *ngIf="f['email'].errors['required']">Please enter your email address</div>
+            <div *ngIf="f['email'].errors['pattern']">Please enter a valid email address</div>
+          </span>
+        </div>     
+        <ion-button expand="block" class="login-button" type="submit">Get New Password</ion-button>
+        <a (click)="backToLogin()"><b>Back to Login</b></a>
+      </form>
+    </div>
 
-      <div class="divider">
-        <span>Or</span>
-      </div>
+    <!-- OTP Verification Form -->
+    <div *ngIf="showOtpVerification && !showResetPassword">
+      <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+        <ion-label class="form-label">OTP</ion-label>
+        <ng-otp-input (onInputChange)="onOtpChange($event)" formControlName="emailOTP" [config]="{ length: 6 ,allowNumbersOnly:true}"></ng-otp-input>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['emailOTP'].errors">
+            <div *ngIf="f['emailOTP'].errors['required']">Please enter your OTP</div>
+          </span>
+        </div>     
+        <ion-button expand="block" class="login-button" type="submit">Submit</ion-button>
+        <a (click)="backToForgotPassword()"><b>Back to Forgot Password</b></a>
+      </form>
+    </div>
 
-      <button type="button" class="google-signin" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
-        <img src="assets/img/google.svg" />
-        <span *ngIf="!isGoogleLoading">Sign up with Google</span>
-        <span *ngIf="isGoogleLoading">Signing in...</span>
-      </button>
-    </form>
+    <!-- Reset Password Form -->
+    <div *ngIf="showResetPassword">
+      <form [formGroup]="resetPasswordForm" (ngSubmit)="resetPassword()">
+        <ion-label class="form-label">Password</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="{{showResetPassword ? 'text' : 'password'}}" placeholder="********" formControlName="password"></ion-input>
+          <ion-icon name="{{showResetPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleResetPassword()"></ion-icon>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['password'].errors">
+            <div *ngIf="f['password'].errors['required']">Please enter your password</div>
+            <div *ngIf="f['password'].errors['minlength']">Password must be more than 6 chatacters</div>
+            <div *ngIf="f['password'].errors['maxlength']">Password must be under 30 chatacters</div>
+            <div *ngIf="f['password'].errors['pattern']">
+              Password must containing at least 1 uppercase, 1 lowercase, 1
+              digit, 1 special character </div>
+          </span>
+        </div>
+        <ion-label class="form-label">Confirm Password</ion-label>
+        <ion-item lines="none" class="input-field">
+          <ion-input type="{{showResetConfirmPassword ? 'text' : 'password'}}" placeholder="********" formControlName="confirmPassword"></ion-input>
+          <ion-icon name="{{showResetConfirmPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleResetConfirmPassword()"></ion-icon>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['confirmPassword'].errors">
+            <div *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</div>
+            <div *ngIf="f['confirmPassword'].errors['mustMatch']">Confirm password not matched</div>
+          </span>
+        </div>   
+        <ion-button expand="block" class="login-button" type="submit">Reset</ion-button>
+        <a (click)="backToLogin()"><b>Back to Login</b></a>
+      </form>
+    </div>
   </div>
 </ion-content>
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/register-logo.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->

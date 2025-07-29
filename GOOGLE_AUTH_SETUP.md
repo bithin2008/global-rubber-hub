@@ -1,38 +1,118 @@
-# Google Auth Implementation Guide
+# Google Auth Setup Guide for Ionic App
 
-## Overview
-This project uses `@codetrix-studio/capacitor-google-auth` for Google authentication in the Ionic Angular app.
+This guide will help you set up Google Authentication for your Ionic application.
 
-## Setup Requirements
+## Prerequisites
 
-### 1. Google Cloud Console Setup
+1. Google Cloud Console account
+2. Ionic project with Capacitor
+3. Android/iOS development environment (for native apps)
+
+## Step 1: Create Google Cloud Project
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable Google+ API and Google Sign-In API
-4. Create OAuth 2.0 credentials:
-   - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
-   - Add your app's package name (e.g., `io.ionic.starter`)
-   - Download the `google-services.json` file
+2. Create a new project or select an existing one
+3. Enable the Google+ API and Google Identity Services API
 
-### 2. Android Configuration
-1. Place `google-services.json` in `android/app/` directory
-2. Update `android/app/build.gradle` to include Google Services plugin
-3. Update `android/build.gradle` to include Google Services classpath
+## Step 2: Configure OAuth 2.0 Credentials
 
-### 3. Capacitor Configuration
-The `capacitor.config.ts` file is already configured with:
+### For Web Platform:
+1. Go to "APIs & Services" > "Credentials"
+2. Click "Create Credentials" > "OAuth 2.0 Client IDs"
+3. Choose "Web application"
+4. Add authorized JavaScript origins:
+   - `http://localhost:8100` (for development)
+   - `https://yourdomain.com` (for production)
+5. Add authorized redirect URIs:
+   - `http://localhost:8100` (for development)
+   - `https://yourdomain.com` (for production)
+6. Copy the Client ID
+
+### For Android Platform:
+1. Go to "APIs & Services" > "Credentials"
+2. Click "Create Credentials" > "OAuth 2.0 Client IDs"
+3. Choose "Android"
+4. Enter your package name (e.g., `io.ionic.starter`)
+5. Generate SHA-1 fingerprint:
+   ```bash
+   keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+   ```
+6. Copy the Client ID
+
+### For iOS Platform:
+1. Go to "APIs & Services" > "Credentials"
+2. Click "Create Credentials" > "OAuth 2.0 Client IDs"
+3. Choose "iOS"
+4. Enter your bundle ID (e.g., `io.ionic.starter`)
+5. Copy the Client ID
+
+## Step 3: Update Environment Configuration
+
+Update your environment files with the Google Client IDs:
+
+### `src/environments/environment.ts`:
 ```typescript
-plugins: {
-  GoogleAuth: {
-    scopes: ['profile', 'email'],
-    serverClientId: 'YOUR_SERVER_CLIENT_ID',
-    forceCodeForRefreshToken: true,
-  },
-}
+export const environment = {
+  production: false,
+  API_ENDPOINT: 'https://your-api-endpoint.com/api/',
+  GOOGLE_CLIENT_ID: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+  GOOGLE_SERVER_CLIENT_ID: 'YOUR_SERVER_CLIENT_ID.apps.googleusercontent.com'
+};
 ```
 
-### 4. Backend API Endpoint
-Your backend should have a `google-login` endpoint that accepts:
+### `src/environments/environment.prod.ts`:
+```typescript
+export const environment = {
+  production: true,
+  API_ENDPOINT: 'https://your-api-endpoint.com/api/',
+  GOOGLE_CLIENT_ID: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+  GOOGLE_SERVER_CLIENT_ID: 'YOUR_SERVER_CLIENT_ID.apps.googleusercontent.com'
+};
+```
+
+## Step 4: Android Configuration
+
+### Update `android/app/src/main/AndroidManifest.xml`:
+```xml
+<manifest>
+    <application>
+        <!-- Add this inside the application tag -->
+        <meta-data
+            android:name="com.google.android.gms.auth.api.signin.GoogleSignInOptions"
+            android:value="@string/google_signin_options" />
+    </application>
+</manifest>
+```
+
+### Create `android/app/src/main/res/values/strings.xml`:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_signin_options">{"web_client_id":"YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"}</string>
+</resources>
+```
+
+## Step 5: iOS Configuration
+
+### Update `ios/App/App/Info.plist`:
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLName</key>
+        <string>google</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+        </array>
+    </dict>
+</array>
+```
+
+## Step 6: Backend Integration
+
+Your backend should handle the Google authentication token. The app sends the following data:
+
 ```json
 {
   "google_id": "user_google_id",
@@ -40,59 +120,46 @@ Your backend should have a `google-login` endpoint that accepts:
   "name": "user_display_name",
   "first_name": "user_given_name",
   "last_name": "user_family_name",
-  "profile_picture": "user_image_url",
+  "profile_picture": "user_profile_picture_url",
   "access_token": "google_access_token",
   "id_token": "google_id_token"
 }
 ```
 
-## Usage
+## Step 7: Testing
 
-### Frontend Implementation
-The Google login is implemented in `src/app/login/login.page.ts`:
-
-1. **Initialization**: Google Auth is initialized in `ngOnInit()`
-2. **Login Flow**: `loginWithGoogle()` method handles the authentication
-3. **Backend Integration**: `handleGoogleLoginSuccess()` sends data to your backend
-4. **Error Handling**: Comprehensive error handling for various scenarios
-
-### Features
-- ✅ Native Google Sign-In on mobile devices
-- ✅ Loading states and user feedback
-- ✅ Error handling for network issues, cancellations, etc.
-- ✅ Integration with existing authentication flow
-- ✅ Token storage and user session management
-
-### Testing
-1. Build the app: `npm run build`
-2. Sync Capacitor: `npx cap sync`
-3. Open Android Studio: `npx cap open android`
-4. Build and run from Android Studio
-5. Test Google login on the login page
+1. **Web Platform**: Run `ionic serve` and test Google sign-in
+2. **Android Platform**: Run `ionic capacitor run android`
+3. **iOS Platform**: Run `ionic capacitor run ios`
 
 ## Troubleshooting
 
-### Common Issues
-1. **"Google login is only available on mobile devices"**
-   - This is expected behavior - Google Auth only works on native platforms
+### Common Issues:
 
-2. **"Google login failed"**
-   - Check Google Cloud Console configuration
-   - Verify `google-services.json` is properly placed
-   - Ensure backend API endpoint is working
+1. **"Sign in failed" error**: Check if Google Client ID is correct
+2. **"Network error"**: Ensure Google APIs are enabled
+3. **"Invalid redirect URI"**: Verify authorized redirect URIs in Google Console
+4. **Android build errors**: Check SHA-1 fingerprint and package name
+5. **iOS build errors**: Verify bundle ID and URL schemes
 
-3. **"Network error"**
-   - Check internet connection
-   - Verify Google Services are accessible
+### Debug Tips:
 
-### Debug Steps
-1. Check console logs for detailed error messages
-2. Verify Google Cloud Console configuration
-3. Test backend API endpoint separately
-4. Ensure all required plugins are installed
+1. Check browser console for web platform errors
+2. Use `adb logcat` for Android debugging
+3. Use Xcode console for iOS debugging
+4. Verify network connectivity and API endpoints
 
 ## Security Notes
-- Never expose your Google Client Secret in frontend code
-- Use server-side verification of Google tokens
-- Implement proper session management
-- Store sensitive data securely 
+
+1. Never expose your Google Client Secret in client-side code
+2. Always validate tokens on your backend
+3. Use HTTPS in production
+4. Implement proper token refresh mechanisms
+5. Handle user logout properly
+
+## Additional Resources
+
+- [Google Identity Services Documentation](https://developers.google.com/identity/gsi/web)
+- [Capacitor Google Auth Plugin](https://github.com/CodetrixStudio/CapacitorGoogleAuth)
+- [Ionic Documentation](https://ionicframework.com/docs)
+- [Google Cloud Console](https://console.cloud.google.com/) 

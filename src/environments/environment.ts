@@ -2,9 +2,11 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+export const environment = {  
   production: false,
-    API_ENDPOINT: 'https://globalrubberhub.com/api/v1/'
+      API_ENDPOINT: 'https://globalrubberhub.com/api/v1/',
+  GOOGLE_CLIENT_ID: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com', // Replace with your actual Google Client ID
+  GOOGLE_SERVER_CLIENT_ID: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com' // Replace with your server client ID
 };
 
 /*

@@ -53,8 +53,7 @@ font-family: var(--ff-body) !important;
       padding: 2px;
 
       .tab {
-        flex: 1;
-        padding: 0.8rem;
+        flex: 1;        
         font-weight: 500;
         font-size: 1rem;
         background: transparent;
@@ -62,7 +61,7 @@ font-family: var(--ff-body) !important;
         color: #fff;
         border-radius: 6px;
 
-        &.active {
+        &.segment-button-checked {
           background: #BCCC5B;
           color: #2f4842;
         }
