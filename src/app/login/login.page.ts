@@ -107,7 +107,9 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
     this.initializeForms();
-    await this.initializeGoogleAuth();
+    // Temporarily disable Google Auth to test if it's causing the black screen
+    // await this.initializeGoogleAuth();
+    console.log('Login page initialized without Google Auth');
   }
 
   initializeForms() {

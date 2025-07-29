@@ -41,7 +41,7 @@
     <div *ngIf="selectedTab === 'login' && !showForgotPassword && !showOtpVerification && !showResetPassword">
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <ion-label class="form-label">Email</ion-label>
-        <ion-item lines="none" class="input-field ion-no-padding">
+        <ion-item lines="none" class="input-field">
           <ion-input type="email" formControlName="email" name="email" [readonly]="isOpenCredentialModal"
           autocomplete="email" inputmode="text" (ionFocus)="checkSavedLogin()"></ion-input>
         </ion-item>
@@ -52,7 +52,7 @@
           </span>
         </div>
         <ion-label class="form-label">Password</ion-label>
-        <ion-item lines="none" class="input-field ion-no-padding">
+        <ion-item lines="none" class="input-field">
           <ion-input type="{{showLoginPassword ? 'text' : 'password'}}" formControlName="password" #x></ion-input>
           <ion-icon name="{{showLoginPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleLoginPassword()"></ion-icon>
         </ion-item>
@@ -160,7 +160,7 @@
     <div *ngIf="showForgotPassword && !showOtpVerification && !showResetPassword">
       <form [formGroup]="forgotPasswordForm" (ngSubmit)="forgotPassword()">
         <ion-label class="form-label">Email</ion-label>
-        <ion-item lines="none" class="input-field ion-no-padding">
+        <ion-item lines="none" class="input-field">
           <ion-input type="email" formControlName="email" name="email" 
           autocomplete="email" inputmode="text" ></ion-input>
         </ion-item>

@@ -6,20 +6,16 @@ const config: CapacitorConfig = {
   webDir: 'www',
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 1000,
       launchAutoHide: true,
       backgroundColor: "#ffffff",
-      androidSplashResourceName: "splash",
-      androidScaleType: "CENTER_CROP",
       showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true,
-      layoutName: "launch_screen",
+      splashFullScreen: false,
+      splashImmersive: false
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com',
-      forceCodeForRefreshToken: true,
+      serverClientId: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com'
     },
   }
 }
