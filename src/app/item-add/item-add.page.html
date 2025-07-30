@@ -1,13 +1,121 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>item-add</ion-title>
-  </ion-toolbar>
+<ion-header class="appHeader">
+    <ion-title class="title">Global Rubber Hub</ion-title>
+    <ion-buttons>
+      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+      <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
+    </ion-buttons>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">item-add</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="add-page">
+  <div class="add-container">
+    <form class="form">
+      <ion-item class="no-style buttonRdo">
+        <h3>I want to</h3>
+        <ion-radio-group name="salebuy">
+          <div class="button-select-container">
+            <label class="button-option">
+              <ion-radio value="buy" class="custom-radio"></ion-radio>
+              <span>Buy</span>
+            </label>
+
+            <label class="button-option">
+              <ion-radio value="sale" class="custom-radio"></ion-radio>
+              <span>Sale</span>
+            </label>
+          </div>
+        </ion-radio-group>
+      </ion-item>
+      
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Commodity</ion-label>
+          <ion-input class="form-field" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Variety/Type</ion-label>
+          <ion-input class="form-field" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Quantity</ion-label>
+          <ion-input class="form-field" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item class="no-style buttonRdo">
+        <h3>Total In</h3>
+        <ion-radio-group name="totalin">
+          <div class="button-select-container">
+            <label class="button-option">
+              <ion-radio value="ka" class="custom-radio"></ion-radio>
+              <span>Ka</span>
+            </label>
+
+            <label class="button-option">
+              <ion-radio value="mt" class="custom-radio"></ion-radio>
+              <span>MT</span>
+            </label>
+            <label class="button-option">
+              <ion-radio value="quintal" class="custom-radio"></ion-radio>
+              <span>Quintal</span>
+            </label>
+            <label class="button-option">
+              <ion-radio value="ton" class="custom-radio"></ion-radio>
+              <span>Ton</span>
+            </label>
+          </div>
+        </ion-radio-group>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Price</ion-label>
+          <ion-input class="form-field" type="text"></ion-input>
+          <ion-item class="no-style buttonRdo">
+            <h3>Per</h3>
+            <ion-radio-group name="per">
+              <div class="button-select-container">
+                <label class="button-option">
+                  <ion-radio value="ka" class="custom-radio"></ion-radio>
+                  <span>Ka</span>
+                </label>
+              </div>
+            </ion-radio-group>
+          </ion-item>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <div class="custom-inner selectId">
+          <ion-label class="formlebel">State</ion-label>
+          <ion-select interface="popover" placeholder="Tripura" class="form-field" slot="start">
+            <ion-select-option value="tripura">Tripura</ion-select-option>
+          </ion-select>
+        </div>
+      </ion-item>
+      <div class="no-style fileUpload">
+        <div class="title">
+
+          <h3>Commodity Images</h3>
+        </div>
+        <div class="imgVid">
+          <div class="uploadBox">
+            <img src="assets/img/icons/upload-image.svg" alt="" title="">
+            <p class="lgdesc">Upload Photo</p>
+            <p class="desc">Please upload image size less than 100kb</p>
+            <ion-input class="form-field" type="file"></ion-input>
+          </div>
+          <div class="uploadBox">
+            <img src="assets/img/icons/upload-video.svg" alt="" title="">
+            <p class="lgdesc">Upload Video</p>
+            <p class="desc">Please upload image size less than 100kb</p>
+            <ion-input class="form-field" type="file"></ion-input>
+          </div>
+        </div>
+      </div>
+      <ion-button class="btn btn-grn no-style" expand="block" type="submit"><img class="btntextimg" src="assets/img/icons/download_done.svg">Save Information</ion-button>
+      
+    </form>
+  </div>
 </ion-content>
