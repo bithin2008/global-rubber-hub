@@ -728,68 +728,200 @@ ion-item.no-style {
 }
 
 .rubber-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
   ion-img {
     height: 160px;
     object-fit: cover;
   }
 
-  .title-text {
+  .title-section {
     h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-top: 12px;
-      margin-bottom: 4px;
-    }
-  }
-
-  .location-date {
-    p {
-      font-size: 0.85rem;
-      margin: 0;
-    }
-
-    .dot {
-      font-weight: bold;
-      margin: 0 6px;
-    }
-
-    .date {
+      font-size: 14px;
       font-weight: 500;
+      margin: 12px 0px;
+      color: #000;
+    }
+
+    .date-location {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #000;
+      img{
+        margin-right: 5px;
+      }
+      .date {
+        font-weight: 500;
+      }
     }
   }
 
   .price-volume {
-    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin: 16px 0;
+    background-color: #fff;
+    padding: 15px 18px;
+    border-radius: 10px;
 
-    .label {
-      display: block;
-      font-size: 0.75rem;
-      color: #888;
-    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      &:first-child{
+        padding-bottom: 8px;
+        border-bottom: 1px solid #000;
+        margin-bottom: 8px;
+      }
+      label {
+        display: block;
+        color: #000;
+      }
 
-    .value {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #000;
+      strong {
+        color: #000;
+        font-weight: 600;
+      }
     }
   }
 
-  .footer-grid {
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 12px;
 
-    .company-name {
-      font-size: 0.9rem;
+    .company {
+      display: flex;
+      align-items: center;
+
+      .distributor{
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        overflow: hidden;
+        margin-right: 10px;
+        img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
+
+      .company-info {
+        h4 {
+          font-size: 14px;
+          font-weight: 500;
+          margin: 0;
+          color: #000;
+        }
+
+        span {
+          font-size: 10px;
+          border-radius: 10px;
+          color: #3C3C43;
+          padding: 3px 6px;
+          border: 1px solid #3C3C43;
+        }
+      }
+    }
+
+    .bid-now {
+      --border-radius: 10px;
+      --padding-top:10px;
+      --padding-bottom: 10px;
       font-weight: 500;
-    }
-
-    .company-role {
-      font-size: 0.75rem;
-    }
-
-    ion-button {
-      --border-radius: 20px;
-      font-weight: 600;
-      padding: 0 14px;
+      color: #fff;
+      width: 82px;
+      --background: #6CA657;
+      font-size: 14px;
+      min-height: auto;
     }
   }
+}
+.itemlist-page{
+  .itemlist-container{
+    padding: 20px 30px !important;
+    .itemTitle{
+      position: static;
+      text-align: left;
+      
+    }
+    ion-card.rubber-card{
+      padding: 18px;
+      background-color: #EFF0F6;
+    }
+  }
+  .filter{
+    .top{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      
+    }
+    .form{
+        .filterItem{
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 5px;
+        }
+        .btn{
+          background-color: #7676801F;
+          padding: 7px 10px;
+          border: 1px solid #6C7278;
+          min-height: auto;
+          border-radius: 10px;
+          img{
+            margin-right: 7px
+          }
+        }
+        .custom-inner{
+          &.selectId{
+            width: 100px;
+            border: 1px solid #6C7278;
+            background-color: #7676801F;
+            height: 32px;
+            border-radius: 10px;
+          }
+          &.search{
+            margin-top: 0;
+            background-color: #7676801F;
+            ion-input{
+              --padding-start: 40px;
+              background-image: url('../../img/icons/magnifyingglass.svg');
+              background-repeat: no-repeat;
+              background-position: left 15px center;
+              
+            }
+          }
+        }
+      }
+  }
+}
+
+ion-card-content {
+  &.card-content-ios {
+    padding: 0 !important;
+  }
+}
+.addBtn{
+  background-color: #FB7805;
+  width: 40px;
+  height: 40px;
+  border-radius: 50% !important;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  right: 30px;
+  bottom: 100px;
 }

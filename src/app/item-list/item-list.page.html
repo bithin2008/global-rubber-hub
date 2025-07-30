@@ -1,17 +1,106 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>item-list</ion-title>
-  </ion-toolbar>
+<ion-header class="appHeader">
+    <ion-title class="title">Global Rubber Hub</ion-title>
+    <ion-buttons>
+      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+      <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
+    </ion-buttons>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">item-list</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-card class="rubber-card">
-  
-  </ion-card>
+<ion-content class="itemlist-page">
+  <div class="itemlist-container">
+    <div class="filter">
+      <form class="form">
+        <div class="top">
+          <ion-title class="itemTitle">Items</ion-title>
+            <div class="filterItem">
+              <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""> Search</ion-button>
+              <ion-item class="no-style">
+                <div class="custom-inner selectId">
+                  <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start">
+                    <ion-select-option value="date">Date</ion-select-option>
+                  </ion-select>
+                </div>
+              </ion-item>
+            </div>
+            
+        </div>
+        <div class="bottom">
+          <ion-item class="no-style">
+            <div class="custom-inner search">
+              <ion-input class="form-field" placeholder="Search" type="text"></ion-input>
+            </div>
+          </ion-item>
+        </div>
+      </form>
+    </div>
+    <ion-card class="rubber-card">
+    <!-- <swiper-container
+        #swiperContainer
+        pagination="true"
+        pagination-clickable="true"
+        slides-per-view="1"
+        centered-slides="true"
+        space-between="12"
+        style="overflow: visible;"
+        class="itemSlider"
+        id="itemsliderimage"
+      >
+        <swiper-slide class="my-slide slide1">
+          <div class="content">
+            
+          </div>
+        </swiper-slide>
+        <swiper-slide class="my-slide slide2">
+          <div class="content">
+            
+          </div>
+        </swiper-slide>
+        <swiper-slide class="my-slide slide3">
+          <div class="content">
+            
+          </div>
+        </swiper-slide>
+      </swiper-container> -->
+      <ion-card-content>
+        <div class="title-section">
+          <h2>Rubber for Sale in Karimganj</h2>
+          <div class="date-location">
+            <div class="location">
+              <img src="assets/img/icons/location_on_color.svg" alt="" title="">
+              <span>Karimganj, Assam</span>
+            </div>
+            <div class="date_wrap">
+              <span class="date">Date 23.07.2025</span>
+            </div>
+          </div>
+        </div>
 
+        <div class="price-volume">
+          <div class="item">
+            <label>Selling Price</label>
+            <strong>185.00/Kg</strong>
+          </div>
+          <div class="item">
+            <label>Trade Volume</label>
+            <strong>1 Ton</strong>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="company">
+            <div class="distributor">
+              <img src="assets/img/distributor.png" alt="" title="">
+            </div>
+            <div class="company-info">
+              <h4>RK Rubber Industries</h4>
+              <span>Distributor</span>
+            </div>
+          </div>
+          <ion-button class="btn no-style bid-now">Bid Now</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <ion-button class="btn no-style addBtn"><img src="assets/img/icons/add.svg" alt="" title=""></ion-button>
 </ion-content>
