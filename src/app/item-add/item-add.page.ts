@@ -8,7 +8,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar,IonCard } from '@ionic/angu
   templateUrl: './item-add.page.html',
   styleUrls: ['./item-add.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonCard]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class ItemAddPage implements OnInit {
 
