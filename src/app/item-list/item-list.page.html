@@ -17,8 +17,13 @@
               <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""> Search</ion-button>
               <ion-item class="no-style">
                 <div class="custom-inner selectId">
-                  <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start">
-                    <ion-select-option value="date">Date</ion-select-option>
+                  <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start" [(ngModel)]="searchField" [ngModelOptions]="{standalone: true}" placeholder="Select Type"
+                  (ngModelChange)="selectFilter()">
+                    <ion-select-option [value]="'item_master.price'">Price</ion-select-option>
+                    <ion-select-option [value]="'item_master.quantity'">Quantity</ion-select-option>
+                    <ion-select-option [value]="'item_master.company_name'">Company Name</ion-select-option>
+                    <ion-select-option [value]="'item_master.added_on'">Added On</ion-select-option>
+                    <ion-select-option [value]="'item_master.status'">Status</ion-select-option>
                   </ion-select>
                 </div>
               </ion-item>
@@ -28,14 +33,17 @@
         <div class="bottom">
           <ion-item class="no-style">
             <div class="custom-inner search">
-              <ion-input class="form-field" placeholder="Search" type="text"></ion-input>
+              <ion-input class="form-field" type="text" [(ngModel)]="searchKeyword" [ngModelOptions]="{standalone: true}" placeholder="Search" (keyup)="searchItem($event)"></ion-input>
             </div>
           </ion-item>
         </div>
       </form>
     </div>
     <ion-card class="rubber-card">
-    <!-- <swiper-container
+   
+       <div *ngIf="itemList.length>0">
+      <ion-card-content  *ngFor="let item of itemList; let i= index">
+        <swiper-container
         #swiperContainer
         pagination="true"
         pagination-clickable="true"
@@ -46,32 +54,22 @@
         class="itemSlider"
         id="itemsliderimage"
       >
-        <swiper-slide class="my-slide slide1">
+        <swiper-slide class="my-slide slide1" *ngFor="let media of item.item_image">
           <div class="content">
-            
+            <img [src]="media" alt="" title="">
           </div>
         </swiper-slide>
-        <swiper-slide class="my-slide slide2">
-          <div class="content">
-            
-          </div>
-        </swiper-slide>
-        <swiper-slide class="my-slide slide3">
-          <div class="content">
-            
-          </div>
-        </swiper-slide>
-      </swiper-container> -->
-      <ion-card-content>
+    
+      </swiper-container>
         <div class="title-section">
-          <h2>Rubber for Sale in Karimganj</h2>
+          <h2>Rubber for Sale in {{item.city}}</h2>
           <div class="date-location">
             <div class="location">
               <img src="assets/img/icons/location_on_color.svg" alt="" title="">
-              <span>Karimganj, Assam</span>
+              <span>{{item.city}}, {{item.state}}</span>
             </div>
             <div class="date_wrap">
-              <span class="date">Date 23.07.2025</span>
+              <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on"> {{item.updated_on | date:'dd.MM.yyyy'}}</span></span>
             </div>
           </div>
         </div>
@@ -79,27 +77,32 @@
         <div class="price-volume">
           <div class="item">
             <label>Selling Price</label>
-            <strong>185.00/Kg</strong>
+            <strong>{{item.price}}/Kg</strong>
           </div>
           <div class="item">
             <label>Trade Volume</label>
-            <strong>1 Ton</strong>
+            <strong>{{item.quantity}} Ton</strong>
           </div>
         </div>
 
         <div class="footer">
           <div class="company">
             <div class="distributor">
-              <img src="assets/img/distributor.png" alt="" title="">
+              <img [src]="item.user_image" alt="" title="">
             </div>
             <div class="company-info">
-              <h4>RK Rubber Industries</h4>
+              <h4>{{item.company_name}}</h4>
               <span>Distributor</span>
             </div>
           </div>
-          <ion-button class="btn no-style bid-now">Bid Now</ion-button>
+                     <ion-button class="btn no-style bid-now" (click)="openBidModal(item)">Bid Now</ion-button>
         </div>
       </ion-card-content>
+      <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)" *ngIf="totalCount!=itemList.length">
+        <ion-infinite-scroll-content loadingSpinner="bubbles">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
     </ion-card>
   </div>
   <ion-button class="btn no-style addBtn"><img src="assets/img/icons/add.svg" alt="" title=""></ion-button>

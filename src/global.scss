@@ -35,3 +35,42 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Swiper CSS */
+@import 'swiper/css';
+@import 'swiper/css/pagination';
+
+/* Bid Modal Styles */
+.bid-modal {
+  --height: auto;
+  --border-radius: 16px 16px 0 0;
+  --backdrop-opacity: 0.5;
+  --width: 100%;
+  --max-width: 500px;
+  --margin: 0 auto;
+  
+  &::part(content) {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  &::part(handle) {
+    background: #e0e0e0;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    margin: 8px auto;
+  }
+}
+
+ion-modal.bid-modal {
+  --height: auto;
+  --border-radius: 16px 16px 0 0;
+  --backdrop-opacity: 0.5;
+  --z-index: 1000;
+}
+
+// Ensure modal backdrop is visible
+ion-modal {
+  --backdrop-opacity: 0.5;
+}

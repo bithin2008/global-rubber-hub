@@ -1,0 +1,55 @@
+<ion-header class="modal-header">
+  <ion-toolbar>
+    <ion-title>Place Your Bid</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content" scrollY="true" (click)="onContentClick($event)">
+  <div class="bid-container">
+    <div class="item-info">
+      <h3>{{item?.company_name}}</h3>
+      <p class="item-details">
+        <span class="price">₹{{item?.price}}/Kg</span>
+        <span class="quantity">{{item?.quantity}} Ton</span>
+      </p>
+      <p class="location">{{item?.city}}, {{item?.state}}</p>
+    </div>
+
+    <div class="bid-form">
+      <ion-item class="bid-input">
+        <ion-label position="stacked">Bid Amount (₹/Kg)</ion-label>
+        <ion-input 
+          type="number" 
+          [(ngModel)]="bidAmount" 
+          placeholder="Enter your bid amount"
+          min="0"
+          step="0.01">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="bid-input">
+        <ion-label position="stacked">Message (Optional)</ion-label>
+        <ion-textarea 
+          [(ngModel)]="bidMessage" 
+          placeholder="Add a message to your bid"
+          rows="3">
+        </ion-textarea>
+      </ion-item>
+    </div>
+
+    <div class="bid-actions">
+      <ion-button 
+        expand="block" 
+        (click)="submitBid()" 
+        [disabled]="bidAmount <= 0"
+        class="submit-bid-btn">
+        Submit Bid
+      </ion-button>
+    </div>
+  </div>
+</ion-content> 
