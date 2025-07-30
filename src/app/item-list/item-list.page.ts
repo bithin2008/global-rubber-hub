@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar,IonCard } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar,IonCard,IonList,IonButton,IonIcon,IonCardContent,IonImg,IonButtons,IonItem,IonSelect,IonSelectOption,IonInput } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-item-list',
   templateUrl: './item-list.page.html',
   styleUrls: ['./item-list.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonCard]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonCard, IonList, IonButton, IonIcon, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput]
   
 })
 export class ItemListPage implements OnInit {
