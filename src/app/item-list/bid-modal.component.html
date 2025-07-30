@@ -13,10 +13,10 @@
   <div class="bid-container">
     <div class="item-info">
       <h3>{{item?.company_name}}</h3>
-      <p class="item-details">
-        <span class="price">₹{{item?.price}}/Kg</span>
-        <span class="quantity">{{item?.quantity}} Ton</span>
-      </p>
+             <p class="item-details">
+         <span class="price">₹{{item?.price}}/Kg</span>
+         <span class="quantity">{{item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
+       </p>
       <p class="location">{{item?.city}}, {{item?.state}}</p>
     </div>
 

@@ -1,0 +1,25 @@
+.itemlist-page {
+  --padding-bottom: 80px;
+}
+
+.itemlist-container {
+  padding-bottom: 80px;
+}
+
+.rubber-card {
+  margin-bottom: 20px;
+}
+
+ion-card-content {
+  margin-bottom: 16px;
+}
+
+// Add bottom margin to the last card content
+ion-card-content:last-child {
+  margin-bottom: 40px;
+}
+
+// Ensure the add button doesn't overlap with content
+.addBtn {
+  margin-bottom: 20px;
+}

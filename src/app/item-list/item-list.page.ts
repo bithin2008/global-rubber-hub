@@ -169,4 +169,18 @@ export class ItemListPage implements OnInit {
     }
   }
 
+  // Convert UOM ID to display text
+  getUOMText(uomId: number): string {
+    switch (uomId) {
+      case 2:
+        return 'KGS';
+      case 23:
+        return 'QUINTAL';
+      case 27:
+        return 'TON';
+      default:
+        return '';
+    }
+  }
+
 }

@@ -62,7 +62,7 @@
     
       </swiper-container>
         <div class="title-section">
-          <h2>Rubber for Sale in {{item.city}}</h2>
+          <h2>Rubber for <span *ngIf="item.item_listed_for == 1">Sale</span> <span *ngIf="item.item_listed_for == 2">Buy</span> in {{item.city}}</h2>
           <div class="date-location">
             <div class="location">
               <img src="assets/img/icons/location_on_color.svg" alt="" title="">
@@ -77,11 +77,11 @@
         <div class="price-volume">
           <div class="item">
             <label>Selling Price</label>
-            <strong>{{item.price}}/Kg</strong>
+            <strong>{{item.price}}/{{getUOMText(item.uom_id)}}</strong>
           </div>
           <div class="item">
             <label>Trade Volume</label>
-            <strong>{{item.quantity}} Ton</strong>
+            <strong>{{item.quantity}} {{getUOMText(item.uom_id)}}</strong>
           </div>
         </div>
 
@@ -92,7 +92,8 @@
             </div>
             <div class="company-info">
               <h4>{{item.company_name}}</h4>
-              <span>Distributor</span>
+              <span *ngIf="item.item_listed_for == 1">Distributor</span>
+              <span *ngIf="item.item_listed_for == 2">Buyer</span>
             </div>
           </div>
                      <ion-button class="btn no-style bid-now" (click)="openBidModal(item)">Bid Now</ion-button>
