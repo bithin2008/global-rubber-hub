@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -37,13 +37,28 @@ import {
     IonIcon
   ]
 })
-export class BidModalComponent {
+export class BidModalComponent implements OnInit {
   @Input() item: any;
   
   bidAmount: number = 0;
   bidMessage: string = '';
 
   constructor(private modalController: ModalController) {}
+
+  ngOnInit() {
+    // Ensure modal has proper bottom spacing after initialization
+    this.setModalSpacing();
+  }
+
+  private setModalSpacing() {
+    // Add a small delay to ensure modal is rendered
+    setTimeout(() => {
+      const modalElement = document.querySelector('ion-modal.bid-modal') as HTMLElement;
+      if (modalElement) {
+        modalElement.style.setProperty('--bottom', '20px');
+      }
+    }, 100);
+  }
 
   dismiss() {
     this.modalController.dismiss();

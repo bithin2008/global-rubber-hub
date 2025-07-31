@@ -48,10 +48,12 @@
   --width: 100%;
   --max-width: 500px;
   --margin: 0 auto;
+  --bottom: 20px;
   
   &::part(content) {
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
   }
   
   &::part(handle) {
@@ -68,6 +70,7 @@ ion-modal.bid-modal {
   --border-radius: 16px 16px 0 0;
   --backdrop-opacity: 0.5;
   --z-index: 1000;
+  --bottom: 20px;
 }
 
 // Ensure modal backdrop is visible
