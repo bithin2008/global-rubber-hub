@@ -9,8 +9,11 @@
 
 <ion-content class="add-page">
   <div class="add-container">
-    <form class="form" [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-      <ion-item class="no-style buttonRdo">
+         <form class="form" [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+       <!-- Hidden ID field for new items -->
+       <ion-input type="hidden" formControlName="id"></ion-input>
+       
+       <ion-item class="no-style buttonRdo">
         <h3>I want to</h3>
         <ion-radio-group formControlName="item_listed_for">
           <div class="button-select-container">

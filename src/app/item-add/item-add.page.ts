@@ -19,11 +19,13 @@ import {
   IonIcon,
   IonLoading,
   IonToast,
+  ModalController,
   ToastController
 } from '@ionic/angular/standalone';
 import { CommonService } from '../services/common-service';
 import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 
 @Component({
   selector: 'app-item-add',
@@ -64,7 +66,8 @@ export class ItemAddPage implements OnInit {
     private formBuilder: FormBuilder,
     private commonService: CommonService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    public modalController: ModalController,
   ) { }
 
   ngOnInit() {
@@ -73,6 +76,7 @@ export class ItemAddPage implements OnInit {
 
   initForm() {
     this.itemForm = this.formBuilder.group({
+      id: ['', []], // Empty for adding new item
       item_name: ['', [Validators.required, Validators.maxLength(60)]],
       hsn_code: ['', [Validators.required, Validators.maxLength(8), Validators.pattern(/^\d+$/)]],
       item_listed_for: ['1', Validators.required],
@@ -90,8 +94,16 @@ export class ItemAddPage implements OnInit {
     if (files) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        if (file.size > 100 * 1024) { // 100KB limit
-          this.showToast('Image size should be less than 100KB', 'danger');
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          this.showToast('danger', 'Please select only image files', '', 2500, '/login');
+          continue;
+        }
+        
+        // Validate file size (100KB limit)
+        if (file.size > 100 * 1024) {
+          this.showToast('danger', 'Image size should be less than 100KB', '', 2500, '/login');
           continue;
         }
         
@@ -110,8 +122,15 @@ export class ItemAddPage implements OnInit {
   onVideoChange(event: any) {
     const file = event.target.files[0];
     if (file) {
-      if (file.size > 100 * 1024 * 1024) { // 100MB limit
-        this.showToast('Video size should be less than 100MB', 'danger');
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        // this.showToast('Please select only video files', 'danger');
+        return;
+      }
+      
+      // Validate file size (100MB limit)
+      if (file.size > 100 * 1024 * 1024) {
+        this.showToast('danger', 'Video size should be less than 100MB', '', 2500, '/login');
         return;
       }
       
@@ -140,20 +159,20 @@ export class ItemAddPage implements OnInit {
       return;
     }
 
-    if (this.itemForm.valid && this.selectedImages.length > 0) {
-      this.isSubmitting = true;
+
       
-      try {
+
         const formData = new FormData();
         
-        // Add form fields
-        formData.append('item_name', this.itemForm.get('item_name')?.value);
-        formData.append('hsn_code', this.itemForm.get('hsn_code')?.value);
-        formData.append('item_listed_for', this.itemForm.get('item_listed_for')?.value);
-        formData.append('uom_id', this.itemForm.get('uom_id')?.value);
-        formData.append('description', this.itemForm.get('description')?.value || '');
-        formData.append('price', this.itemForm.get('price')?.value);
-        formData.append('quantity', this.itemForm.get('quantity')?.value);
+                 // Add form fields
+        // formData.append('id', this.itemForm.get('id')?.value || '');
+         formData.append('item_name', this.itemForm.get('item_name')?.value);
+         formData.append('hsn_code', this.itemForm.get('hsn_code')?.value);
+         formData.append('item_listed_for', this.itemForm.get('item_listed_for')?.value);
+         formData.append('uom_id', this.itemForm.get('uom_id')?.value);
+         formData.append('description', this.itemForm.get('description')?.value || '');
+         formData.append('price', this.itemForm.get('price')?.value);
+         formData.append('quantity', this.itemForm.get('quantity')?.value);
         
         // Add images
         this.selectedImages.forEach((image, index) => {
@@ -165,26 +184,48 @@ export class ItemAddPage implements OnInit {
           formData.append('video', this.selectedVideo.file);
         }
         
-        // Make API call
-      //  const response = await this.commonService.filepost('items/add', formData).toPromise();
+        let url = 'items/add';
+      
+        //this.enableLoader = true;
+        this.commonService.filepost(url, formData).subscribe(
+          (response: any) => {
+          //  this.enableLoader = false;
+            if (response.code == 200) {
+              this.showToast('success', response.message, '', 2500, '/item-list');
+            } else {
+              this.showToast('error', response.message, '', 2500, '');
+            }
+          },
+          (error) => {
+          //  this.enableLoader = false;
+            console.log('error ts: ', error.error);
+            // this.toastr.error(error);
+          }
+        );
         
-        this.showToast('Item added successfully!', 'success');
-        this.router.navigate(['/item-list']);
+     
         
-      } catch (error: any) {
-        console.error('Error adding item:', error);
-        this.showToast(error.message || 'Failed to add item. Please try again.', 'danger');
-      } finally {
-        this.isSubmitting = false;
-      }
-         } else {
-       // Form validation errors will be shown by the validation-error divs
-       return;
-     }
   }
 
-  private showToast(message: string, color: string = 'primary') {
-    this.toastService.showToast(message);
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 
 

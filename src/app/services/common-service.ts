@@ -38,8 +38,7 @@ export class CommonService {
     this.headersObj = new HttpHeaders()
       .set('Authorization', 'Bearer ' + this.token);
     let header = {
-      headers: this.headersObj,
-      responseType: 'blob' as 'json'
+      headers: this.headersObj
     };
     return header;
   }
@@ -87,6 +86,17 @@ export class CommonService {
   filepost(url: any, data: any): Observable<any> {
     return this._http
       .post(environment.API_ENDPOINT + url, data, this.getFileHeader())
+      .pipe(catchError(this.handleError));
+  }
+
+  fileDownload(url: any, data: any): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + this.token);
+    return this._http
+      .post(environment.API_ENDPOINT + url, data, { 
+        headers, 
+        responseType: 'blob' 
+      })
       .pipe(catchError(this.handleError));
   }
 
