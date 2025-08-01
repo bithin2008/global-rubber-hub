@@ -101,8 +101,8 @@ export class ItemAddPage implements OnInit {
           continue;
         }
         
-        // Validate file size (100KB limit)
-        if (file.size > 100 * 1024) {
+        // Validate file size (2MB limit)
+        if (file.size > 2000 * 1024) {
           this.showToast('danger', 'Image size should be less than 100KB', '', 2500, '/login');
           continue;
         }

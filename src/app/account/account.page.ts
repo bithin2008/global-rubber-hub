@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonBackButton, IonToolbar } from '@ionic/angular/standalone';
 
 import { IonicModule } from '@ionic/angular';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -15,14 +16,64 @@ import { Router } from '@angular/router';
   imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule ]
 })
 export class AccountPage implements OnInit {
+  public enableLoader: boolean = false;
+  public profileImage: string = '';
+  public showPlaceholder: boolean = true;
+  public profileDetails:any={}
+
 
   constructor(public router: Router,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
     public modalController: ModalController,
-     private alertController: AlertController,) { }
+     private alertController: AlertController,
+     private location: Location) { }
 
   ngOnInit() {
+    this.getProfileData();
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.profileDetails=response.user;
+          // Set profile image if available, otherwise show placeholder
+          if (response.user.profile_image && response.user.profile_image.trim() !== '') {
+            this.profileImage = response.user.profile_image;
+            this.showPlaceholder = false;
+          } else {
+            this.profileImage = '';
+            this.showPlaceholder = true;
+          }
+         
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
+  }
+
+  goToEditProfile(){
+    this.router.navigate(['/profile']);
+  }
+
+  goBack() {
+    this.location.back();
+  }
+
+  onImageError(event: Event) {
+    this.profileImage = ''; // Clear the image source
+    this.showPlaceholder = true; // Show placeholder
   }
 
   async confirmLogout() {

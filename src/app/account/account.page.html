@@ -1,28 +1,31 @@
 <ion-header class="appHeader">
-    <ion-title class="title">Global Rubber Hub</ion-title>
-    <ion-buttons>
-      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
-      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
-      <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
-    </ion-buttons>
+  <ion-title class="title">Global Rubber Hub</ion-title>
+  <ion-buttons>
+    <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+    <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+    <ion-button class="btn account"><img src="assets/img/icons/person.svg" alt="" title=""></ion-button>
+  </ion-buttons>
 </ion-header>
 
 <ion-content class="account-page">
   <div class="account-container">
     <ion-title class="accountTitle">Account</ion-title>
-    <ion-button class="btn no-style back"><img src="assets/img/icons/arrow_forward.svg" alt="" title="">Back</ion-button>
+    <ion-button class="btn no-style back" (click)="goBack()"><img src="assets/img/icons/arrow_forward.svg" alt="" title="">Back</ion-button>
 
     <div class="accountInfo">
-      <div class="profileimg">
-        <img class="accountPhoto" src="assets/img/profile-placeholder.jpg" alt="Profile Photo" />
+      <div class="profileimg"  *ngIf="profileImage && !showPlaceholder">
+        <img [src]="profileImage" alt="Profile Photo" (error)="onImageError($event)" />
+      </div>     
+      <div class="profileimg placeholder" *ngIf="showPlaceholder || !profileImage">
+        <ion-icon name="person" class="user-icon"></ion-icon>
       </div>
       <div class="content">
-        <ion-title class="name">Sanjay Sharma</ion-title>
+        <ion-title class="name">{{profileDetails.full_name}}</ion-title>
         <div class="addressCall">
-            <p class="address"><img src="assets/img/icons/location_on.svg" alt="" title="">Karimganj, Assam</p>
-            <ion-button class="btn no-style"><img src="assets/img/icons/mobile.svg" alt="" title="">9876543210</ion-button>
+            <p class="address"><img src="assets/img/icons/location_on.svg" alt="" title="">{{profileDetails.city}}, {{profileDetails.state}}</p>
+            <ion-button class="btn no-style"><img src="assets/img/icons/mobile.svg" alt="" title="">{{profileDetails.country_code}}{{profileDetails.phone}}</ion-button>
         </div>
-        <ion-button class="btn no-style editprofile">Edit Profile</ion-button>
+        <ion-button class="btn no-style editprofile" (click)="goToEditProfile()">Edit Profile</ion-button>
 
       </div>
     </div>

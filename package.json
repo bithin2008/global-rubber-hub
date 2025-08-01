@@ -34,7 +34,6 @@
     "@ionic-native/google-plus": "^5.36.0",
     "@ionic/angular": "^8.0.0",
     "cordova-plugin-googleplus": "^8.5.2",
-    "cordova-plugin-splashscreen": "^6.0.2",
     "cordova-sqlite-storage": "^7.0.0",
     "ionicons": "^7.0.0",
     "lodash": "^4.17.21",
@@ -78,16 +77,17 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.8.0"
+    "typescript": "~5.8.0",
+    "cordova-plugin-splashscreen": "5.0.2"
   },
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-splashscreen": {}
     },
     "platforms": [
       "android"

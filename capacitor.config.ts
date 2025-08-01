@@ -14,6 +14,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
+      androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
+      spinnerColor: "#999999",
+      layoutName: "launch_screen",
+      useDialog: false
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],
