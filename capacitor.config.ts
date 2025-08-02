@@ -8,16 +8,16 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 3000,
       launchAutoHide: true,
-      backgroundColor: "#1F272A",
+      backgroundColor: "#000000",
       androidSplashResourceName: "splash",
-      androidScaleType: "CENTER_CROP",
+      androidScaleType: "FIT_XY",
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
       androidSpinnerStyle: "large",
       iosSpinnerStyle: "small",
       spinnerColor: "#999999",
-      layoutName: "launch_screen",
+      layoutName: "",
       useDialog: false
     },
     GoogleAuth: {
