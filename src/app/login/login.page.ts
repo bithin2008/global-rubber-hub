@@ -255,8 +255,12 @@ export class LoginPage implements OnInit {
     try {
       if (Capacitor.isNativePlatform()) {
         // Initialize Google Auth for native platforms (Android/iOS)
+        const clientId = isPlatform('android') ? environment.GOOGLE_ANDROID_CLIENT_ID : environment.GOOGLE_WEB_CLIENT_ID;
+        console.log('Initializing Google Auth for platform:', Capacitor.getPlatform());
+        console.log('Using client ID:', clientId);
+        
         await GoogleAuth.initialize({
-          clientId: isPlatform('android') ? environment.GOOGLE_ANDROID_CLIENT_ID : environment.GOOGLE_WEB_CLIENT_ID,
+          clientId: clientId,
           scopes: ['profile', 'email']
         });
         console.log('Google Auth initialized successfully for native platform');
