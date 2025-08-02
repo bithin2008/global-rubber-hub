@@ -77,7 +77,7 @@
           <span>Or</span>
         </div>
 
-        <button type="button" class="google-signin" [disabled]="isGoogleLoading">
+        <button type="button" class="google-signin" [disabled]="isGoogleLoading" (click)="loginWithGoogle()">
           <img src="assets/img/google.svg" alt="Google" />
           <span *ngIf="!isGoogleLoading">Sign in with Google</span>
           <span *ngIf="isGoogleLoading">Signing in...</span>

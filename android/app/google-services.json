@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1067170807523",
+    "project_id": "global-rubber-hub",
+    "storage_bucket": "global-rubber-hub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067170807523:android:YOUR_ANDROID_APP_ID",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067170807523-YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.ionic.starter",
+            "certificate_hash": "YOUR_SHA1_FINGERPRINT"
+          }
+        },
+        {
+          "client_id": "1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "YOUR_API_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

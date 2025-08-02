@@ -254,9 +254,9 @@ export class LoginPage implements OnInit {
   async initializeGoogleAuth() {
     try {
       if (Capacitor.isNativePlatform()) {
-        // Initialize Google Auth for native platforms
+        // Initialize Google Auth for native platforms (Android/iOS)
         await GoogleAuth.initialize({
-          clientId: environment.GOOGLE_CLIENT_ID,
+          clientId: isPlatform('android') ? environment.GOOGLE_ANDROID_CLIENT_ID : environment.GOOGLE_WEB_CLIENT_ID,
           scopes: ['profile', 'email']
         });
         console.log('Google Auth initialized successfully for native platform');
@@ -299,19 +299,42 @@ export class LoginPage implements OnInit {
   async loginWithGoogle() {
     try {
       this.isGoogleLoading = true;
+      console.log('Google login clicked - Platform:', Capacitor.getPlatform());
       
       if (Capacitor.isNativePlatform()) {
+        console.log('Attempting native Google sign-in...');
         // Native platform (Android/iOS)
         const user = await GoogleAuth.signIn();
+        console.log('Native Google sign-in successful:', user);
         await this.handleGoogleLoginSuccess(user);
       } else {
+        console.log('Attempting web Google sign-in...');
         // Web platform - trigger Google sign-in
         this.triggerGoogleWebSignIn();
       }
-    } catch (error) {
+    } catch (error: any) {
       this.isGoogleLoading = false;
       console.error('Google sign-in error:', error);
-      this.showToast('error', 'Google sign-in failed', 'Please try again', 3000, '');
+      
+      // Better error messages for Android
+      let errorMessage = 'Google sign-in failed';
+      let errorDetail = 'Please try again';
+      
+      if (Capacitor.isNativePlatform()) {
+        const errorStr = error?.message || error?.toString() || '';
+        if (errorStr.includes('12501')) {
+          errorMessage = 'Google sign-in cancelled';
+          errorDetail = 'Sign-in was cancelled by user';
+        } else if (errorStr.includes('12502')) {
+          errorMessage = 'Google Play Services error';
+          errorDetail = 'Please update Google Play Services';
+        } else if (errorStr.includes('10')) {
+          errorMessage = 'Configuration error';
+          errorDetail = 'Please check your Google Auth setup';
+        }
+      }
+      
+      this.showToast('error', errorMessage, errorDetail, 3000, '');
     }
   }
 
@@ -324,7 +347,7 @@ export class LoginPage implements OnInit {
     try {
       // Initialize Google Identity Services
       window.google.accounts.id.initialize({
-        client_id: environment.GOOGLE_CLIENT_ID,
+        client_id: environment.GOOGLE_WEB_CLIENT_ID,
         callback: (response: any) => {
           this.handleGoogleWebSignIn(response);
         },
