@@ -17,7 +17,7 @@
 4. Choose **Android** as application type
 5. Fill in the details:
    - **Name**: `Global Rubber Hub Android`
-   - **Package name**: `io.ionic.starter`
+   - **Package name**: `com.globalrubber.hub`
    - **SHA-1 certificate fingerprint**: `04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8`
 
 ### Step 3: Download google-services.json

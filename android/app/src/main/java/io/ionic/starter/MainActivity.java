@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.globalrubber.hub;
 
 import com.getcapacitor.BridgeActivity;
 

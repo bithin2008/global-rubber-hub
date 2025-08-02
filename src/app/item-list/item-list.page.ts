@@ -2,13 +2,14 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonIcon, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { BidModalComponent } from './bid-modal.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { CommonService } from '../services/common-service';
-import { BidModalComponent } from './bid-modal.component';
 import * as _ from 'lodash';
 import { register } from 'swiper/element/bundle';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 
 @Component({
   selector: 'app-item-list',
@@ -69,7 +70,7 @@ export class ItemListPage implements OnInit {
 
   getItemList() {
     let data = {
-      module: 1,
+      module: 2,
       start: this.page,
       limit: 10,
       order_field: this.searchField==5 ? 'item_master.added_on':this.searchField,
@@ -192,32 +193,7 @@ export class ItemListPage implements OnInit {
     this.page = 0;
     this.itemList = [];
     this.getItemList();
-  }
-
-  async openBidModal(item: any) {
-    const modal = await this.modalController.create({
-      component: BidModalComponent,
-      componentProps: {
-        item: item
-      },
-      cssClass: 'bid-modal',
-      presentingElement: await this.modalController.getTop(),
-      backdropDismiss: true,
-      showBackdrop: true,
-      breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-      // Handle the bid submission
-      console.log('Bid submitted:', data);
-      // You can add your bid submission logic here
-      // For example, call an API to submit the bid
-    }
-  }
+  }  
 
   // Convert UOM ID to display text
   getUOMText(uomId: number): string {
@@ -264,6 +240,80 @@ export class ItemListPage implements OnInit {
     }
     
     return 0;
+  }
+
+  // Open bid modal
+  async openBidModal(item: any) {
+    const modal = await this.modalController.create({
+      component: BidModalComponent,
+      componentProps: {
+        item: item
+      },
+      cssClass: 'bid-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        // Handle the bid submission
+        console.log('Bid submitted:', result.data);
+        // You can add your bid submission logic here
+        this.handleBidSubmission(result.data);
+      }
+    });
+
+    return await modal.present();
+  }
+
+  // Handle bid submission (you can customize this method)
+  handleBidSubmission(bidData: any) {
+    console.log('Processing bid:', bidData);
+    let url = 'bids/add';
+      let data={
+          item_id: bidData.item_id,
+          bid_amount: bidData.bid_amount,
+          bid_quantity: bidData.bid_quantity,
+          actual_bid_amount: bidData.actual_bid_amount,
+          remark: bidData.remark,
+          cancel_rejection_reason: null
+        
+      }
+    //this.enableLoader = true;
+    this.commonService.filepost(url, data).subscribe(
+      (response: any) => {
+      //  this.enableLoader = false;
+        if (response.code == 200) {
+          this.showToast('success', response.message, '', 2500, '');
+        } else {
+          this.showToast('error', response.message, '', 2500, '');
+        }
+      },
+      (error) => {
+      //  this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 
 }
