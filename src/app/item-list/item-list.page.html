@@ -106,6 +106,63 @@
         <p class="ion-text-center mt-5">-- No data found --</p>
       </div>
     </ion-card>
+    <div class="popupOuter">
+      <div class="popup-wrapper">
+        <div class="popup-header">
+          <h2>Place Your Bid</h2>
+          <img src="assets/img/icons/cancel.svg" alt="" title="">
+        </div>
+
+        <div class="bid-info-box">
+          <div class="info-row">
+            <span>RSS1</span>
+            <span class="bold">1500 Kg</span>
+          </div>
+          <div class="info-row">
+            <span>Listed By</span>
+            <span class="bold">Sanjay Kumar</span>
+          </div>
+          <div class="info-row">
+            <span>Location</span>
+            <span class="bold">Kottayam, Kerala</span>
+          </div>
+          <div class="info-row">
+            <span>Current Price</span>
+            <span class="bold">₹185.00/Kg</span>
+          </div>
+        </div>
+      <form class="form">
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Your bid price (₹/kg)</ion-label>
+            <ion-input class="form-field" type="text" type="number" placeholder="190.00"></ion-input>
+          </div>
+        </ion-item>
+
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Quantity Interested</ion-label>
+            <ion-input class="form-field" type="text" type="text" placeholder="50kg"></ion-input>
+          </div>
+        </ion-item>
+
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Message to Seller</ion-label>
+            <ion-textarea class="form-field" placeholder="Type your message here"></ion-textarea>
+          </div>
+        </ion-item>
+        <ion-button expand="block" class="btn btn-grn no-style">
+          <img src="assets/img/icons/credit_card.svg" alt="" title="">
+          Pay and Place Bid
+        </ion-button>
+      </form>
+
+        
+      </div>
+    </div>
+    
+
   </div>
   <ion-button class="btn no-style addBtn" (click)="goToAddItem()"><img src="assets/img/icons/add.svg" alt="" title=""></ion-button>
 </ion-content>

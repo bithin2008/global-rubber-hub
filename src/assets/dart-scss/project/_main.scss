@@ -404,6 +404,12 @@ font-family: var(--ff-body) !important;
     --padding-start: 0.875rem;
     --padding-end: 0.875rem;
   }
+  ion-textarea.form-field{
+    @include font-size(14);
+    --padding-start: 0.875rem;
+    --padding-end: 0.875rem;
+    min-height: 75px;
+  }
 
   ion-label.formlebel{
     position: absolute;
@@ -1045,5 +1051,98 @@ ion-card-content {
     background-color: #03962A;
     color: #fff;
     border-color: #03962A;
+  }
+}
+.popupOuter{
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 999999999999;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 10px;
+  --padding-bottom: 16px;
+}
+.popup-wrapper {
+  padding: 15px;
+  background: #ffffff;
+  width: 90%;
+  border-radius: 10px;
+
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close-icon {
+      font-size: 24px;
+      color: #f44336;
+      cursor: pointer;
+    }
+  }
+
+  .bid-info-box {
+    background: #E6F4EA;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      &:not(:last-child){
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #C4DECB;
+      }
+
+      .bold {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .form-fields {
+    ion-item {
+      --background: transparent;
+      --min-height: 50px;
+      margin-bottom: 12px;
+
+      ion-label {
+        font-size: 14px;
+        color: #444;
+        margin-bottom: 4px;
+      }
+
+      ion-input, ion-textarea {
+        font-size: 15px;
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 6px;
+      }
+    }
+  }
+
+  .btn {
+    
+
+    img {
+      margin-right: 10px;
+    }
   }
 }
