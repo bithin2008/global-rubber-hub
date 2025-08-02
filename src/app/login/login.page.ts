@@ -536,18 +536,13 @@ export class LoginPage implements OnInit {
 
       console.log('Sending Google data to backend:', googleData);
 
-      this.commonService.googleLogin('google-login', googleData).subscribe(
+      let url = 'auth/google-login';
+      this.commonService.login(url, googleData).subscribe(
         (response: any) => {
-          this.enableLoader = false;
-          
-          if (response.code === 200) {
+          this.enableLoader = false;          
+          if (response.code === 200) {            
             localStorage.setItem('token', response.access_token);
-            
-            if (response.user) {
-              localStorage.setItem('user', JSON.stringify(response.user));
-            }
-            
-            this.showToast('success', 'Google login successful!', 'Welcome ' + user.displayName, 3000, '/dashboard');
+            this.showToast('success', response.message, '', 4000, '/dashboard');            
           } else if (response.code === 401) {
             this.showToast('error', response.message || 'Authentication failed', '', 3000, '');
           } else if (response.code === 423) {

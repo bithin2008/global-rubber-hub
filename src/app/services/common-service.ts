@@ -122,11 +122,11 @@ export class CommonService {
       .post(environment.API_ENDPOINT + url, data)
       .pipe(catchError(this.handleError));
   }
-  googleLogin(url: any, data: any) {
-    return this._http
-      .post(environment.API_ENDPOINT + url, data)
-      .pipe(catchError(this.handleError));
-  }
+  // googleLogin(url: any, data: any) {
+  //   return this._http
+  //     .post(environment.API_ENDPOINT + url, data)
+  //     .pipe(catchError(this.handleError));
+  // }
   noTokenPost(url: any, data: any) {
     return this._http
       .post(environment.API_ENDPOINT + url, data, this.headerKeys())
