@@ -50,4 +50,16 @@ export const routes: Routes = [
     path: 'item-add',
     loadComponent: () => import('./item-add/item-add.page').then( m => m.ItemAddPage)
   },
+  {
+    path: 'my-item',
+    loadComponent: () => import('./my-item/my-item.page').then( m => m.MyItemPage)
+  },
+  {
+    path: 'bid-history',
+    loadComponent: () => import('./bid-history/bid-history.page').then( m => m.BidHistoryPage)
+  },
+  {
+    path: 'bid-request',
+    loadComponent: () => import('./bid-request/bid-request.page').then( m => m.BidRequestPage)
+  },
 ];

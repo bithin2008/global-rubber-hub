@@ -20,17 +20,14 @@ This guide explains how to complete the Google Authentication setup for your And
    - **Package name**: `io.ionic.starter`
    - **SHA-1 certificate fingerprint**: [See instructions below]
 
-### 3. Get SHA-1 Fingerprint
+### 3. Your SHA-1 Fingerprint
 
-For **debug** builds (development):
-```bash
-keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+**Debug SHA-1 Fingerprint (for development):**
+```
+04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8
 ```
 
-For **release** builds (production):
-```bash
-keytool -list -v -keystore /path/to/your/release.keystore -alias your_alias_name
-```
+Use this SHA-1 fingerprint when creating your Android OAuth client in Google Console.
 
 ### 4. Update Configuration Files
 
