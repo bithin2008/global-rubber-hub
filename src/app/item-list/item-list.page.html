@@ -53,9 +53,10 @@
             <h2>{{item.item_name}} for <span *ngIf="item.item_listed_for == 1">Sale</span> <span
                 *ngIf="item.item_listed_for == 2">Buy</span> in {{item.city}}</h2>
             <div class="date-location">
-              <div class="location">
+              <div class="location" >
                 <img src="assets/img/icons/location_on_color.svg" alt="" title="">
-                <span>{{item.city}}, {{item.state}}</span>
+                <span *ngIf="item.city && item.state">{{item.city}}, {{item.state}}</span>
+                <span *ngIf="!item.city || !item.state">N/A</span>
               </div>
               <div class="date_wrap">
                 <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on">
