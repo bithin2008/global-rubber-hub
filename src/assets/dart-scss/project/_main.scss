@@ -276,11 +276,34 @@
   } 
   .btn{
     min-height: auto;
+    position: relative;
+    &.addicon{
+      &:after{
+        content: "";
+        width: 17px;
+        height: 17px;
+        background-image: url('../../img/icons/add_circle.svg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100%;
+        position: absolute;
+        right: -8px;
+        top: -6px;
+        border-radius: 50%;
+      }
+    }
     img{
       height: 23px;
+      &.add{
+        width:17px;
+        height: 17px;
+        position: absolute;
+        top: -2px;
+        right: -15px;
+      }
     }
     &:not(:last-child){
-      margin-right: 12px;
+      margin-right: 22px;
     }
   }
 
@@ -1244,10 +1267,10 @@ ion-card-content {
 .dashboard-wrapper {
   padding: 16px;
   background: #f7f7f7;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
+  --padding-start: 30px;
+  --padding-end: 30px;
+  --padding-top: 20px;
+  --padding-bottom: 20px;
   .compIcon{
     width: 50px;
     height: 50px;
@@ -1302,13 +1325,13 @@ ion-card-content {
       border: 1px solid #d7d7d7;
 
       p {
-        font-size: 13px;
+        font-size: 12px;
         margin-bottom: 4px;
         color: #000;
       }
 
       h2 {
-        font-size: 16px;
+        font-size: 12px;
         margin: 0;
 
         span {
@@ -1621,4 +1644,26 @@ ion-app {
     }
   }
 }
+.blink-after{
+  position: relative;
+}
+.blink-after::after {
+  content: "";
+  position: absolute;
+  top: -1px; // adjust based on your design
+  right: -2px; // adjust based on icon width
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #FBBC05; // red dot
+  animation: blink 1s infinite;
+}
 
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
