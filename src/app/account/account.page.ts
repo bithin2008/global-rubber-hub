@@ -63,6 +63,10 @@ export class AccountPage implements OnInit {
 
   }
 
+  goToProfile(){
+    this.router.navigateByUrl('/profile');
+  }
+
   goToEditProfile(){
     this.router.navigate(['/profile']);
   }

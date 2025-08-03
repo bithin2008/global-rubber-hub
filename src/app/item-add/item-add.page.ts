@@ -228,5 +228,8 @@ export class ItemAddPage implements OnInit {
     return await modal.present();
   }
 
+  goToProfile(){
+    this.router.navigateByUrl('/profile');
+  }
 
 }

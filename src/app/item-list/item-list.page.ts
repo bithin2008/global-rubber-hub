@@ -264,6 +264,10 @@ export class ItemListPage implements OnInit {
     return await modal.present();
   }
 
+  goToProfile(){
+    this.router.navigateByUrl('/profile');
+  }
+
   // Handle bid submission (you can customize this method)
   handleBidSubmission(bidData: any) {
     console.log('Processing bid:', bidData);
