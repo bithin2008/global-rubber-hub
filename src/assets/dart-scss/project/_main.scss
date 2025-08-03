@@ -1335,7 +1335,12 @@ ion-card-content {
     }
   }
 
-  .section {
+  
+  .worning_badg{
+    --background: #FB7805 !important;
+  }
+}
+.section {
     margin-bottom: 24px;
 
     .section-title {
@@ -1544,8 +1549,3 @@ ion-card-content {
       }
     }
   }
-  .worning_badg{
-    --background: #FB7805 !important;
-  }
-}
-
