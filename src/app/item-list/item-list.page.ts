@@ -10,13 +10,14 @@ import { CommonService } from '../services/common-service';
 import * as _ from 'lodash';
 import { register } from 'swiper/element/bundle';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { HeaderComponent } from '../shared/header/header.component';
 
 @Component({
   selector: 'app-item-list',
   templateUrl: './item-list.page.html',
   styleUrls: ['./item-list.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, CommonModule, NgIf, NgFor, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent],
+  imports: [IonContent, IonHeader, IonTitle, CommonModule, NgIf, NgFor, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ItemListPage implements OnInit {
@@ -264,9 +265,7 @@ export class ItemListPage implements OnInit {
     return await modal.present();
   }
 
-  goToProfile(){
-    this.router.navigateByUrl('/profile');
-  }
+
 
   // Handle bid submission (you can customize this method)
   handleBidSubmission(bidData: any) {

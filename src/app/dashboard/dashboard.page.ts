@@ -6,13 +6,14 @@ import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { HeaderComponent } from '../shared/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule ]
+  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent ]
 })
 export class DashboardPage implements OnInit {
 
@@ -21,9 +22,7 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
   }
 
-  goToProfile(){
-    this.router.navigate(['/profile']);
-  }
+
 
 
 

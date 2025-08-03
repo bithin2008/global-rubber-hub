@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonBackButton, IonToolbar } from '@ionic/angular/standalone';
@@ -8,18 +8,22 @@ import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { HeaderComponent } from '../shared/header/header.component';
+import { ProfileService } from '../services/profile.service';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
   standalone: true,
-  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule ]
+  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent ]
 })
-export class AccountPage implements OnInit {
+export class AccountPage implements OnInit, OnDestroy {
   public enableLoader: boolean = false;
   public profileImage: string = '';
   public showPlaceholder: boolean = true;
   public profileDetails:any={}
+  private subscription: Subscription = new Subscription();
 
 
   constructor(public router: Router,
@@ -27,10 +31,23 @@ export class AccountPage implements OnInit {
     private commonService: CommonService,
     public modalController: ModalController,
      private alertController: AlertController,
-     private location: Location) { }
+     private location: Location,
+     private profileService: ProfileService) { }
 
   ngOnInit() {
     this.getProfileData();
+    
+    // Subscribe to profile image changes from the service
+    this.subscription.add(
+      this.profileService.profileImage$.subscribe((imageUrl) => {
+        this.profileImage = imageUrl;
+        this.showPlaceholder = !imageUrl;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   getProfileData() {
@@ -45,9 +62,17 @@ export class AccountPage implements OnInit {
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
             this.showPlaceholder = false;
+            // Update the service so header reflects the change
+            this.profileService.updateProfileImage(response.user.profile_image);
           } else {
             this.profileImage = '';
             this.showPlaceholder = true;
+            // Clear the service as well
+            this.profileService.updateProfileImage('');
+          }
+          // Update user name in service if available
+          if (response.user.full_name) {
+            this.profileService.updateUserName(response.user.full_name);
           }
          
         } else {
@@ -63,9 +88,7 @@ export class AccountPage implements OnInit {
 
   }
 
-  goToProfile(){
-    this.router.navigateByUrl('/profile');
-  }
+
 
   goToEditProfile(){
     this.router.navigate(['/profile']);
