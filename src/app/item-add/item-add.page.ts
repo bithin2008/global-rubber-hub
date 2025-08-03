@@ -27,6 +27,7 @@ import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 
 @Component({
   selector: 'app-item-add',
@@ -54,7 +55,8 @@ import { HeaderComponent } from '../shared/header/header.component';
     IonIcon,
     IonLoading,
     IonToast,
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent
   ]
 })
 export class ItemAddPage implements OnInit {

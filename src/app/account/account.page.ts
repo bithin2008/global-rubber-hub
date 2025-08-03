@@ -9,6 +9,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
 import { Subscription } from 'rxjs';
 @Component({
@@ -16,7 +17,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
   standalone: true,
-  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent ]
+  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent ]
 })
 export class AccountPage implements OnInit, OnDestroy {
   public enableLoader: boolean = false;
