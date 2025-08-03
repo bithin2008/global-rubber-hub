@@ -32,6 +32,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
+  navigateTo(route: string) {
+    this.router.navigate([route]);
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

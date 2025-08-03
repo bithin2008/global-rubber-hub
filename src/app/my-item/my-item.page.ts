@@ -51,11 +51,11 @@ export class MyItemPage implements OnInit {
 
   getItemList() {
     let data = {
-      module: 2,
+      module: 1,
       start: this.page,
       limit: 10,
-      order_field: this.searchField==5 ? 'item_master.added_on':this.searchField,
-      order_by: this.orderBy,
+      orderfield: this.searchField==5 ? 'item_master.added_on':this.searchField,
+      orderby: this.orderBy,
       keyword: this.searchKeyword ? this.searchKeyword : '',
       options:  this.searchField==5 ? 'item_master.added_on':this.searchField
 
