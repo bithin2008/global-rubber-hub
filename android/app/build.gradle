@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "io.ionic.starter"
+    namespace "com.globalrubber.hub"
     compileSdk rootProject.ext.compileSdkVersion
     
     compileOptions {
@@ -10,7 +10,7 @@ android {
     }
     
     defaultConfig {
-        applicationId "io.ionic.starter"
+        applicationId "com.globalrubber.hub"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

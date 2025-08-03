@@ -17,7 +17,7 @@ This guide explains how to complete the Google Authentication setup for your And
 2. Select **Android** as application type
 3. Enter the following details:
    - **Name**: Global Rubber Hub Android
-   - **Package name**: `io.ionic.starter`
+   - **Package name**: `com.globalrubber.hub`
    - **SHA-1 certificate fingerprint**: [See instructions below]
 
 ### 3. Your SHA-1 Fingerprint
@@ -64,7 +64,7 @@ Make sure these APIs are enabled in Google Console:
 
 1. **"Developer Error" message**: 
    - Check that SHA-1 fingerprint matches exactly
-   - Ensure package name matches (`io.ionic.starter`)
+   - Ensure package name matches (`com.globalrubber.hub`)
 
 2. **Sign-in popup doesn't appear**:
    - Verify `google-services.json` is properly configured

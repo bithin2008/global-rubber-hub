@@ -404,6 +404,10 @@ export class ProfilePage implements OnInit {
     this.profileImage = ''; // Clear the image source
     this.showPlaceholder = true; // Show placeholder
   }
+  
+  goToProfile(){
+    this.router.navigateByUrl('/profile');
+  }
 
   updateProfile() {
     this.submitted = true;

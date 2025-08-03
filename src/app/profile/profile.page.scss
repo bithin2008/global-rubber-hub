@@ -31,6 +31,10 @@
   position: relative;
 }
 
+form ion-item.no-style {
+  margin-bottom: 0;
+}
+
 .no-results {
   color: #999;
   font-style: italic;

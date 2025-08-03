@@ -118,6 +118,8 @@ export class LoginPage implements OnInit {
   async ngOnInit() {
     this.initializeForms();
     await this.initializeGoogleAuth();
+    // Add diagnostic information
+    await this.diagnosGoogleAuthSetup();
   }
 
   initializeForms() {
@@ -255,22 +257,84 @@ export class LoginPage implements OnInit {
     try {
       if (Capacitor.isNativePlatform()) {
         // Initialize Google Auth for native platforms (Android/iOS)
-        const clientId = isPlatform('android') ? environment.GOOGLE_ANDROID_CLIENT_ID : environment.GOOGLE_WEB_CLIENT_ID;
+        const clientId = environment.GOOGLE_ANDROID_CLIENT_ID; // Use Android client ID for native platforms
         console.log('Initializing Google Auth for platform:', Capacitor.getPlatform());
         console.log('Using client ID:', clientId);
+        console.log('Environment check:', {
+          production: environment.production,
+          androidClientId: environment.GOOGLE_ANDROID_CLIENT_ID,
+          webClientId: environment.GOOGLE_WEB_CLIENT_ID,
+          serverClientId: environment.GOOGLE_SERVER_CLIENT_ID
+        });
         
         await GoogleAuth.initialize({
           clientId: clientId,
-          scopes: ['profile', 'email']
+          scopes: ['profile', 'email'],
+          grantOfflineAccess: true
         });
         console.log('Google Auth initialized successfully for native platform');
       } else {
+        console.log('Initializing Google Auth for web platform');
         // For web platform, load Google Identity Services
         this.loadGoogleIdentityServices();
       }
     } catch (error) {
       console.error('Error initializing Google Auth:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
     }
+  }
+
+  async diagnosGoogleAuthSetup() {
+    console.log('🔍 === GOOGLE AUTH DIAGNOSTIC START ===');
+    console.log('Platform:', Capacitor.getPlatform());
+    console.log('Is Native Platform:', Capacitor.isNativePlatform());
+    console.log('Is Android:', Capacitor.getPlatform() === 'android');
+    console.log('Is iOS:', Capacitor.getPlatform() === 'ios');
+    console.log('Is Web:', Capacitor.getPlatform() === 'web');
+    
+    console.log('📋 Environment Configuration:');
+    console.log('- Production:', environment.production);
+    console.log('- Android Client ID:', environment.GOOGLE_ANDROID_CLIENT_ID);
+    console.log('- Web Client ID:', environment.GOOGLE_WEB_CLIENT_ID);
+    console.log('- Server Client ID:', environment.GOOGLE_SERVER_CLIENT_ID);
+    
+    console.log('🔌 Plugin Check:');
+    console.log('- GoogleAuth available:', !!GoogleAuth);
+    console.log('- GoogleAuth object:', GoogleAuth);
+    
+    if (Capacitor.isNativePlatform()) {
+      console.log('📱 Native Platform Diagnostics:');
+      try {
+        // Check if we can access GoogleAuth methods
+        console.log('- GoogleAuth.initialize method available:', typeof GoogleAuth.initialize === 'function');
+        console.log('- GoogleAuth.signIn method available:', typeof GoogleAuth.signIn === 'function');
+        
+        // Test initialization with current settings
+        console.log('🔧 Testing initialization...');
+        await GoogleAuth.initialize({
+          clientId: environment.GOOGLE_ANDROID_CLIENT_ID,
+          scopes: ['profile', 'email'],
+          grantOfflineAccess: true
+        });
+        console.log('✅ Initialization test successful');
+        
+        // Check available methods
+        console.log('- Available GoogleAuth methods:', Object.getOwnPropertyNames(GoogleAuth));
+        
+      } catch (diagError: any) {
+        console.error('❌ Diagnostic error:', diagError);
+        console.error('- Error type:', typeof diagError);
+        console.error('- Error message:', diagError?.message);
+        console.error('- Error code:', diagError?.code);
+        console.error('- Full error:', JSON.stringify(diagError, null, 2));
+      }
+    }
+    
+    console.log('📄 Package Configuration Check:');
+    console.log('- Expected package name: com.globalrubber.hub');
+    console.log('- Expected SHA-1: 04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8');
+    
+    console.log('🔍 === GOOGLE AUTH DIAGNOSTIC END ===');
   }
 
   private loadGoogleIdentityServices() {
@@ -304,12 +368,35 @@ export class LoginPage implements OnInit {
     try {
       this.isGoogleLoading = true;
       console.log('Google login clicked - Platform:', Capacitor.getPlatform());
+      console.log('Is native platform:', Capacitor.isNativePlatform());
+      console.log('Platform info:', Capacitor.getPlatform());
       
       if (Capacitor.isNativePlatform()) {
         console.log('Attempting native Google sign-in...');
+        
+        // Check if GoogleAuth is available
+        if (!GoogleAuth) {
+          throw new Error('GoogleAuth plugin not available');
+        }
+        
+        // Re-initialize if needed (Android sometimes needs this)
+        try {
+          console.log('Re-initializing GoogleAuth before sign-in...');
+          await GoogleAuth.initialize({
+            clientId: environment.GOOGLE_ANDROID_CLIENT_ID,
+            scopes: ['profile', 'email'],
+            grantOfflineAccess: true
+          });
+          console.log('GoogleAuth re-initialized successfully');
+        } catch (initError) {
+          console.warn('GoogleAuth re-initialization failed:', initError);
+        }
+        
         // Native platform (Android/iOS)
+        console.log('Calling GoogleAuth.signIn()...');
         const user = await GoogleAuth.signIn();
         console.log('Native Google sign-in successful:', user);
+        console.log('User details:', JSON.stringify(user, null, 2));
         await this.handleGoogleLoginSuccess(user);
       } else {
         console.log('Attempting web Google sign-in...');
@@ -319,6 +406,10 @@ export class LoginPage implements OnInit {
     } catch (error: any) {
       this.isGoogleLoading = false;
       console.error('Google sign-in error:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message);
+      console.error('Error code:', error?.code);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
       
       // Better error messages for Android
       let errorMessage = 'Google sign-in failed';
@@ -326,19 +417,34 @@ export class LoginPage implements OnInit {
       
       if (Capacitor.isNativePlatform()) {
         const errorStr = error?.message || error?.toString() || '';
-        if (errorStr.includes('12501')) {
+        const errorCode = error?.code || '';
+        
+        console.log('Analyzing error:', { errorStr, errorCode });
+        
+        if (errorStr.includes('12501') || errorCode === '12501') {
           errorMessage = 'Google sign-in cancelled';
           errorDetail = 'Sign-in was cancelled by user';
-        } else if (errorStr.includes('12502')) {
+        } else if (errorStr.includes('12502') || errorCode === '12502') {
           errorMessage = 'Google Play Services error';
           errorDetail = 'Please update Google Play Services';
-        } else if (errorStr.includes('10')) {
+        } else if (errorStr.includes('10') || errorCode === '10') {
           errorMessage = 'Configuration error';
           errorDetail = 'Please check your Google Auth setup';
+        } else if (errorStr.includes('INTERNAL_ERROR')) {
+          errorMessage = 'Internal error';
+          errorDetail = 'Google Play Services internal error. Please try again.';
+        } else if (errorStr.includes('NETWORK_ERROR')) {
+          errorMessage = 'Network error';
+          errorDetail = 'Please check your internet connection';
+        } else if (errorStr.includes('GoogleAuth plugin not available')) {
+          errorMessage = 'Plugin error';
+          errorDetail = 'GoogleAuth plugin is not properly installed';
+        } else {
+          errorDetail = `Error: ${errorStr}`;
         }
       }
       
-      this.showToast('error', errorMessage, errorDetail, 3000, '');
+      this.showToast('error', errorMessage, errorDetail, 5000, '');
     }
   }
 

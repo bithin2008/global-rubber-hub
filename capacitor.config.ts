@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.globalrubber.hub',
   appName: 'Global Rubber Hub',
   webDir: 'www',
   plugins: {
@@ -22,7 +22,7 @@ const config: CapacitorConfig = {
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com',
+      serverClientId: '1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2.apps.googleusercontent.com',
       forceCodeForRefreshToken: true
     },
   }

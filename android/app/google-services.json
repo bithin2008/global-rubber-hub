@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1067170807523:android:skqbcodkktsctbuvkltjosnaok60j7l2",
         "android_client_info": {
-          "package_name": "io.ionic.starter"
+          "package_name": "com.globalrubber.hub"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "io.ionic.starter",
+            "package_name": "com.globalrubber.hub",
             "certificate_hash": "04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8"
           }
         },
@@ -28,7 +28,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBvOiuR8Q3UO5lY5g5g5g5g5g5g5g5g5g5"
+          "current_key": "AIzaSyDgRLAUvPa7-17v9tPDn34OKNNRBwuFWcQ"
         }
       ],
       "services": {

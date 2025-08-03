@@ -1,55 +1,97 @@
-<ion-header class="modal-header">
-  <ion-toolbar>
-    <ion-title>Place Your Bid</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="modal-content">
+  <div class="popupOuter">
+    <div class="popup-wrapper">
+      <div class="popup-header">
+        <h2>Place Your Bid</h2>
+        <img src="assets/img/icons/cancel.svg" alt="" title="" (click)="dismiss()">
+      </div>
 
-<ion-content class="modal-content" scrollY="true" (click)="onContentClick($event)">
-  <div class="bid-container">
-    <div class="item-info">
-      <h3>{{item?.company_name}}</h3>
-             <p class="item-details">
-         <span class="price">₹{{item?.price}}/Kg</span>
-         <span class="quantity">{{item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
-       </p>
-      <p class="location">{{item?.city}}, {{item?.state}}</p>
-    </div>
-
-    <div class="bid-form">
-      <ion-item class="bid-input">
-        <ion-label position="stacked">Bid Amount (₹/Kg)</ion-label>
-        <ion-input 
-          type="number" 
-          [(ngModel)]="bidAmount" 
-          placeholder="Enter your bid amount"
-          min="0"
-          step="0.01">
-        </ion-input>
+      <div class="bid-info-box">
+        <div class="info-row">
+          <span>{{item?.item_name}}</span>
+          <span class="bold">{{item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
+        </div>
+        <div class="info-row">
+          <span>Listed By</span>
+          <span class="bold" *ngIf="item.company_name">{{item.company_name}}</span>
+          <span class="bold" *ngIf="!item.company_name">{{item.full_name}}</span>
+        </div>
+        <div class="info-row">
+          <span>Location</span>
+          <span class="bold">{{item?.city}}, {{item?.state}}</span>
+        </div>
+        <div class="info-row">
+          <span>Current Price</span>
+          <span class="bold">₹{{item?.price}}/{{getUOMText(item.uom_id)}}</span>
+        </div>
+      </div>
+    <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Your bid price (₹/{{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
+          <ion-input 
+            class="form-field" 
+            type="number" 
+            formControlName="bid_amount"
+            placeholder="190.00">
+          </ion-input>
+        </div>
       </ion-item>
+      <div class="validation-error">
+        <span *ngIf="submitted && f['bid_amount'].errors">
+        <span *ngIf="f['bid_amount'].errors['required']">Bid amount is required</span>
+        <span *ngIf="f['bid_amount'].errors['min']">Bid amount must be greater than 0</span>
+        <span *ngIf="f['bid_amount'].errors['pattern']">Please enter a valid amount (e.g., 190.50)</span>
+      </span>
+      </div>
 
-      <ion-item class="bid-input">
-        <ion-label position="stacked">Message (Optional)</ion-label>
-        <ion-textarea 
-          [(ngModel)]="bidMessage" 
-          placeholder="Add a message to your bid"
-          rows="3">
-        </ion-textarea>
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Quantity Interested({{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
+          <ion-input 
+            class="form-field" 
+            type="number" 
+            formControlName="bid_quantity"
+            placeholder="50">
+          </ion-input>
+        </div>
       </ion-item>
-    </div>
+      <div class="validation-error" >
+        <span *ngIf="submitted && f['bid_quantity'].errors">
+        <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
+      </span>
+      </div>
 
-    <div class="bid-actions">
+      <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Message to <span *ngIf="item.item_listed_for == 1">Seller</span> <span
+            *ngIf="item.item_listed_for == 2">Buyer</span><span class="required">*</span></ion-label>
+          <ion-textarea 
+            class="form-field" 
+            formControlName="remark"
+            placeholder="Type your message here">
+          </ion-textarea>
+        </div>
+      </ion-item>
+      <div class="validation-error" >
+        <span *ngIf="submitted && f['remark'].errors">
+        <span *ngIf="f['remark'].errors['required']">Message is required</span>
+        <span *ngIf="f['remark'].errors['minlength']">Message must be at least 10 characters</span>
+        <span *ngIf="f['remark'].errors['maxlength']">Message must be less than 100 characters</span>
+      </span>
+      </div>
+      
       <ion-button 
         expand="block" 
-        (click)="submitBid()" 
-        [disabled]="bidAmount <= 0"
-        class="submit-bid-btn">
-        Submit Bid
+        class="btn btn-grn no-style"
+        type="submit"
+        >
+        <img src="assets/img/icons/credit_card.svg" alt="" title="">
+        Pay and Place Bid
       </ion-button>
+    </form>
+
+      
     </div>
   </div>
 </ion-content> 
