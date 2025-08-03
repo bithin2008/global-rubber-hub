@@ -61,6 +61,7 @@
         border: none;
         color: #fff;
         border-radius: 6px;
+        padding: 9px 0;
 
         &.segment-button-checked {
           background: #BCCC5B;
@@ -158,6 +159,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
+        text-align: center;
 
         img {
           width: 20px;
@@ -1666,4 +1668,29 @@ ion-app {
   50% {
     opacity: 0;
   }
+}
+
+ion-segment-button {
+  ion-label {
+    opacity: 1 !important;
+    color: var(--ion-text-color, #000) !important;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+  }
+
+  &.segment-button-checked ion-label {
+    color: var(--ion-color-primary, #000) !important;
+  }
+}
+
+.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{
+  justify-content: center !important;
+}
+.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{
+  flex-grow: unset !important;
+}
+.nsm7Bb-HzV7m-LgbsSe{
+  padding: 15px 12px !important;
+  height: 49px !important;
 }
