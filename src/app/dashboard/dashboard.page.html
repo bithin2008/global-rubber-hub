@@ -1,10 +1,289 @@
-<app-header></app-header>
+<ion-header class="appHeader">
+  <img class="headerLogo" src="assets/img/headerlogo.png" alt="">
+  <div class="btn-container">
+    <ion-button class="btn no-style"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+    <ion-button class="btn no-style"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+    <ion-button class="btn no-style account" (click)="goToProfile()"><img src="assets/img/icons/person.svg" alt=""
+        title=""></ion-button>
+  </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+</ion-header>
 
+<ion-content class="dashboard-wrapper">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <img src="assets/img/icons/user_dashboard.svg" alt="">
+    <div>
+      <h3>Welcome Surya Kumar!</h3>
+      <p>Your trusted marketplace for real-time rubber trading.</p>
+    </div>
+  </div>
+
+  <!-- Market Stats -->
+  <div class="market-stats">
+    <div class="market-card up">
+      <p>Item Name</p>
+      <h2>25,195.80 <span class="change up">+113.80 (0.45%)</span></h2>
+    </div>
+    <div class="market-card down">
+      <p>Item Name</p>
+      <h2>25,195.80 <span class="change down">+113.80 (0.45%)</span></h2>
+    </div>
+  </div>
+
+  <!-- Top Seller -->
+  <div class="section">
+    <div class="section-title">Top Seller</div>
+    <div class="cards-row">
+      <div class="product-card">
+        <ion-badge class="success_badg">On Sale</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/tata.png" />
+          </figure>
+          <h4>TATA Consultancy Services</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+
+      <div class="product-card">
+        <ion-badge class="success_badg">On Sale</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/mrf.png" />
+          </figure>
+          <h4>Madras Rubber Factory</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+    </div>
+
+    <div class="cards-row">
+      <div class="product-card">
+        <ion-badge class="success_badg">On Sale</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/mgm.png" />
+          </figure>
+          <h4>TATA Consultancy Services</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+
+      <div class="more-card">
+        <div class="title">More Wanted Items</div>
+        <div class="logo-group">
+          <figure class="compIcon">
+            <img src="assets/img/mrf.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/mgm.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/tata.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/sail.png" />
+          </figure>
+        </div>
+        <ion-button fill="clear" class="btn no-style see-more-btn">
+          See More <img src="assets/img/icons/arrow_yellow.svg" />
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Listed -->
+  <div class="section">
+    <div class="section-title">Recent Listed</div>
+    <div class="cards-row">
+      <div class="product-card">
+        <ion-badge class="worning_badg">Wanted</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/tata.png" />
+          </figure>
+          <h4>TATA Consultancy Services</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+
+      <div class="product-card">
+        <ion-badge class="worning_badg">Wanted</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/mrf.png" />
+          </figure>
+          <h4>Madras Rubber Factory</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+    </div>
+
+    <div class="cards-row">
+      <div class="product-card">
+        <ion-badge class="worning_badg">Wanted</ion-badge>
+        <div class="logoCompname">
+          <figure class="compIcon">
+            <img src="assets/img/mgm.png" />
+          </figure>
+          <h4>TATA Consultancy Services</h4>
+        </div>
+        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <h3>25,195.80</h3>
+      </div>
+
+      <div class="more-card">
+        <div class="title">More Wanted Items</div>
+        <div class="logo-group">
+          <figure class="compIcon">
+            <img src="assets/img/mrf.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/mgm.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/tata.png" />
+          </figure>
+          <figure class="compIcon">
+            <img src="assets/img/sail.png" />
+          </figure>
+        </div>
+        <ion-button fill="clear" class="btn no-style see-more-btn">
+          See More <img src="assets/img/icons/arrow_yellow.svg" />
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other Items -->
+  <div class="section">
+    <div class="section-title">
+      Other Items
+      <ion-button size="small" class="btn no-style see-all-btn">See All</ion-button>
+    </div>
+    <div class="other-list">
+      <ion-item class="no-style">
+        <ion-avatar slot="start">
+          <img src="assets/img/sail.png" />
+        </ion-avatar>
+        <ion-label>
+          <h4>TATA Consultancy Services</h4>
+          <p>Dealer Name NP Enterprise PVT. LTD.</p>
+          <h3>25,195.80</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <ion-avatar slot="start">
+          <img src="assets/img/sail.png" />
+        </ion-avatar>
+        <ion-label>
+          <h4>TATA Consultancy Services</h4>
+          <p>Dealer Name NP Enterprise PVT. LTD.</p>
+          <h3>25,195.80</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <ion-avatar slot="start">
+          <img src="assets/img/sail.png" />
+        </ion-avatar>
+        <ion-label>
+          <h4>TATA Consultancy Services</h4>
+          <p>Dealer Name NP Enterprise PVT. LTD.</p>
+          <h3>25,195.80</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <ion-avatar slot="start">
+          <img src="assets/img/sail.png" />
+        </ion-avatar>
+        <ion-label>
+          <h4>TATA Consultancy Services</h4>
+          <p>Dealer Name NP Enterprise PVT. LTD.</p>
+          <h3>25,195.80</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+      <ion-item class="no-style">
+        <ion-avatar slot="start">
+          <img src="assets/img/sail.png" />
+        </ion-avatar>
+        <ion-label>
+          <h4>TATA Consultancy Services</h4>
+          <p>Dealer Name NP Enterprise PVT. LTD.</p>
+          <h3>25,195.80</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </div>
+  </div>
 </ion-content>
