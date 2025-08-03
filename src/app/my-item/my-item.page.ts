@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 import { register } from 'swiper/element/bundle';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { HeaderComponent } from '../shared/header/header.component';
   templateUrl: './my-item.page.html',
   styleUrls: ['./my-item.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent],
+  imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
 })
 export class MyItemPage implements OnInit {
   public filterWarning: boolean = false;

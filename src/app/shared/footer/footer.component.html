@@ -1,0 +1,38 @@
+<ion-footer>
+  <ion-toolbar class="custom-footer">
+    <ion-grid>
+      <ion-row class="footer-row" justify-content-center>
+        <ion-col class="footer-icon">
+          <div class="icon-group" [class.active]="router.url === '/dashboard'" (click)="navigateTo('/dashboard')">
+            <img src="assets/img/icons/dashboard-f.svg" alt="">
+            <span>Dashboard</span>
+          </div>
+        </ion-col>
+        <ion-col class="footer-icon">
+          <div class="icon-group" [class.active]="router.url === '/my-item'" (click)="navigateTo('/my-item')">
+            <img src="assets/img/icons/my-items.svg" alt="">
+            <span>My Items</span>
+          </div>
+        </ion-col>
+        <ion-col class="footer-icon live-bid-col">
+          <div class="live-bid" (click)="navigateTo('/item-list')">
+            <img src="assets/img/icons/add_diamond.svg" alt="">
+            <span>Live Bid</span>
+          </div>
+        </ion-col>
+        <ion-col class="footer-icon">
+          <div class="icon-group" [class.active]="router.url === '/bid-request'" (click)="navigateTo('/bid-request')">
+            <img src="assets/img/icons/bid-request.svg" alt="">
+            <span>Bid Request</span>
+          </div>
+        </ion-col>
+        <ion-col class="footer-icon">
+          <div class="icon-group" [class.active]="router.url === '/bid-history'" (click)="navigateTo('/bid-history')">
+            <img src="assets/img/icons/bid-history.svg" alt="">
+            <span>Bid History</span>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
