@@ -1,20 +1,20 @@
 <ion-header class="appHeader">
-    <ion-title class="title">Global Rubber Hub</ion-title>
-    <ion-buttons>
-      <ion-button class="btn"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
-      <ion-button class="btn"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
-      <ion-button class="btn account" (click)="goToProfile()">
-        <div class="profile-container">
-          <img *ngIf="profileImage && !showPlaceholder" 
-               [src]="profileImage" 
-               alt="Profile" 
-               class="profile-image" 
-               (error)="onImageError()">
-          <img *ngIf="showPlaceholder || !profileImage" 
-               src="assets/img/icons/person.svg" 
-               alt="Profile" 
-               class="default-icon">
-        </div>
-      </ion-button>
-    </ion-buttons>
+  <img class="headerLogo" src="assets/img/headerlogo.png" alt="">
+  <div class="btn-container">
+    <ion-button class="btn no-style"><img src="assets/img/icons/wallet.svg" alt="" title=""></ion-button>
+    <ion-button class="btn no-style"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+    <ion-button class="btn no-style account" (click)="goToProfile()">
+      <div class="profile-container">
+        <img *ngIf="profileImage && !showPlaceholder" 
+             [src]="profileImage" 
+             alt="Profile" 
+             class="profile-image" 
+             (error)="onImageError()">
+        <img *ngIf="showPlaceholder || !profileImage" 
+             src="assets/img/icons/person.svg" 
+             alt="Profile" 
+             class="default-icon">
+      </div>
+    </ion-button>
+  </div>
 </ion-header>
