@@ -6,12 +6,14 @@ import { Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { HeaderComponent } from '../shared/header/header.component';
+import { ProfileService } from '../services/profile.service';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule]
+  imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent]
 })
 export class ProfilePage implements OnInit {
   profileForm!: FormGroup;
@@ -30,7 +32,8 @@ export class ProfilePage implements OnInit {
     private formBuilder: FormBuilder,
     private commonService: CommonService,
     public modalController: ModalController,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private profileService: ProfileService
   ) { }
 
   ngOnInit() {
@@ -133,9 +136,17 @@ export class ProfilePage implements OnInit {
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
             this.showPlaceholder = false;
+            // Update the service so header reflects the change
+            this.profileService.updateProfileImage(response.user.profile_image);
           } else {
             this.profileImage = '';
             this.showPlaceholder = true;
+            // Clear the service as well
+            this.profileService.updateProfileImage('');
+          }
+          // Update user name in service if available
+          if (response.user.full_name) {
+            this.profileService.updateUserName(response.user.full_name);
           }
           this.profileForm.patchValue(response.user)
         } else {
@@ -324,6 +335,8 @@ export class ProfilePage implements OnInit {
         // Store the image URI directly in the variable
         this.profileImage = image.webPath;
         this.showPlaceholder = false; // Hide placeholder
+        // Update the service immediately so header shows the new image
+        this.profileService.updateProfileImage(image.webPath);
 
         // Convert to PNG format using canvas
         const canvas = document.createElement('canvas');
@@ -337,6 +350,17 @@ export class ProfilePage implements OnInit {
 
           canvas.toBlob((pngBlob) => {
             if (pngBlob) {
+              // Check file size (2MB = 2 * 1024 * 1024 bytes)
+              const maxSize = 2 * 1024 * 1024; // 2MB
+              if (pngBlob.size > maxSize) {
+                this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
+                // Reset the image display
+                this.profileImage = '';
+                this.showPlaceholder = true;
+                this.profileService.updateProfileImage('');
+                return;
+              }
+
               const file = new File([pngBlob], 'profile-photo.png', { type: 'image/png' });
 
               // Upload the image to server using FormData
@@ -404,10 +428,7 @@ export class ProfilePage implements OnInit {
     this.profileImage = ''; // Clear the image source
     this.showPlaceholder = true; // Show placeholder
   }
-  
-  goToProfile(){
-    this.router.navigateByUrl('/profile');
-  }
+
 
   updateProfile() {
     this.submitted = true;
@@ -454,6 +475,10 @@ export class ProfilePage implements OnInit {
               responseData = JSON.parse(reader.result as string);
               if (responseData.code == 200) {
                 this.showToast('success', responseData.message, '', 2500, '');
+                // Update user name in service if form data changed
+                this.profileService.updateUserName(this.f['full_name'].value);
+                // Refresh profile data to get updated information
+                this.getProfileData();
               } else if (responseData.code == 423) {
                 this.showToast('error', responseData.message, '', 2500, '');
               } else {
@@ -470,6 +495,10 @@ export class ProfilePage implements OnInit {
           responseData = response;
           if (responseData.code == 200) {
             this.showToast('success', responseData.message, '', 2500, '');
+            // Update user name in service if form data changed
+            this.profileService.updateUserName(this.f['full_name'].value);
+            // Refresh profile data to get updated information
+            this.getProfileData();
           } else if (responseData.code == 423) {
             this.showToast('error', responseData.message, '', 2500, '');
           } else {

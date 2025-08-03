@@ -26,6 +26,7 @@ import { CommonService } from '../services/common-service';
 import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { HeaderComponent } from '../shared/header/header.component';
 
 @Component({
   selector: 'app-item-add',
@@ -52,7 +53,8 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
     IonTextarea,
     IonIcon,
     IonLoading,
-    IonToast
+    IonToast,
+    HeaderComponent
   ]
 })
 export class ItemAddPage implements OnInit {
@@ -228,8 +230,6 @@ export class ItemAddPage implements OnInit {
     return await modal.present();
   }
 
-  goToProfile(){
-    this.router.navigateByUrl('/profile');
-  }
+
 
 }
