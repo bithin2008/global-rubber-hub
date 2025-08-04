@@ -38,6 +38,11 @@ ion-segment {
   }
 }
 
+ion-content{
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
 // Form container styles
 .form-container {
   margin-top: 20px;

@@ -63,11 +63,20 @@ ion-footer {
   }
 }
 
-// Ensure content doesn't go under footer - using direct padding instead of CSS variables
+// Set ion-content height to viewport minus footer height
 ion-content {
-  padding-bottom: calc(70px + env(safe-area-inset-bottom));
-  
-  @media (max-width: 768px) {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  }
+  height: calc(100vh - 70px) !important; // Full viewport minus 70px footer
+  max-height: calc(100vh - 70px) !important;
+  overflow-y: auto !important;
+}
+
+// Ensure footer is properly positioned with exact 70px height
+ion-footer {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  height: 70px !important; // Fixed footer height
 }
