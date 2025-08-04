@@ -36,12 +36,14 @@
         <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
         <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
-        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="src/assets/img/logo.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="src/assets/img/splash.png" />
         <preference name="AndroidWindowSplashScreenBackground" value="#1f272a" />
         <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#1f272a" />
         <preference name="AndroidWindowSplashScreenBrandingImage" value="" />
         <preference name="SplashScreenBackgroundColor" value="#1f272a" />
         <preference name="SplashMaintainAspectRatio" value="true" />
+        <preference name="AndroidWindowSplashScreenIconSize" value="400" />
+
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
