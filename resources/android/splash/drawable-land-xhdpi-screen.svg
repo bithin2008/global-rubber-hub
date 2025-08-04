@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="1280" height="720" fill="#1f272a"/>
+  
+  <!-- Logo centered -->
+  <g transform="translate(496, 216)">
+    <rect width="288" height="288" fill="#ffffff" rx="20" opacity="0.1"/>
+    <text x="144" y="124" text-anchor="middle" dominant-baseline="middle" 
+          font-family="Arial, sans-serif" font-size="36" fill="#ffffff" font-weight="bold">
+      GLOBAL
+    </text>
+    <text x="144" y="164" text-anchor="middle" dominant-baseline="middle" 
+          font-family="Arial, sans-serif" font-size="36" fill="#ffffff" font-weight="bold">
+      RUBBER HUB
+    </text>
+  </g>
+</svg>
