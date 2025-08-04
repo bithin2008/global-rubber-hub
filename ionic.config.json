@@ -1,7 +1,6 @@
 {
   "name": "global-rubber-hubpp",
   "integrations": {
-    "capacitor": {},
     "cordova": {}
   },
   "type": "angular"

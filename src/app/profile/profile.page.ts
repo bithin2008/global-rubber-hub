@@ -5,7 +5,9 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, Modal
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+// Cordova Camera plugin
+declare var Camera: any;
+declare var navigator: any;
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
@@ -303,14 +305,14 @@ export class ProfilePage implements OnInit {
           text: 'Camera',
           icon: 'camera',
           handler: () => {
-            this.takePicture(CameraSource.Camera);
+            this.takePicture('camera');
           }
         },
         {
           text: 'Photo Library',
           icon: 'images',
           handler: () => {
-            this.takePicture(CameraSource.Photos);
+            this.takePicture('library');
           }
         },
         {
@@ -323,21 +325,34 @@ export class ProfilePage implements OnInit {
     await actionSheet.present();
   }
 
-  async takePicture(source: CameraSource) {
+  async takePicture(source: string) {
     try {
-      const image = await Camera.getPhoto({
+      // Use Cordova Camera plugin
+      const sourceType = source === 'camera' ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY;
+      const options = {
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.Uri,
-        source: source
+        allowEdit: true,
+        encodingType: Camera.EncodingType.JPEG,
+        targetWidth: 1000,
+        targetHeight: 1000,
+        sourceType: sourceType,
+        destinationType: Camera.DestinationType.FILE_URI
+      };
+      
+      const imageURI = await new Promise<string>((resolve, reject) => {
+        navigator.camera.getPicture(
+          (imageURI: string) => resolve(imageURI),
+          (error: any) => reject(error),
+          options
+        );
       });
 
-      if (image.webPath) {
+      if (imageURI) {
         // Store the image URI directly in the variable
-        this.profileImage = image.webPath;
+        this.profileImage = imageURI as string;
         this.showPlaceholder = false; // Hide placeholder
         // Update the service immediately so header shows the new image
-        this.profileService.updateProfileImage(image.webPath);
+        this.profileService.updateProfileImage(imageURI);
 
         // Convert to PNG format using canvas
         const canvas = document.createElement('canvas');
@@ -417,7 +432,7 @@ export class ProfilePage implements OnInit {
             }
           }, 'image/png');
         };
-        img.src = image.webPath;
+        img.src = imageURI;
       }
     } catch (error) {
       console.error('Error taking picture:', error);

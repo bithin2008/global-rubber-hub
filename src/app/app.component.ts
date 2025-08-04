@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { SplashScreen } from '@capacitor/splash-screen';
-import { StatusBar, Style } from '@capacitor/status-bar';
+// Cordova plugins will be available globally
+declare var StatusBar: any;
 import { Platform } from '@ionic/angular';
 
 @Component({
@@ -19,22 +19,25 @@ export class AppComponent {
       // Configure status bar for proper header display
       this.configureStatusBar();
       
-      // Let Capacitor handle the splash screen automatically
-      // with the configuration from capacitor.config.ts
-      console.log('App initialized - splash screen will auto-hide');
+      // Cordova splash screen will auto-hide based on config.xml preferences
+      console.log('App initialized - Cordova splash screen configured');
     });
   }
 
-  async configureStatusBar() {
+  configureStatusBar() {
     try {
       if (this.platform.is('android')) {
-        // Set status bar style for Android
-        await StatusBar.setStyle({ style: Style.Light });
-        await StatusBar.setBackgroundColor({ color: '#1A8135' }); // Match header color
-        await StatusBar.setOverlaysWebView({ overlay: false }); // Don't overlay content
+        // Set status bar style for Android using Cordova StatusBar plugin
+        if (typeof StatusBar !== 'undefined') {
+          StatusBar.styleLightContent();
+          StatusBar.backgroundColorByHexString('#1A8135'); // Match header color
+          StatusBar.show();
+        }
       } else if (this.platform.is('ios')) {
-        // Set status bar style for iOS
-        await StatusBar.setStyle({ style: Style.Light });
+        // Set status bar style for iOS using Cordova StatusBar plugin
+        if (typeof StatusBar !== 'undefined') {
+          StatusBar.styleLightContent();
+        }
       }
     } catch (error) {
       console.log('Status bar configuration error:', error);

@@ -6,13 +6,13 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
-import { isPlatform } from '@ionic/angular';
+import { isPlatform, Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { Capacitor } from '@capacitor/core';
+// Cordova Google+ plugin
+declare var window: any;
 import { environment } from '../../environments/environment';
 
 // Google API type declarations
@@ -105,7 +105,8 @@ export class LoginPage implements OnInit {
     private menu: MenuController,
     private commonService: CommonService,
     private authenticationService: AuthService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private platform: Platform
   ) {
     this.activatedRoute.params.subscribe(async val => {
       let hasLoggin: any = await this.alreadyLoggedIn();
@@ -255,10 +256,10 @@ export class LoginPage implements OnInit {
 
   async initializeGoogleAuth() {
     try {
-      if (Capacitor.isNativePlatform()) {
+      if (this.platform.is('cordova')) {
         // Initialize Google Auth for native platforms (Android/iOS)
         const clientId = environment.GOOGLE_ANDROID_CLIENT_ID; // Use Android client ID for native platforms
-        console.log('Initializing Google Auth for platform:', Capacitor.getPlatform());
+        console.log('Initializing Google Auth for Cordova platform');
         console.log('Using client ID:', clientId);
         console.log('Environment check:', {
           production: environment.production,
@@ -267,11 +268,8 @@ export class LoginPage implements OnInit {
           serverClientId: environment.GOOGLE_SERVER_CLIENT_ID
         });
         
-        await GoogleAuth.initialize({
-          clientId: clientId,
-          scopes: ['profile', 'email'],
-          grantOfflineAccess: true
-        });
+        // Cordova GooglePlus doesn't require explicit initialization
+        console.log('Cordova GooglePlus plugin ready');
         console.log('Google Auth initialized successfully for native platform');
       } else {
         console.log('Initializing Google Auth for web platform');
@@ -286,11 +284,10 @@ export class LoginPage implements OnInit {
 
   async diagnosGoogleAuthSetup() {
     console.log('🔍 === GOOGLE AUTH DIAGNOSTIC START ===');
-    console.log('Platform:', Capacitor.getPlatform());
-    console.log('Is Native Platform:', Capacitor.isNativePlatform());
-    console.log('Is Android:', Capacitor.getPlatform() === 'android');
-    console.log('Is iOS:', Capacitor.getPlatform() === 'ios');
-    console.log('Is Web:', Capacitor.getPlatform() === 'web');
+            console.log('Is Cordova Platform:', this.platform.is('cordova'));
+        console.log('Is Android:', this.platform.is('android'));
+        console.log('Is iOS:', this.platform.is('ios'));
+        console.log('Is Web:', this.platform.is('desktop'));
     
     console.log('📋 Environment Configuration:');
     console.log('- Production:', environment.production);
@@ -299,27 +296,25 @@ export class LoginPage implements OnInit {
     console.log('- Server Client ID:', environment.GOOGLE_SERVER_CLIENT_ID);
     
     console.log('🔌 Plugin Check:');
-    console.log('- GoogleAuth available:', !!GoogleAuth);
-    console.log('- GoogleAuth object:', GoogleAuth);
+    console.log('- Cordova GooglePlus available:', !!(window.plugins && window.plugins.googleplus));
+    console.log('- Window plugins object:', window.plugins);
     
-    if (Capacitor.isNativePlatform()) {
+    if (this.platform.is('cordova')) {
       console.log('📱 Native Platform Diagnostics:');
       try {
         // Check if we can access GoogleAuth methods
-        console.log('- GoogleAuth.initialize method available:', typeof GoogleAuth.initialize === 'function');
-        console.log('- GoogleAuth.signIn method available:', typeof GoogleAuth.signIn === 'function');
+        console.log('- Cordova GooglePlus plugin available:', typeof window.plugins !== 'undefined' && typeof window.plugins.googleplus !== 'undefined');
         
         // Test initialization with current settings
         console.log('🔧 Testing initialization...');
-        await GoogleAuth.initialize({
-          clientId: environment.GOOGLE_ANDROID_CLIENT_ID,
-          scopes: ['profile', 'email'],
-          grantOfflineAccess: true
-        });
-        console.log('✅ Initialization test successful');
-        
-        // Check available methods
-        console.log('- Available GoogleAuth methods:', Object.getOwnPropertyNames(GoogleAuth));
+        // Cordova GooglePlus doesn't need explicit initialization
+        // Check if plugin is available
+        if (window.plugins && window.plugins.googleplus) {
+          console.log('✅ Cordova GooglePlus plugin is available');
+          console.log('- Available methods:', Object.getOwnPropertyNames(window.plugins.googleplus));
+        } else {
+          console.log('❌ Cordova GooglePlus plugin not found');
+        }
         
       } catch (diagError: any) {
         console.error('❌ Diagnostic error:', diagError);
@@ -367,34 +362,42 @@ export class LoginPage implements OnInit {
   async loginWithGoogle() {
     try {
       this.isGoogleLoading = true;
-      console.log('Google login clicked - Platform:', Capacitor.getPlatform());
-      console.log('Is native platform:', Capacitor.isNativePlatform());
-      console.log('Platform info:', Capacitor.getPlatform());
+              console.log('Google login clicked - Is Cordova:', this.platform.is('cordova'));
+        console.log('Is Android:', this.platform.is('android'));
+        console.log('Is iOS:', this.platform.is('ios'));
       
-      if (Capacitor.isNativePlatform()) {
+      if (this.platform.is('cordova')) {
         console.log('Attempting native Google sign-in...');
         
-        // Check if GoogleAuth is available
-        if (!GoogleAuth) {
-          throw new Error('GoogleAuth plugin not available');
+        // Check if Cordova GooglePlus plugin is available
+        if (!window.plugins || !window.plugins.googleplus) {
+          throw new Error('Cordova GooglePlus plugin not available');
         }
         
         // Re-initialize if needed (Android sometimes needs this)
         try {
-          console.log('Re-initializing GoogleAuth before sign-in...');
-          await GoogleAuth.initialize({
-            clientId: environment.GOOGLE_ANDROID_CLIENT_ID,
-            scopes: ['profile', 'email'],
-            grantOfflineAccess: true
-          });
-          console.log('GoogleAuth re-initialized successfully');
+          console.log('Checking Cordova GooglePlus plugin availability...');
+          if (!window.plugins || !window.plugins.googleplus) {
+            throw new Error('Cordova GooglePlus plugin not available');
+          }
+          console.log('Cordova GooglePlus plugin is available');
         } catch (initError) {
-          console.warn('GoogleAuth re-initialization failed:', initError);
+          console.warn('Cordova GooglePlus plugin check failed:', initError);
         }
         
-        // Native platform (Android/iOS)
-        console.log('Calling GoogleAuth.signIn()...');
-        const user = await GoogleAuth.signIn();
+        // Native platform (Android/iOS) - Use Cordova GooglePlus
+        console.log('Calling Cordova GooglePlus login...');
+        const user = await new Promise((resolve, reject) => {
+          window.plugins.googleplus.login(
+            {
+              'scopes': 'profile email',
+              'webClientId': environment.GOOGLE_ANDROID_CLIENT_ID,
+              'offline': true
+            },
+            (obj: any) => resolve(obj),
+            (msg: any) => reject(msg)
+          );
+        });
         console.log('Native Google sign-in successful:', user);
         console.log('User details:', JSON.stringify(user, null, 2));
         await this.handleGoogleLoginSuccess(user);
@@ -415,7 +418,7 @@ export class LoginPage implements OnInit {
       let errorMessage = 'Google sign-in failed';
       let errorDetail = 'Please try again';
       
-      if (Capacitor.isNativePlatform()) {
+      if (this.platform.is('cordova')) {
         const errorStr = error?.message || error?.toString() || '';
         const errorCode = error?.code || '';
         
@@ -682,9 +685,16 @@ export class LoginPage implements OnInit {
 
   async signOutGoogle() {
     try {
-      if (Capacitor.isNativePlatform()) {
-        await GoogleAuth.signOut();
-        console.log('Google user signed out from native platform');
+      if (this.platform.is('cordova')) {
+        await new Promise((resolve, reject) => {
+          window.plugins.googleplus.logout(
+            () => {
+              console.log('Google user signed out from Cordova platform');
+              resolve(true);
+            },
+            (msg: any) => reject(msg)
+          );
+        });
       } else {
         // For web platform, clear any stored tokens
         if (window.google && window.google.accounts) {
