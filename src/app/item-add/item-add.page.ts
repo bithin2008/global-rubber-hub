@@ -65,6 +65,7 @@ export class ItemAddPage implements OnInit {
   selectedVideo: any = null;
   isSubmitting = false;
   submitted = false;
+  enableLoader = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -190,10 +191,10 @@ export class ItemAddPage implements OnInit {
         
         let url = 'items/add';
       
-        //this.enableLoader = true;
+        this.enableLoader = true;
         this.commonService.filepost(url, formData).subscribe(
           (response: any) => {
-          //  this.enableLoader = false;
+            this.enableLoader = false;
             if (response.code == 200) {
               this.showToast('success', response.message, '', 2500, '/item-list');
             } else {
@@ -201,7 +202,7 @@ export class ItemAddPage implements OnInit {
             }
           },
           (error) => {
-          //  this.enableLoader = false;
+           this.enableLoader = false;
             console.log('error ts: ', error.error);
             // this.toastr.error(error);
           }

@@ -284,7 +284,7 @@ export class ItemListPage implements OnInit {
     //this.enableLoader = true;
     this.commonService.filepost(url, data).subscribe(
       (response: any) => {
-      //  this.enableLoader = false;
+        this.enableLoader = false;
         if (response.code == 200) {
           this.showToast('success', response.message, '', 2500, '');
         } else {
@@ -292,7 +292,7 @@ export class ItemListPage implements OnInit {
         }
       },
       (error) => {
-      //  this.enableLoader = false;
+        this.enableLoader = false;
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }

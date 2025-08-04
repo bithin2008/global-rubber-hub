@@ -1,2 +1,73 @@
-/* Footer component styles will inherit from the global styles */
-/* Add any footer-specific styles here if needed */
+/* Footer component styles with mobile responsiveness */
+
+// Mobile-specific footer styles
+ion-footer {
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
+  // Safe area handling for mobile devices
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  
+  // Ensure proper mobile layout
+  width: 100%;
+  box-sizing: border-box;
+  
+  .custom-footer {
+    // Override any conflicting styles
+    position: relative;
+    overflow: visible;
+    
+    // Mobile responsiveness  
+    @media (max-width: 768px) {
+      padding: 8px env(safe-area-inset-left) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-right) !important;
+      min-height: calc(70px + env(safe-area-inset-bottom));
+      
+      .footer-row {
+        ion-col {
+          padding: 0 2px;
+        }
+        
+        .footer-icon {
+          .icon-group {
+            font-size: 10px;
+            
+            img {
+              height: 20px;
+              width: 20px;
+            }
+            
+            span {
+              margin-top: 2px;
+              font-size: 9px;
+            }
+          }
+          
+          &.live-bid-col .live-bid {
+            width: 60px;
+            height: 60px;
+            font-size: 10px;
+            
+            img {
+              height: 20px;
+              width: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Ensure content doesn't go under footer - using direct padding instead of CSS variables
+ion-content {
+  padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  
+  @media (max-width: 768px) {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}

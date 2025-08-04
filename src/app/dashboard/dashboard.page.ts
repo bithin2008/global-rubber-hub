@@ -17,6 +17,7 @@ import { FooterComponent } from '../shared/footer/footer.component';
   imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent ]
 })
 export class DashboardPage implements OnInit {
+  public enableLoader: boolean = false;
 
   constructor(private router: Router) { }
 

@@ -1,20 +1,17 @@
-// Ensure ion-content background is transparent
+// Ensure ion-content background is transparent - using direct properties instead of CSS variables
 ::ng-deep ion-content {
-  --background: transparent;
   background: transparent !important;
-  --color: inherit;
+  color: inherit;
 }
 
 // Also target the modal's ion-content specifically
 ::ng-deep .modal-content ion-content {
-  --background: transparent;
   background: transparent !important;
-  --color: inherit;
+  color: inherit;
 }
 
 // Remove any default ionic background
 ::ng-deep ion-content.modal-content {
-  --background: transparent;
   background: transparent !important;
 }
 

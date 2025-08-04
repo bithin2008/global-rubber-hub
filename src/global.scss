@@ -34,7 +34,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
 
 /* Swiper CSS */
 @import 'swiper/css';
@@ -55,4 +55,57 @@ ion-modal.bid-modal {
 // Ensure modal backdrop is visible
 ion-modal {
   --backdrop-opacity: 0.5;
+}
+
+/* Mobile Layout Fixes for Header and Footer */
+// Override any conflicting styles from main.scss
+@media (max-width: 768px) {
+  // Ensure proper mobile layout
+  ion-app {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh; // Use dynamic viewport height on supported browsers
+  }
+  
+  // Global content spacing for mobile - Android status bar aware
+  .itemlist-page,
+  .dashboard-page,
+  .profile-page,
+  ion-content {
+    padding-top: calc(71px + max(8px, env(safe-area-inset-top))) !important;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    
+    // Ensure scroll area accounts for header/footer with Android status bar
+    min-height: calc(100vh - 151px - max(8px, env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+    min-height: calc(100dvh - 151px - max(8px, env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+  }
+  
+  // Fix any absolute positioning issues - Android status bar handling
+  .appHeader {
+    position: fixed !important;
+    top: 0 !important;
+    width: 100% !important;
+    z-index: 1001 !important;
+    margin-top: var(--ion-safe-area-top, 0) !important;
+    padding-top: max(8px, env(safe-area-inset-top)) !important;
+  }
+  
+  ion-footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    z-index: 1001 !important;
+  }
+}
+
+/* Android Status Bar Specific Fixes */
+// Ensure status bar doesn't overlap content - removed CSS variable for direct implementation
+
+// Android status bar color and visibility
+@media (max-width: 768px) {
+  body {
+    background-color: #1A8135; // Match header color for status bar
+  }
 }
