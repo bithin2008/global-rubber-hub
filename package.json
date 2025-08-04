@@ -85,9 +85,12 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-googleplus": {
-        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2"
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2",
+        "PLAY_SERVICES_VERSION": "15.0.1"
       },
-      "cordova-plugin-camera": {}
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      }
     },
     "platforms": [
       "android"
