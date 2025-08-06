@@ -1,0 +1,175 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Choose Your Plan</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="payment-modal">
+  <div class="modal-container">
+    
+    <!-- Header -->
+    <div class="header-section">
+      <h2>Select Your Subscription</h2>
+      <p>Choose the perfect plan for your business needs</p>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="plans-grid">
+      <div 
+        *ngFor="let plan of plans" 
+        class="plan-card"
+        [class.selected]="selectedPlan?.id === plan.id"
+        [class.popular]="plan.popular"
+        (click)="selectPlan(plan)">
+        
+        <!-- Popular Badge -->
+        <div class="popular-badge" *ngIf="plan.popular">
+          <ion-icon name="star"></ion-icon>
+          Most Popular
+        </div>
+
+        <!-- Plan Header -->
+        <div class="plan-header">
+          <h3>{{ plan.name }}</h3>
+          <p class="plan-description">{{ plan.description }}</p>
+        </div>
+
+        <!-- Pricing -->
+        <div class="pricing">
+          <div class="current-price">
+            {{ formatAmount(plan.amount) }}
+            <span class="duration">/ {{ plan.duration }}</span>
+          </div>
+          
+          <div class="original-price" *ngIf="plan.originalPrice">
+            <span class="crossed-price">{{ formatAmount(plan.originalPrice) }}</span>
+            <span class="discount">{{ plan.discount }}% OFF</span>
+          </div>
+          
+          <div class="savings" *ngIf="plan.originalPrice">
+            Save {{ formatAmount(calculateSavings(plan)) }}
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+          <div class="feature" *ngFor="let feature of plan.features.slice(0, 4)">
+            <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+            {{ feature }}
+          </div>
+          <div class="more-features" *ngIf="plan.features.length > 4">
+            +{{ plan.features.length - 4 }} more features
+          </div>
+        </div>
+
+        <!-- Selection Indicator -->
+        <div class="selection-indicator" *ngIf="selectedPlan?.id === plan.id">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Plan Summary -->
+    <div class="selected-plan-summary" *ngIf="selectedPlan">
+      <h3>You've Selected: {{ selectedPlan.name }}</h3>
+      <div class="summary-details">
+        <div class="summary-item">
+          <span>Plan:</span>
+          <span>{{ selectedPlan.name }}</span>
+        </div>
+        <div class="summary-item">
+          <span>Duration:</span>
+          <span>{{ selectedPlan.duration }}</span>
+        </div>
+        <div class="summary-item">
+          <span>Amount:</span>
+          <span class="amount">{{ formatAmount(selectedPlan.amount) }}</span>
+        </div>
+        <div class="summary-item" *ngIf="selectedPlan.originalPrice">
+          <span>You Save:</span>
+          <span class="savings">{{ formatAmount(calculateSavings(selectedPlan)) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Methods Info -->
+    <div class="payment-methods-section">
+      <h3>Available Payment Methods</h3>
+      <div class="payment-methods-grid">
+        <div class="payment-method" *ngFor="let method of paymentMethods">
+          <ion-icon [name]="method.icon" class="method-icon"></ion-icon>
+          <div class="method-info">
+            <div class="method-name">{{ method.name }}</div>
+            <div class="method-description">{{ method.description }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Info -->
+    <div class="security-info">
+      <ion-icon name="shield-checkmark" class="security-icon"></ion-icon>
+      <div class="security-text">
+        <strong>100% Secure Payment</strong>
+        <p>Your payment is secured by Razorpay with bank-level security</p>
+      </div>
+    </div>
+
+    <!-- Auto-Capture Info -->
+    <div class="auto-capture-info">
+      <ion-icon name="flash" class="auto-capture-icon"></ion-icon>
+      <div class="auto-capture-text">
+        <strong>Instant Payment Processing</strong>
+        <p>{{ getAutoCaptureInfo() }}</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button 
+        expand="block" 
+        size="large" 
+        (click)="proceedToPay()" 
+        [disabled]="isProcessing || !selectedPlan"
+        class="pay-button">
+        <ion-spinner *ngIf="isProcessing" slot="start"></ion-spinner>
+        <span *ngIf="!isProcessing">
+          Pay {{ selectedPlan ? formatAmount(selectedPlan.amount) : '' }} Securely
+        </span>
+        <span *ngIf="isProcessing">Processing...</span>
+      </ion-button>
+      
+      <!-- Test Payment Button (for debugging) -->
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        size="large" 
+        (click)="testPayment()"
+        [disabled]="isProcessing"
+        class="test-button">
+        ⚡ Test Auto-Capture (₹1)
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        fill="clear" 
+        size="large" 
+        (click)="closeModal()"
+        [disabled]="isProcessing"
+        class="cancel-button">
+        Cancel
+      </ion-button>
+    </div>
+
+    <!-- Terms & Conditions -->
+    <div class="terms">
+      <p>By proceeding, you agree to our <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></p>
+    </div>
+
+  </div>
+</ion-content>

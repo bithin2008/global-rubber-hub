@@ -1,0 +1,404 @@
+.payment-modal {
+  --background: #f8fafc;
+}
+
+.modal-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 25px;
+  
+  h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a202c;
+  }
+  
+  p {
+    margin: 0;
+    color: #64748b;
+    font-size: 16px;
+  }
+}
+
+.plans-grid {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 25px;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.plan-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
+  &:hover {
+    border-color: #2dd36f;
+    box-shadow: 0 4px 12px rgba(45, 211, 111, 0.1);
+  }
+  
+  &.selected {
+    border-color: #2dd36f;
+    background: linear-gradient(135deg, rgba(45, 211, 111, 0.05) 0%, rgba(45, 211, 111, 0.02) 100%);
+    box-shadow: 0 4px 20px rgba(45, 211, 111, 0.15);
+  }
+  
+  &.popular {
+    border-color: #f59e0b;
+    
+    &.selected {
+      border-color: #2dd36f;
+    }
+  }
+}
+
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+.plan-header {
+  margin-bottom: 15px;
+  
+  h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a202c;
+  }
+  
+  .plan-description {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.4;
+  }
+}
+
+.pricing {
+  margin-bottom: 20px;
+  
+  .current-price {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2dd36f;
+    line-height: 1;
+    
+    .duration {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 400;
+    }
+  }
+  
+  .original-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    
+    .crossed-price {
+      text-decoration: line-through;
+      color: #94a3b8;
+      font-size: 16px;
+    }
+    
+    .discount {
+      background: #ef4444;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+  }
+  
+  .savings {
+    color: #16a34a;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+}
+
+.features {
+  .feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #374151;
+    
+    .check-icon {
+      color: #2dd36f;
+      margin-right: 8px;
+      font-size: 16px;
+    }
+  }
+  
+  .more-features {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 5px;
+  }
+}
+
+.selection-indicator {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  
+  ion-icon {
+    font-size: 24px;
+    color: #2dd36f;
+  }
+}
+
+.selected-plan-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-left: 4px solid #2dd36f;
+  
+  h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+    color: #1a202c;
+  }
+  
+  .summary-details {
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      
+      span:first-child {
+        color: #64748b;
+      }
+      
+      span:last-child {
+        font-weight: 600;
+        color: #1a202c;
+        
+        &.amount {
+          color: #2dd36f;
+          font-size: 16px;
+        }
+        
+        &.savings {
+          color: #16a34a;
+        }
+      }
+    }
+  }
+}
+
+.payment-methods-section {
+  margin-bottom: 25px;
+  
+  h3 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    color: #1a202c;
+  }
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  
+  .method-icon {
+    font-size: 20px;
+    color: #2dd36f;
+    margin-right: 12px;
+  }
+  
+  .method-info {
+    .method-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 2px;
+    }
+    
+    .method-description {
+      font-size: 12px;
+      color: #64748b;
+    }
+  }
+}
+
+.security-info {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 15px;
+  
+  .security-icon {
+    font-size: 24px;
+    color: #2dd36f;
+    margin-right: 15px;
+  }
+  
+  .security-text {
+    strong {
+      color: #1a202c;
+      font-size: 14px;
+    }
+    
+    p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+  }
+}
+
+.auto-capture-info {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(45, 211, 111, 0.05) 0%, rgba(45, 211, 111, 0.02) 100%);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(45, 211, 111, 0.2);
+  margin-bottom: 25px;
+  
+  .auto-capture-icon {
+    font-size: 24px;
+    color: #f59e0b;
+    margin-right: 15px;
+  }
+  
+  .auto-capture-text {
+    strong {
+      color: #1a202c;
+      font-size: 14px;
+    }
+    
+    p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+  }
+}
+
+.action-buttons {
+  margin-bottom: 20px;
+  
+  .pay-button {
+    --background: linear-gradient(135deg, #2dd36f 0%, #16a34a 100%);
+    --background-hover: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    --color: white;
+    font-weight: 600;
+    height: 50px;
+    margin-bottom: 12px;
+    
+    ion-spinner {
+      margin-right: 8px;
+    }
+  }
+  
+  .cancel-button {
+    --color: #64748b;
+    height: 45px;
+  }
+}
+
+.terms {
+  text-align: center;
+  
+  p {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+    
+    a {
+      color: #2dd36f;
+      text-decoration: none;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-container {
+    padding: 15px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .plan-card {
+    padding: 15px;
+  }
+  
+  .pricing .current-price {
+    font-size: 24px;
+  }
+}
+
+/* Animation for plan selection */
+.plan-card {
+  transform: scale(1);
+  
+  &.selected {
+    animation: selectPlan 0.3s ease;
+  }
+}
+
+@keyframes selectPlan {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}

@@ -37,7 +37,7 @@
           <h3>Mandi Pro</h3>
           <p>No Active Plan</p>
         </ion-label>
-        <ion-button class="btn no-style subscribe">Subscribe</ion-button>
+        <ion-button class="btn no-style subscribe" (click)="onMandiProSubscribe()">Subscribe</ion-button>
       </ion-item>
 
       <ion-item class="account-row no-style accountItem">
@@ -46,7 +46,7 @@
           <h3>Trusted Seller</h3>
           <p>No Active Plan</p>
         </ion-label>
-        <ion-button class="btn no-style subscribe">Subscribe</ion-button>
+        <ion-button class="btn no-style subscribe" (click)="onTrustedSellerSubscribe()">Subscribe</ion-button>
       </ion-item>
       
     </ion-list>
@@ -136,6 +136,9 @@
         <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>
     </ion-list>
+    <!-- Debug Test Button (Temporary) -->
+    <ion-button class="btn btn-blue no-style" expand="block" type="button" (click)="testRazorpayDirect()">🧪 Test Razorpay Direct (₹1)</ion-button>
+    
     <ion-button class="btn btn-grn no-style logout" expand="block" type="button" (click)="confirmLogout()"><img class="btntextimg" src="assets/img/icons/chip_extraction.svg">Logout</ion-button>
 
 
