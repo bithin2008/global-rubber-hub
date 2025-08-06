@@ -99,9 +99,17 @@ export class DashboardPage implements OnInit, AfterViewInit {
     this.pageTitleService.setPageTitle('Dashboard');
     this.subscription.add(
       this.profileService.userName$.subscribe((data) => {
-        this.profileName = data.split(' ')[0];
+        if (data && typeof data === 'string' && data.trim() !== '') {
+          this.profileName = data.split(' ')[0];
+        } else {
+          this.profileName = 'User';
+        }
       })
     );
+  }
+
+  goToLiveBids(){
+    this.router.navigate(['/item-list']);
   }
 
   ngAfterViewInit() {
@@ -124,14 +132,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
     }, 200);
   }
 
-  // Method to manually start autoplay (for testing)
-  startAutoplay() {
-    const swiperEl = document.querySelector('swiper-container');
-    if (swiperEl && swiperEl.swiper && swiperEl.swiper.autoplay) {
-      swiperEl.swiper.autoplay.start();
-      console.log('🚀 Manual autoplay started');
-    }
-  }
+
 
 
 

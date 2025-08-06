@@ -45,8 +45,8 @@ export class RazorpayService {
       id: 'mandi_pro_monthly',
       name: 'Mandi Pro Monthly',
       description: 'Professional monthly subscription',
-      amount: 99900, // ₹999 in paise
-      originalPrice: 129900, // ₹1299
+      amount: 999, // ₹999 in paise
+      originalPrice: 1299, // ₹1299
       discount: 23,
       duration: '1 Month',
       features: [
@@ -63,8 +63,8 @@ export class RazorpayService {
       id: 'mandi_pro_yearly',
       name: 'Mandi Pro Yearly',
       description: 'Professional yearly subscription with best value',
-      amount: 999900, // ₹9999 in paise
-      originalPrice: 1559900, // ₹15599
+      amount: 554, // ₹9999 in paise
+      originalPrice: 649, // ₹15599
       discount: 36,
       duration: '12 Months',
       features: [
@@ -81,8 +81,8 @@ export class RazorpayService {
       id: 'trusted_seller',
       name: 'Trusted Seller Badge',
       description: 'Get verified seller status',
-      amount: 49900, // ₹499 in paise
-      originalPrice: 69900, // ₹699
+      amount: 499, // ₹499 in paise
+      originalPrice: 699, // ₹699
       discount: 29,
       duration: '6 Months',
       features: [

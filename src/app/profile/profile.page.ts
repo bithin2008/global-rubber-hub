@@ -267,10 +267,12 @@ export class ProfilePage implements OnInit {
 
               this.uploadedFiles.push(fileObj);
 
-              // Update form control
-              this.profileForm.patchValue({
-                id_proof_image: this.uploadedFiles.map(f => f.file)
-              });
+                             // Update form control
+               if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+                 this.profileForm.patchValue({
+                   id_proof_image: this.uploadedFiles.map(f => f.file)
+                 });
+               }
             }
           }, 'image/png');
         };
@@ -302,10 +304,12 @@ export class ProfilePage implements OnInit {
   }
 
   removeFile(index: number) {
-    this.uploadedFiles.splice(index, 1);
-    this.profileForm.patchValue({
-      id_proof_image: this.uploadedFiles.map(f => f.file)
-    });
+    if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+      this.uploadedFiles.splice(index, 1);
+      this.profileForm.patchValue({
+        id_proof_image: this.uploadedFiles.map(f => f.file)
+      });
+    }
   }
 
   formatFileSize(bytes: number): string {
@@ -568,7 +572,9 @@ export class ProfilePage implements OnInit {
     formData.append('state', this.f['state'].value);
 
     // Append all files
-    formData.append(`id_proof_image`, this.uploadedFiles[0].file);
+    if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+      formData.append(`id_proof_image`, this.uploadedFiles[0].file);
+    }
 
     this.enableLoader = true;
     let url = 'user/profile-update';
