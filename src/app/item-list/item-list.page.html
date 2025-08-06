@@ -7,8 +7,7 @@
         <div class="top">
           <ion-title class="itemTitle">Items</ion-title>
           <div class="filterItem">
-            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title="">
-              Search</ion-button>
+            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
             <ion-item class="no-style">
               <div class="custom-inner selectId">
                 <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
@@ -38,12 +37,12 @@
     <ion-card class="rubber-card">
 
       <div *ngIf="itemList.length>0">
-        <ion-card-content *ngFor="let item of itemList; let i= index">
+        <ion-card-content class="rubber-card-item" *ngFor="let item of itemList; let i= index">
           <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
             centered-slides="true" space-between="12" style="overflow: visible;" class="itemSlider"
             id="itemsliderimage">
             <swiper-slide class=" slide1" *ngFor="let media of item.item_image">
-              <div class="content">
+              <div class="content myitemImg">
                 <img [src]="media" alt="" title="">
               </div>
             </swiper-slide>

@@ -8,6 +8,7 @@
        
        <ion-item class="no-style buttonRdo">
         <h3>I want to</h3>
+
         <ion-radio-group formControlName="item_listed_for">
           <div class="button-select-container">
             <label class="button-option">
@@ -79,26 +80,31 @@
         <span *ngIf="f['quantity'].errors['min']">Quantity must be greater than 0</span>
       </div>
 
-      <ion-item class="no-style buttonRdo">
-        <h3>Unit of Measurement *</h3>
-        <ion-radio-group formControlName="uom_id">
-          <div class="button-select-container">
-            <label class="button-option">
-              <ion-radio value="2" class="custom-radio"></ion-radio>
-              <span>KGS</span>
-            </label>
+      <div class="no-style buttonRdo uom">
+        <div class="title">
+          <h3>Unit of Measurement *</h3>
+        </div>
+        <div class="radioWrap">
 
-            <label class="button-option">
-              <ion-radio value="23" class="custom-radio"></ion-radio>
-              <span>QUINTAL</span>
-            </label>
-            <label class="button-option">
-              <ion-radio value="27" class="custom-radio"></ion-radio>
-              <span>TON</span>
-            </label>
-          </div>
-        </ion-radio-group>
-      </ion-item>
+          <ion-radio-group formControlName="uom_id">
+            <div class="button-select-container">
+              <label class="button-option">
+                <ion-radio value="2" class="custom-radio"></ion-radio>
+                <span>KGS</span>
+              </label>
+  
+              <label class="button-option">
+                <ion-radio value="23" class="custom-radio"></ion-radio>
+                <span>QUINTAL</span>
+              </label>
+              <label class="button-option">
+                <ion-radio value="27" class="custom-radio"></ion-radio>
+                <span>TON</span>
+              </label>
+            </div>
+          </ion-radio-group>
+        </div>
+      </div>
       <div class="validation-error" *ngIf="submitted && f['uom_id'].errors">
         <span *ngIf="f['uom_id'].errors['required']">Please select unit of measurement</span>
       </div>

@@ -488,6 +488,7 @@
     @include font-size(14);
     --padding-start: 0.875rem;
     --padding-end: 0.875rem;
+    min-height: auto
   }
 
   ion-textarea.form-field {
@@ -861,10 +862,7 @@ ion-item.no-style {
 }
 
 .rubber-card {
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-
+  
   ion-img {
     height: 160px;
     object-fit: cover;
@@ -992,12 +990,26 @@ ion-item.no-style {
     .itemTitle {
       position: static;
       text-align: left;
+      font-size: 18px;
+      @media(max-width:375px){
+        font-size: 15px;
+      }
 
     }
 
     ion-card.rubber-card {
-      padding: 14px;
-      background-color: #EFF0F6;
+      box-shadow: none;
+      .rubber-card-item{
+        padding: 14px;
+        background-color: #EFF0F6;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+
+        &:not(:last-child){
+          margin-bottom: 15px !important;
+        }
+      }
     }
   }
 
@@ -1024,9 +1036,9 @@ ion-item.no-style {
         min-height: auto;
         border-radius: 10px;
 
-        img {
-          margin-right: 7px
-        }
+        // img {
+        //   margin-right: 7px
+        // }
       }
 
       .custom-inner {
@@ -1085,17 +1097,40 @@ ion-card-content {
       font-size: 14px;
       font-weight: 500;
       margin-right: 10px;
-      margin-top: 0;
-      margin-bottom: 0;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
 
     &.buttonRdo {
       display: flex;
+      flex-direction: row;
       justify-content: flex-start;
       align-items: center;
+      flex-wrap: wrap;
+      
 
     }
   }
+  .uom{
+    margin-bottom: 20px;
+    .title{
+      margin-right: 10px;
+    }
+    display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+      @media(max-width: 400px){
+        display: block;
+      }
+      .button-select-container{
+        @media(max-width: 400px){
+          justify-content: flex-start;
+        }
+      }
+  }
+   
 
   .custom-inner {
     position: relative;
@@ -1303,7 +1338,7 @@ ion-card-content {
   padding: 16px;
   background: #f7f7f7;
   --padding-start: 20px;
-  --padding-end: 20px;
+  --padding-end: 20px;  
   --padding-top: 20px;
   --padding-bottom: 20px;
   .compIcon{
@@ -1318,6 +1353,11 @@ ion-card-content {
       height: 100%;
       object-fit: cover;
       object-position: center;
+    }
+    @media(max-width: 375px){
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
     }
   }
 
@@ -1341,7 +1381,7 @@ ion-card-content {
     }
 
     p {
-      font-size: 13px;
+      font-size: 12px;
       margin: 2px 0 0;
     }
   }
@@ -1471,6 +1511,10 @@ ion-card-content {
       p {
         font-size: 12px;
         margin-top: 20px;
+        @media(max-width: 375px){
+          font-size: 11px;
+          margin-top: 10px;
+        }
       }
 
       h3 {
@@ -1478,6 +1522,9 @@ ion-card-content {
         font-weight: bold;
         color: #03962A;
         margin-top: 5px;
+        @media(max-width:375px){
+          font-size: 15px;
+        }
       }
     }
 
@@ -1495,6 +1542,9 @@ ion-card-content {
       .title{
         color: #fff;
         margin-bottom: 10px;
+        @media(max-width: 375px){
+          font-size: 14px;
+        }
       }
 
       .logo-group {
@@ -1505,14 +1555,14 @@ ion-card-content {
           position: relative;
           float: left;
           &:not(:first-child){
-            margin-left: -20px;
+            margin-left: -12%;
           }
         }
-        // @for $i from 2 through 10 {
-        //   figure:nth-child(#{$i}) {
-        //     margin-left: -#{($i - 1) * 30}px;
-        //   }
-        // }
+       .compIcon{
+        width: 34%;
+        
+        
+       }
       }
 
       ion-button.see-more-btn {
@@ -1536,7 +1586,7 @@ ion-card-content {
 
     .other-list {
       border: 1px solid #BCBCBC;
-      padding: 18px !important;
+      padding: 15px !important;
       border-radius: 10px;
       ion-item {
         &:not(:last-child){
@@ -1558,13 +1608,21 @@ ion-card-content {
             object-fit: cover;
             object-position: center;
           }
+          @media(max-width: 375px){
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+          }
         }
 
         ion-label {
           h4 {
             font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            @media(max-width: 375px){
+              font-size: 13px;
+            }
           }
 
           p {
@@ -1572,6 +1630,9 @@ ion-card-content {
             margin: 0;
             color: #676767;
             font-weight: 500;
+            @media(max-width: 375px){
+              font-size: 12px;
+            }
 
           }
 
@@ -1726,4 +1787,15 @@ ion-segment-button {
 .nsm7Bb-HzV7m-LgbsSe{
   padding: 15px 12px !important;
   height: 49px !important;
+}
+
+.myitemImg{
+  height: 151px;
+  overflow: hidden;
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
 }
