@@ -7,8 +7,8 @@
         <div class="top">
           <!-- <ion-title class="itemTitle">Items</ion-title> -->
           <div class="filterItem">
-            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title="">
-              Search</ion-button>
+            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt=""
+                title=""></ion-button>
             <ion-item class="no-style">
               <div class="custom-inner selectId">
                 <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
@@ -36,77 +36,77 @@
       </form>
     </div>
     <ng-container *ngIf="itemList.length>0">
-    <ion-card class="rubber-card" *ngFor="let item of itemList; let i= index">
+      <ion-card class="rubber-card" *ngFor="let item of itemList; let i= index">
 
-      
-        <ion-card-content >
-          <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
-            centered-slides="true" space-between="12" style="overflow: visible;" class="itemSlider"
-            id="itemsliderimage">
-            <swiper-slide class=" slide1" *ngFor="let media of item.item_image">
-              <div class="content">
-                <img [src]="media" alt="" title="">
-              </div>
-            </swiper-slide>
+        <div *ngIf="itemList.length>0">
+          <ion-card-content class="rubber-card-item" *ngFor="let item of itemList; let i= index">
+            <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
+              centered-slides="true" space-between="12" style="overflow: visible;" class="itemSlider"
+              id="itemsliderimage">
+              <swiper-slide class=" slide1" *ngFor="let media of item.item_image">
+                <div class="content myitemImg">
+                  <img [src]="media" alt="" title="">
+                </div>
+              </swiper-slide>
 
-          </swiper-container>
-          <div class="title-section">
-            <h2>{{item.item_name}} for <span *ngIf="item.item_listed_for == 1">Sale</span> <span
-                *ngIf="item.item_listed_for == 2">Buy</span> in {{item.city}}</h2>
-            <div class="date-location">
-              <div class="location" >
-                <img src="assets/img/icons/location_on_color.svg" alt="" title="">
-                <span *ngIf="item.city && item.state">{{item.city}}, {{item.state}}</span>
-                <span *ngIf="!item.city || !item.state">N/A</span>
-              </div>
-              <div class="date_wrap">
-                <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on">
-                    {{item.updated_on | date:'dd.MM.yyyy'}}</span></span>
+            </swiper-container>
+            <div class="title-section">
+              <h2>{{item.item_name}} for <span *ngIf="item.item_listed_for == 1">Sale</span> <span
+                  *ngIf="item.item_listed_for == 2">Buy</span> in {{item.city}}</h2>
+              <div class="date-location">
+                <div class="location">
+                  <img src="assets/img/icons/location_on_color.svg" alt="" title="">
+                  <span *ngIf="item.city && item.state">{{item.city}}, {{item.state}}</span>
+                  <span *ngIf="!item.city || !item.state">N/A</span>
+                </div>
+                <div class="date_wrap">
+                  <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on">
+                      {{item.updated_on | date:'dd.MM.yyyy'}}</span></span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="price-volume">
-            <div class="item">
-              <label>Selling Price</label>
-              <strong>{{item.price}}/{{getUOMText(item.uom_id)}}</strong>
-            </div>
-            <div class="item">
-              <label>Trade Volume</label>
-              <strong>{{item.quantity}} {{getUOMText(item.uom_id)}}</strong>
-            </div>
-          </div>
-
-          <div class="footer">
-            <div class="company">
-              <div class="distributor">
-                <img [src]="item.user_image" alt="" title="">
+            <div class="price-volume">
+              <div class="item">
+                <label>Selling Price</label>
+                <strong>{{item.price}}/{{getUOMText(item.uom_id)}}</strong>
               </div>
-              <div class="company-info">
-                <h4 *ngIf="item.company_name">{{item.company_name}}</h4>
-                <h4 *ngIf="!item.company_name">{{item.full_name}}</h4>
-                <span *ngIf="item.item_listed_for == 1">Distributor</span>
-                <span *ngIf="item.item_listed_for == 2">Buyer</span>
+              <div class="item">
+                <label>Trade Volume</label>
+                <strong>{{item.quantity}} {{getUOMText(item.uom_id)}}</strong>
               </div>
             </div>
-            <ion-button class="btn no-style bid-now" (click)="openBidModal(item)">Bid Now</ion-button>
-          </div>
-        </ion-card-content>
-        <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)" *ngIf="totalCount!=itemList.length">
-          <ion-infinite-scroll-content loadingSpinner="bubbles">
-          </ion-infinite-scroll-content>
-        </ion-infinite-scroll>
-     
-      
-    </ion-card>
-  </ng-container>
-    
+
+            <div class="footer">
+              <div class="company">
+                <div class="distributor">
+                  <img [src]="item.user_image" alt="" title="">
+                </div>
+                <div class="company-info">
+                  <h4 *ngIf="item.company_name">{{item.company_name}}</h4>
+                  <h4 *ngIf="!item.company_name">{{item.full_name}}</h4>
+                  <span *ngIf="item.item_listed_for == 1">Distributor</span>
+                  <span *ngIf="item.item_listed_for == 2">Buyer</span>
+                </div>
+              </div>
+              <ion-button class="btn no-style bid-now" (click)="openBidModal(item)">Bid Now</ion-button>
+            </div>
+          </ion-card-content>
+          <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)" *ngIf="totalCount!=itemList.length">
+            <ion-infinite-scroll-content loadingSpinner="bubbles">
+            </ion-infinite-scroll-content>
+          </ion-infinite-scroll>
+
+
+      </ion-card>
+    </ng-container>
+
     <div class="app-customers" *ngIf="itemList.length==0 && showNoRecord">
-        <p class="ion-text-center mt-5">-- No data found --</p>
-      </div>
-    
+      <p class="ion-text-center mt-5">-- No data found --</p>
+    </div>
+
   </div>
- 
+
 </ion-content>
 
 <app-footer></app-footer>
