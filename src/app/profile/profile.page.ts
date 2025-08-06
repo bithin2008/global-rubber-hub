@@ -8,9 +8,26 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 // Cordova Camera plugin
 declare var Camera: any;
 declare var navigator: any;
+
+// Camera constants fallback
+const CAMERA_OPTIONS = {
+  PictureSourceType: {
+    CAMERA: 1,
+    PHOTOLIBRARY: 0
+  },
+  EncodingType: {
+    JPEG: 0,
+    PNG: 1
+  },
+  DestinationType: {
+    FILE_URI: 1,
+    DATA_URL: 0
+  }
+};
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
+import { PageTitleService } from '../services/page-title.service';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -36,10 +53,12 @@ export class ProfilePage implements OnInit {
     private commonService: CommonService,
     public modalController: ModalController,
     private actionSheetController: ActionSheetController,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private pageTitleService: PageTitleService
   ) { }
 
   ngOnInit() {
+    this.pageTitleService.setPageTitle('Profile');
     this.getProfileData()
     this.loadCountries()
     this.profileForm = this.formBuilder.group({
@@ -327,116 +346,194 @@ export class ProfilePage implements OnInit {
 
   async takePicture(source: string) {
     try {
-      // Use Cordova Camera plugin
-      const sourceType = source === 'camera' ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY;
+      // Check if running on device and camera plugin is available
+      if (!this.isCameraAvailable()) {
+        // Fallback to file input for browsers/testing
+        this.openFileInput();
+        return;
+      }
+
+      // Use Camera constants with fallback
+      const cameraConstants = (typeof Camera !== 'undefined') ? Camera : CAMERA_OPTIONS;
+      const sourceType = source === 'camera' ? cameraConstants.PictureSourceType.CAMERA : cameraConstants.PictureSourceType.PHOTOLIBRARY;
+      
       const options = {
         quality: 90,
         allowEdit: true,
-        encodingType: Camera.EncodingType.JPEG,
+        encodingType: cameraConstants.EncodingType.JPEG,
         targetWidth: 1000,
         targetHeight: 1000,
         sourceType: sourceType,
-        destinationType: Camera.DestinationType.FILE_URI
+        destinationType: cameraConstants.DestinationType.FILE_URI,
+        correctOrientation: true
       };
       
       const imageURI = await new Promise<string>((resolve, reject) => {
         navigator.camera.getPicture(
-          (imageURI: string) => resolve(imageURI),
-          (error: any) => reject(error),
+          (imageURI: string) => {
+            console.log('Camera success:', imageURI);
+            resolve(imageURI);
+          },
+          (error: any) => {
+            console.error('Camera error:', error);
+            reject(new Error(`Camera failed: ${error}`));
+          },
           options
         );
       });
 
       if (imageURI) {
-        // Store the image URI directly in the variable
-        this.profileImage = imageURI as string;
-        this.showPlaceholder = false; // Hide placeholder
-        // Update the service immediately so header shows the new image
-        this.profileService.updateProfileImage(imageURI);
+        await this.processImageURI(imageURI);
+      } else {
+        throw new Error('No image URI received from camera');
+      }
+    } catch (error: any) {
+      console.error('Camera error:', error);
+      let errorMessage = 'Failed to capture image.';
+      
+      if (error.message && error.message.includes('cancelled')) {
+        errorMessage = 'Image capture was cancelled.';
+      } else if (error.message && error.message.includes('permission')) {
+        errorMessage = 'Camera permission denied. Please allow camera access.';
+      } else if (error.message && error.message.includes('not available')) {
+        errorMessage = 'Camera is not available on this device.';
+      }
+      
+      this.showToast('error', errorMessage, '', 4000, '');
+    }
+  }
 
-        // Convert to PNG format using canvas
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
+  private isCameraAvailable(): boolean {
+    // Check if running on device (Cordova/PhoneGap environment)
+    return !!(window as any).cordova && 
+           typeof navigator !== 'undefined' && 
+           navigator.camera && 
+           typeof navigator.camera.getPicture === 'function';
+  }
 
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx?.drawImage(img, 0, 0);
+  private openFileInput(): void {
+    // Create a hidden file input for fallback
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    
+    fileInput.addEventListener('change', (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.processImageURI(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+      document.body.removeChild(fileInput);
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+  }
 
-          canvas.toBlob((pngBlob) => {
-            if (pngBlob) {
-              // Check file size (2MB = 2 * 1024 * 1024 bytes)
-              const maxSize = 2 * 1024 * 1024; // 2MB
-              if (pngBlob.size > maxSize) {
-                this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
-                // Reset the image display
-                this.profileImage = '';
-                this.showPlaceholder = true;
-                this.profileService.updateProfileImage('');
-                return;
-              }
+  private async processImageURI(imageURI: string): Promise<void> {
+    try {
+      // Store the image URI directly in the variable
+      this.profileImage = imageURI;
+      this.showPlaceholder = false;
+      // Update the service immediately so header shows the new image
+      this.profileService.updateProfileImage(imageURI);
 
-              const file = new File([pngBlob], 'profile-photo.png', { type: 'image/png' });
+      // Convert to PNG format using canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
 
-              // Upload the image to server using FormData
-              let url = 'user/update-profile-image';
-              const formData = new FormData();
-              formData.append('profile_image', file);
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
 
-              this.commonService.filepost(url, formData).subscribe(
-                (res: any) => {
-                  this.enableLoader = false;
-                  console.log('Response type:', typeof res);
-                  console.log('Response:', res);
+        canvas.toBlob((pngBlob) => {
+          if (pngBlob) {
+            // Check file size (2MB = 2 * 1024 * 1024 bytes)
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (pngBlob.size > maxSize) {
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
+              // Reset the image display
+              this.profileImage = '';
+              this.showPlaceholder = true;
+              this.profileService.updateProfileImage('');
+              return;
+            }
 
-                  // Handle different response types
-                  let responseData;
-                  if (res instanceof Blob) {
-                    // If response is a blob, try to parse it as JSON
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      try {
-                        responseData = JSON.parse(reader.result as string);
-                        if (responseData.code == 200) {
-                          this.showToast('success', responseData.message, '', 2500, '');
-                        } else {
-                          this.showToast('error', responseData.message, '', 2500, '');
-                          this.getProfileData()
-                        }
-                      } catch (e) {
-                        console.error('Error parsing blob response:', e);
-                        this.showToast('error', 'Invalid response format', '', 2500, '');
+            const file = new File([pngBlob], 'profile-photo.png', { type: 'image/png' });
+
+            // Upload the image to server using FormData
+            let url = 'user/update-profile-image';
+            const formData = new FormData();
+            formData.append('profile_image', file);
+
+            this.commonService.filepost(url, formData).subscribe(
+              (res: any) => {
+                this.enableLoader = false;
+                console.log('Response type:', typeof res);
+                console.log('Response:', res);
+
+                // Handle different response types
+                let responseData;
+                if (res instanceof Blob) {
+                  // If response is a blob, try to parse it as JSON
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    try {
+                      responseData = JSON.parse(reader.result as string);
+                      if (responseData.code == 200) {
+                        this.showToast('success', responseData.message, '', 2500, '');
+                      } else {
+                        this.showToast('error', responseData.message, '', 2500, '');
                         this.getProfileData()
                       }
-                    };
-                    reader.readAsText(res);
-                  } else {
-                    // Handle regular JSON response
-                    responseData = res;
-                    if (responseData.code == 200) {
-                      this.showToast('success', responseData.message, '', 2500, '');
-                    } else {
-                      this.showToast('error', responseData.message, '', 2500, '');
+                    } catch (e) {
+                      console.error('Error parsing blob response:', e);
+                      this.showToast('error', 'Invalid response format', '', 2500, '');
+                      this.getProfileData()
                     }
-                    this.getProfileData()
+                  };
+                  reader.readAsText(res);
+                } else {
+                  // Handle regular JSON response
+                  responseData = res;
+                  if (responseData.code == 200) {
+                    this.showToast('success', responseData.message, '', 2500, '');
+                  } else {
+                    this.showToast('error', responseData.message, '', 2500, '');
                   }
-                },
-                (error) => {
-                  this.enableLoader = false;
-                  console.log('error ts: ', error.error);
-                  this.showToast('error', 'Upload failed', '', 2500, '');
                   this.getProfileData()
                 }
-              );
-            }
-          }, 'image/png');
-        };
-        img.src = imageURI;
-      }
-    } catch (error) {
-      console.error('Error taking picture:', error);
-      this.showToast('error', 'Failed to capture image', '', 3000, '');
+              },
+              (error) => {
+                this.enableLoader = false;
+                console.log('error ts: ', error.error);
+                this.showToast('error', 'Upload failed', '', 2500, '');
+                this.getProfileData()
+              }
+            );
+          }
+        }, 'image/png');
+      };
+
+      img.onerror = () => {
+        console.error('Error loading image');
+        this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
+        // Reset the image display
+        this.profileImage = '';
+        this.showPlaceholder = true;
+        this.profileService.updateProfileImage('');
+      };
+
+      img.src = imageURI;
+    } catch (error: any) {
+      console.error('Image processing error:', error);
+      this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
     }
   }
 

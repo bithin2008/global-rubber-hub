@@ -28,6 +28,7 @@ import { Router } from '@angular/router';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { PageTitleService } from '../services/page-title.service';
 
 @Component({
   selector: 'app-item-add',
@@ -73,9 +74,11 @@ export class ItemAddPage implements OnInit {
     private toastService: ToastService,
     private router: Router,
     public modalController: ModalController,
+    private pageTitleService: PageTitleService
   ) { }
 
   ngOnInit() {
+    this.pageTitleService.setPageTitle('Add Item');
     this.initForm();
   }
 

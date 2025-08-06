@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ProfileService } from '../../services/profile.service';
+import { PageTitleService } from '../../services/page-title.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -15,11 +16,13 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   profileImage: string = '';
   showPlaceholder: boolean = true;
+  pageTitle: string = 'Global Rubber Hub';
   private subscription: Subscription = new Subscription();
 
   constructor(
     private router: Router,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private pageTitleService: PageTitleService
   ) { }
 
   ngOnInit() {
@@ -28,6 +31,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.profileService.profileImage$.subscribe((imageUrl) => {
         this.profileImage = imageUrl;
         this.showPlaceholder = !imageUrl;
+      })
+    );
+
+    // Subscribe to page title changes
+    this.subscription.add(
+      this.pageTitleService.pageTitle$.subscribe((title) => {
+        this.pageTitle = title;
       })
     );
   }
@@ -41,7 +51,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToProfile() {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/account']);
   }
 
   onImageError() {

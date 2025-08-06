@@ -8,6 +8,7 @@ import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { PageTitleService } from '../services/page-title.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,9 +20,14 @@ import { FooterComponent } from '../shared/footer/footer.component';
 export class DashboardPage implements OnInit {
   public enableLoader: boolean = false;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private pageTitleService: PageTitleService
+  ) { }
 
   ngOnInit() {
+    // Set the page title when the page loads
+    this.pageTitleService.setPageTitle('Dashboard');
   }
 
 

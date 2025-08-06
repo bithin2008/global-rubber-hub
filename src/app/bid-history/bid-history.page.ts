@@ -11,6 +11,7 @@ import { register } from 'swiper/element/bundle';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { PageTitleService } from '../services/page-title.service';
 
 @Component({
   selector: 'app-bid-history',
@@ -40,12 +41,14 @@ export class BidHistoryPage implements OnInit {
     private commonService: CommonService,
     private popoverController: PopoverController,
     private authenticationService: AuthService,
+    private pageTitleService: PageTitleService
     // private sharedService: SharedService,
   ) { 
     this.getItemList();
   }
 
   ngOnInit() {
+    this.pageTitleService.setPageTitle('Bid History');
   }
 
   getItemList() {

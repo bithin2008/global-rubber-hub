@@ -12,6 +12,7 @@ import { register } from 'swiper/element/bundle';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { PageTitleService } from '../services/page-title.service';
 
 @Component({
   selector: 'app-item-list',
@@ -42,6 +43,7 @@ export class ItemListPage implements OnInit {
     private commonService: CommonService,
     private popoverController: PopoverController,
     private authenticationService: AuthService,
+    private pageTitleService: PageTitleService
     // private sharedService: SharedService,
   ) {
     // Register Swiper custom elements
@@ -64,11 +66,10 @@ export class ItemListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.pageTitleService.setPageTitle('Live Bid');
   }
 
-  goToAddItem(){
-    this.router.navigate(['/item-add']);
-  }
+ 
 
   getItemList() {
     let data = {

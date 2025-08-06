@@ -12,6 +12,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
 import { Subscription } from 'rxjs';
+import { PageTitleService } from '../services/page-title.service';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -33,9 +34,11 @@ export class AccountPage implements OnInit, OnDestroy {
     public modalController: ModalController,
      private alertController: AlertController,
      private location: Location,
+     private pageTitleService: PageTitleService,
      private profileService: ProfileService) { }
 
   ngOnInit() {
+    this.pageTitleService.setPageTitle('Account');
     this.getProfileData();
     
     // Subscribe to profile image changes from the service

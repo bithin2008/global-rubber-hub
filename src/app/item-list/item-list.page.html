@@ -5,7 +5,7 @@
     <div class="filter">
       <form class="form">
         <div class="top">
-          <ion-title class="itemTitle">Items</ion-title>
+          <!-- <ion-title class="itemTitle">Items</ion-title> -->
           <div class="filterItem">
             <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title="">
               Search</ion-button>
@@ -35,10 +35,11 @@
         </div>
       </form>
     </div>
-    <ion-card class="rubber-card">
+    <ng-container *ngIf="itemList.length>0">
+    <ion-card class="rubber-card" *ngFor="let item of itemList; let i= index">
 
-      <div *ngIf="itemList.length>0">
-        <ion-card-content *ngFor="let item of itemList; let i= index">
+      
+        <ion-card-content >
           <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
             centered-slides="true" space-between="12" style="overflow: visible;" class="itemSlider"
             id="itemsliderimage">
@@ -95,14 +96,17 @@
           <ion-infinite-scroll-content loadingSpinner="bubbles">
           </ion-infinite-scroll-content>
         </ion-infinite-scroll>
-      </div>
-      <div class="app-customers" *ngIf="itemList.length==0 && showNoRecord">
+     
+      
+    </ion-card>
+  </ng-container>
+    
+    <div class="app-customers" *ngIf="itemList.length==0 && showNoRecord">
         <p class="ion-text-center mt-5">-- No data found --</p>
       </div>
-    </ion-card>
     
   </div>
-  <ion-button class="btn no-style addBtn" (click)="goToAddItem()"><img src="assets/img/icons/add.svg" alt="" title=""></ion-button>
+ 
 </ion-content>
 
 <app-footer></app-footer>
