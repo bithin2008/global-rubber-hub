@@ -15,7 +15,8 @@
       <div class="content">
         <ion-title class="name">{{profileDetails.full_name}}</ion-title>
         <div class="addressCall">
-            <p class="address"><img src="assets/img/icons/location_on.svg" alt="" title="">{{profileDetails.city}}, {{profileDetails.state}}</p>
+            <p class="address" *ngIf="profileDetails.city && profileDetails.state"><img src="assets/img/icons/location_on.svg" alt="" title="" >{{profileDetails.city}}, {{profileDetails.state}}</p>
+            <p class="address" *ngIf="!profileDetails.city && !profileDetails.state">N/A</p>
             <ion-button class="btn no-style"><img src="assets/img/icons/mobile.svg" alt="" title="">{{profileDetails.country_code}}{{profileDetails.phone}}</ion-button>
         </div>
         <ion-button class="btn no-style editprofile" (click)="goToEditProfile()">Edit Profile</ion-button>

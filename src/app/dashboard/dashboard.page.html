@@ -11,16 +11,22 @@
     </div>
   </div>
 
-  <!-- Market Stats -->
-  <div class="market-stats">
-    <div class="market-card up">
-      <p>Item Name</p>
-      <h2>25,195.80 <span class="change up">+113.80 (0.45%)</span></h2>
+  <!-- Market Stats Swiper -->
+  <div class="market-stats-swiper">
+    <div class="swiper-header">
+      <h4>Market Trends</h4>
+
     </div>
-    <div class="market-card down">
-      <p>Item Name</p>
-      <h2>25,195.80 <span class="change down">+113.80 (0.45%)</span></h2>
-    </div>
+    <swiper-container 
+      class="market-swiper"
+      [options]="swiperOptions">
+      <swiper-slide *ngFor="let card of marketCards" class="market-slide">
+        <div class="market-card" [ngClass]="card.direction">
+          <p>{{ card.name }}</p>
+          <h2>{{ card.price }} <span class="change" [ngClass]="card.direction">{{ card.change }} ({{ card.percentage }})</span></h2>
+        </div>
+      </swiper-slide>
+    </swiper-container>
   </div>
 
   <!-- Top Seller -->
