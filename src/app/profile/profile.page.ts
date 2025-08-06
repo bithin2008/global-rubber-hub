@@ -58,7 +58,7 @@ export class ProfilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.pageTitleService.setPageTitle('Profile');
+    this.pageTitleService.setPageTitle('Update Profile');
     this.getProfileData()
     this.loadCountries()
     this.profileForm = this.formBuilder.group({
