@@ -258,48 +258,48 @@ form ion-item.no-style {
       }
     }
     
-    .camera {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      background: #007bff;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-      transition: all 0.3s ease;
+    // .camera {
+    //   position: absolute;
+    //   bottom: 0;
+    //   right: 0;
+    //   background: #007bff;
+    //   border-radius: 50%;
+    //   width: 32px;
+    //   height: 32px;
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   cursor: pointer;
+    //   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    //   transition: all 0.3s ease;
       
-      &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-      }
+    //   &:hover {
+    //     transform: scale(1.1);
+    //     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    //   }
       
-      img {
-        width: 16px;
-        height: 16px;
-        filter: brightness(0) invert(1);
-      }
-    }
+    //   img {
+    //     width: 16px;
+    //     height: 16px;
+    //     filter: brightness(0) invert(1);
+    //   }
+    // }
   }
   
-  .right {
-    flex: 1;
+  // .right {
+  //   flex: 1;
     
-    .lgdesc {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 8px 0;
-    }
+  //   .lgdesc {
+  //     font-size: 18px;
+  //     font-weight: 600;
+  //     color: #333;
+  //     margin: 0 0 8px 0;
+  //   }
     
-    .photo-note {
-      font-size: 14px;
-      color: #666;
-      margin: 0;
-    }
-  }
+  //   .photo-note {
+  //     font-size: 14px;
+  //     color: #666;
+  //     margin: 0;
+  //   }
+  // }
 }
