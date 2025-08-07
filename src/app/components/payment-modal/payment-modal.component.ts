@@ -31,12 +31,12 @@ export class PaymentModalComponent implements OnInit {
     private modalController: ModalController,
     private razorpayService: RazorpayService,
     private commonService: CommonService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.plans = this.razorpayService.getPlans();
     this.selectedPlan = this.plans.find(plan => plan.popular) || this.plans[0];
-    
+
     // Check if Razorpay is available
     if (!this.razorpayService.isRazorpayAvailable()) {
       console.error('Razorpay not available in payment modal');
@@ -76,63 +76,79 @@ export class PaymentModalComponent implements OnInit {
       const orderId = await this.generateOrderId(this.selectedPlan.amount);
       console.log('✅ Order ID generated:', orderId);
 
-      // let url = "users/subscription";
-      // this._commonService.post(url, data).subscribe(
-      //   (response) => {
-      //     this.enableLoader = false;
-      //     console.log("response", response);
-      //     // this.loading.dismiss();
-      //     if (response.status == 1) {
-  
-      //       var options = {
-      //         description: `Subcrption for ${object.duration} months`,
-      //         image: "https://chhatrasathi.in:6002/razorpay-chhatrasathi-icon.png",
-      //         currency: "INR", // your 3 letter currency code
-      //         key: this.settingsObj.key_id, // your Key Id from Razorpay dashboard  //rzp_test_a3mI6L2qtvBXSF   //rzp_live_j32lzE3Haz8pZd
-      //         order_id: response.result.orderId,
-      //         amount: response.result.amount, // Payment amount in smallest denomiation e.g. cents for USD
-      //         name: "CHHATRASATHI",
-      //         prefill: {
-      //           email: localStorage.getItem("email") ? localStorage.getItem("email") : 'chhatrasathi2020@gmail.com',
-      //           contact: localStorage.getItem("mobile"),
-      //           name: localStorage.getItem("name"),
-      //         },
-      //         theme: {
-      //           color: "#621647",
-      //         },
-      //         modal: {
-      //           ondismiss: function () {
-      //             //  alert("dismissed");
-      //           },
-      //         },
-      //       };
-      //       var _this = this;
-      //       var successCallback = function (success) {
-      //         console.log("payment_id: ", success);
-      //         _this.successPayment(success);
-      //       };
-      //       var cancelCallback = function (error) {
-      //         //////////////////////
-      //         //PASS ORDERID & ERROR OBJECT TO BACKEND
-      //         /////////////////////
-      //         console.log("description: ", error);
-      //       };
-      //       RazorpayCheckout.on("payment.success", successCallback);
-      //       RazorpayCheckout.on("payment.cancel", cancelCallback);
-      //       RazorpayCheckout.open(options);
-      //     } else if (response.status == 401) {
-      //       this.showToast('error', this.messsageObj.plan.invalidMessage[this.defaultLanguage], response.message, 3000, '/login')
-      //     } else {
-      //       this.showToast('error', this.messsageObj.plan.errorMessage[this.defaultLanguage], response.message, 5000, '')
-      //     }
-      //   },
-      //   (error) => {
-      //     this.enableLoader = false;
-      //     console.log("error ts: ", error);
-      //   }
-      // );
+      // Get user details from local storage or service
+      const userDetails = {
+        name: 'Customer',
+        email: 'customer@example.com',  // ✅ required
+        contact: '9999999999'           // ✅ required
+      };
 
-   
+
+      // Initialize Razorpay payment directly
+      const options = {
+        key: 'rzp_test_pukxv7Ki2WgVYL',
+        amount: 100, // ₹1 for testing
+        currency: 'INR',
+        name: 'Global Rubber Hub',
+        description: 'Test Payment',
+        order_id: orderId,
+        prefill: {
+          name: userDetails.name,
+          email: userDetails.email,
+          contact: userDetails.contact
+        },
+        theme: {
+          color: '#2DD36F'
+        },
+        handler: (response: any) => {
+          console.log('🎉 Payment successful:', response);
+          this.isProcessing = false;
+          
+          // Close modal with success response
+          this.modalController.dismiss({
+            success: true,
+            plan: this.selectedPlan,
+            payment: response,
+            orderId: orderId,
+            message: `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+          });
+        },
+        modal: {
+          ondismiss: () => {
+            console.log('⚠️ Payment dismissed by user');
+            this.isProcessing = false;
+            this.modalController.dismiss({
+              success: false,
+              error: 'Payment cancelled by user',
+              orderId: orderId,
+              message: 'Payment was cancelled'
+            });
+          }
+        }
+      };
+
+      // Check if Razorpay is available
+      if (typeof (window as any).Razorpay === 'undefined') {
+        throw new Error('Razorpay is not loaded. Please refresh the page and try again.');
+      }
+
+      // Create and open Razorpay instance
+      console.log('🚀 Opening Razorpay payment gateway...');
+      const rzp = new (window as any).Razorpay(options);
+      
+      // Handle payment failures
+      rzp.on('payment.failed', (response: any) => {
+        console.error('❌ Payment failed:', response);
+        this.isProcessing = false;
+        this.modalController.dismiss({
+          success: false,
+          error: response.error,
+          orderId: orderId,
+          message: response.error?.description || 'Payment failed'
+        });
+      });
+      
+      rzp.open();
 
     } catch (error: any) {
       // Payment failed
@@ -153,7 +169,7 @@ export class PaymentModalComponent implements OnInit {
   private async generateOrderId(amount: number): Promise<string> {
     try {
       console.log('🔄 Generating order ID for amount:', amount);
-      
+
       const requestBody = {
         amount: amount,
         currency: "INR"
@@ -176,7 +192,7 @@ export class PaymentModalComponent implements OnInit {
 
     } catch (error: any) {
       console.error('❌ Error generating order ID:', error);
-      
+
       if (error.status === 404) {
         throw new Error('Order generation service not found. Please contact support.');
       } else if (error.status === 500) {
@@ -191,22 +207,6 @@ export class PaymentModalComponent implements OnInit {
 
 
 
-  // Test payment function for debugging (with auto-capture)
-  testPayment() {
-    console.log('🧪 Starting test payment from payment modal...');
-    
-    // First run troubleshooting to verify setup
-    console.log('🔧 Running pre-test diagnostics...');
-    
-    if (!this.razorpayService.isRazorpayAvailable()) {
-      console.error('❌ Razorpay not available, running troubleshooting...');
-      this.razorpayService.troubleshootRazorpay();
-      return;
-    }
-    
-    console.log('✅ Razorpay is available, proceeding with test...');
-    this.razorpayService.testPayment();
-  }
 
   // Get current auto-capture status info
   getAutoCaptureInfo(): string {
@@ -216,5 +216,37 @@ export class PaymentModalComponent implements OnInit {
   calculateSavings(plan: PaymentPlan): number {
     if (!plan.originalPrice || !plan.discount) return 0;
     return plan.originalPrice - plan.amount;
+  }
+
+  /**
+   * Get user details from local storage or service
+   */
+  private async getUserDetails(): Promise<any> {
+    try {
+      // Try to get user details from local storage
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return {
+          full_name: user.full_name || user.name || 'Customer',
+          email: user.email || '',
+          phone: user.phone || user.contact || ''
+        };
+      }
+
+      // Fallback to default values
+      return {
+        full_name: 'Customer',
+        email: '',
+        phone: ''
+      };
+    } catch (error) {
+      console.error('Error getting user details:', error);
+      return {
+        full_name: 'Customer',
+        email: '',
+        phone: ''
+      };
+    }
   }
 }

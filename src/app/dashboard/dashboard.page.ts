@@ -12,6 +12,8 @@ import { PageTitleService } from '../services/page-title.service';
 import { Subscription } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { register } from 'swiper/element/bundle';
+import { Platform } from '@ionic/angular';
+declare var StatusBar: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -88,7 +90,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
   constructor(
     private router: Router,
     private profileService: ProfileService,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
@@ -106,6 +109,11 @@ export class DashboardPage implements OnInit, AfterViewInit {
         }
       })
     );
+    if (this.platform.is('cordova')) {
+      // Configure StatusBar color
+      StatusBar.backgroundColorByHexString('#1a8135');
+      StatusBar.styleDefault();
+    }
   }
 
   goToLiveBids(){

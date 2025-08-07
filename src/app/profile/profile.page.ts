@@ -1,29 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
-// Cordova Camera plugin
-declare var Camera: any;
+// Camera plugin declarations
 declare var navigator: any;
-
-// Camera constants fallback
-const CAMERA_OPTIONS = {
-  PictureSourceType: {
-    CAMERA: 1,
-    PHOTOLIBRARY: 0
-  },
-  EncodingType: {
-    JPEG: 0,
-    PNG: 1
-  },
-  DestinationType: {
-    FILE_URI: 1,
-    DATA_URL: 0
-  }
-};
+declare var Camera: any;
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
@@ -54,13 +38,15 @@ export class ProfilePage implements OnInit {
     public modalController: ModalController,
     private actionSheetController: ActionSheetController,
     private profileService: ProfileService,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
     this.pageTitleService.setPageTitle('Update Profile');
     this.getProfileData()
     this.loadCountries()
+    
     this.profileForm = this.formBuilder.group({
       full_name: ['', [Validators.required, Validators.maxLength(60)]],
       email: ['', [Validators.required, Validators.email]],
@@ -350,28 +336,35 @@ export class ProfilePage implements OnInit {
 
   async takePicture(source: string) {
     try {
-      // Check if running on device and camera plugin is available
-      if (!this.isCameraAvailable()) {
-        // Fallback to file input for browsers/testing
+      // Check if running on device
+      if (!this.platform.is('cordova')) {
+        console.log('Not on device, using file input');
         this.openFileInput();
         return;
       }
 
-      // Use Camera constants with fallback
-      const cameraConstants = (typeof Camera !== 'undefined') ? Camera : CAMERA_OPTIONS;
-      const sourceType = source === 'camera' ? cameraConstants.PictureSourceType.CAMERA : cameraConstants.PictureSourceType.PHOTOLIBRARY;
-      
+      // Check if camera plugin is available
+      if (!navigator.camera) {
+        console.log('Camera plugin not available, using file input');
+        this.openFileInput();
+        return;
+      }
+
+      // Camera options
       const options = {
         quality: 90,
         allowEdit: true,
-        encodingType: cameraConstants.EncodingType.JPEG,
+        encodingType: Camera.EncodingType.JPEG,
         targetWidth: 1000,
         targetHeight: 1000,
-        sourceType: sourceType,
-        destinationType: cameraConstants.DestinationType.FILE_URI,
+        sourceType: source === 'camera' ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY,
+        destinationType: Camera.DestinationType.FILE_URI,
         correctOrientation: true
       };
-      
+
+      console.log('Taking picture with options:', options);
+
+      // Take picture
       const imageURI = await new Promise<string>((resolve, reject) => {
         navigator.camera.getPicture(
           (imageURI: string) => {
@@ -380,7 +373,11 @@ export class ProfilePage implements OnInit {
           },
           (error: any) => {
             console.error('Camera error:', error);
-            reject(new Error(`Camera failed: ${error}`));
+            if (error === 'No Image Selected') {
+              reject(new Error('No image selected'));
+            } else {
+              reject(new Error(`Camera failed: ${error}`));
+            }
           },
           options
         );
@@ -388,17 +385,16 @@ export class ProfilePage implements OnInit {
 
       if (imageURI) {
         await this.processImageURI(imageURI);
-      } else {
-        throw new Error('No image URI received from camera');
       }
     } catch (error: any) {
       console.error('Camera error:', error);
       let errorMessage = 'Failed to capture image.';
       
-      if (error.message && error.message.includes('cancelled')) {
-        errorMessage = 'Image capture was cancelled.';
+      if (error.message && error.message.includes('No image selected')) {
+        // User cancelled, don't show error
+        return;
       } else if (error.message && error.message.includes('permission')) {
-        errorMessage = 'Camera permission denied. Please allow camera access.';
+        errorMessage = 'Camera permission denied. Please allow camera access in settings.';
       } else if (error.message && error.message.includes('not available')) {
         errorMessage = 'Camera is not available on this device.';
       }
@@ -408,8 +404,7 @@ export class ProfilePage implements OnInit {
   }
 
   private isCameraAvailable(): boolean {
-    // Check if running on device (Cordova/PhoneGap environment)
-    return !!(window as any).cordova && 
+    return this.platform.is('cordova') && 
            typeof navigator !== 'undefined' && 
            navigator.camera && 
            typeof navigator.camera.getPicture === 'function';
