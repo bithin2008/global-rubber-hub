@@ -12,7 +12,7 @@
   </div>
 
   <!-- Market Stats Swiper -->
-  <div class="market-stats-swiper">
+  <div class="market-stats-swiper" *ngIf="dashboardData && dashboardData.rubberRates && dashboardData.rubberRates.results && dashboardData.rubberRates.results.length > 0">
     <div class="swiper-header">
       <h4>International Rubber Rates</h4>
 
@@ -20,57 +20,64 @@
     <swiper-container 
       class="market-swiper"
       [options]="swiperOptions">
-      <swiper-slide *ngFor="let card of marketCards" class="market-slide">
-        <div class="market-card" [ngClass]="card.direction">
-          <p>{{ card.name }}</p>
-          <h2>{{ card.price }} <span class="change" [ngClass]="card.direction">{{ card.change }} ({{ card.percentage }})</span></h2>
+      <swiper-slide *ngFor="let card of dashboardData.rubberRates.results" class="market-slide">
+        <div class="market-card" [ngClass]="card.rate_deviation_percentage > 0 ? 'up' : 'down'">
+          <p>{{ card.description }}</p>
+          <h2>{{ card.rate }} <span class="change" [ngClass]="card.direction">{{ card.rate_deviation }} ({{ card.rate_deviation_percentage }})</span></h2>
         </div>
       </swiper-slide>
     </swiper-container>
   </div>
 
   <!-- Top Seller -->
-  <div class="section">
+  <div class="section" *ngIf="dashboardData && dashboardData.topSellerItems && dashboardData.topSellerItems.results && dashboardData.topSellerItems.results.length > 0">
     <div class="section-title">Top Seller</div>
+  
+    <!-- First Row: First 2 Items -->
     <div class="cards-row">
-      <div class="product-card">
+      <div
+        class="product-card"
+        *ngFor="let item of ((dashboardData?.topSellerItems?.results) ? dashboardData.topSellerItems.results : []) | slice:0:2"
+      >
         <ion-badge class="success_badg">On Sale</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img src="assets/img/tata.png" />
+            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
-          <h4>TATA Consultancy Services</h4>
+          <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
-        <h3>25,195.80</h3>
-      </div>
-
-      <div class="product-card">
-        <ion-badge class="success_badg">On Sale</ion-badge>
-        <div class="logoCompname">
-          <figure class="compIcon">
-            <img src="assets/img/mrf.png" />
-          </figure>
-          <h4>Madras Rubber Factory</h4>
-        </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
-        <h3>25,195.80</h3>
+        <p>
+          Dealer Name<br />
+          <b *ngIf="item?.company_name">{{ item.company_name }}</b>
+          <b *ngIf="item?.full_name">{{ item.full_name }}</b>
+        </p>
+        <h3>{{ item?.price || '0' }}</h3>
       </div>
     </div>
-
+    
+  
+    <!-- Second Row: Only 3rd Item -->
     <div class="cards-row">
-      <div class="product-card">
+      <div
+        class="product-card"
+        *ngFor="let item of ((dashboardData?.topSellerItems?.results) ? dashboardData.topSellerItems.results : []) | slice:2:3"
+      >
         <ion-badge class="success_badg">On Sale</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img src="assets/img/mgm.png" />
+            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
-          <h4>TATA Consultancy Services</h4>
+          <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
-        <h3>25,195.80</h3>
+        <p>
+          Dealer Name<br />
+          <b *ngIf="item?.company_name">{{ item.company_name }}</b>
+          <b *ngIf="item?.full_name">{{ item.full_name }}</b>
+        </p>
+        <h3>{{ item?.price || '0' }}</h3>
       </div>
-
+    
+      <!-- Keep this manually as-is -->
       <div class="more-card">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
@@ -87,39 +94,119 @@
             <img src="assets/img/sail.png" />
           </figure>
         </div>
-        <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids()">
+        <ion-button
+          fill="clear"
+          class="btn no-style see-more-btn"
+          (click)="goToLiveBids()"
+        >
           See More <img src="assets/img/icons/arrow_yellow.svg" />
         </ion-button>
       </div>
     </div>
+    
   </div>
+
+
+
+    <!-- Top buyer -->
+    <div class="section" *ngIf="dashboardData && dashboardData.topBuyerItems && dashboardData.topBuyerItems.results && dashboardData.topBuyerItems.results.length > 0">
+      <div class="section-title">Top Buyer</div>
+    
+      <!-- First Row: First 2 Items -->
+      <div class="cards-row">
+        <div
+          class="product-card"
+          *ngFor="let item of ((dashboardData?.topBuyerItems?.results) ? dashboardData.topBuyerItems.results : []) | slice:0:2"
+        >
+          <ion-badge class="success_badg">On Buy</ion-badge>
+          <div class="logoCompname">
+            <figure class="compIcon">
+              <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            </figure>
+            <h4>{{ item?.item_name || 'Item Name' }}</h4>
+          </div>
+          <p>
+            Dealer Name<br />
+            <b *ngIf="item?.company_name">{{ item?.company_name }}</b>
+            <b *ngIf="item?.full_name">{{ item?.full_name }}</b>
+          </p>
+          <h3>{{ item?.price || '0' }}</h3>
+        </div>
+      </div>
+      
+    
+      <!-- Second Row: Only 3rd Item -->
+      <div class="cards-row">
+        <div
+          class="product-card"
+          *ngFor="let item of ((dashboardData?.topBuyerItems?.results) ? dashboardData.topBuyerItems.results : []) | slice:2:3"
+        >
+          <ion-badge class="success_badg">On Buy</ion-badge>
+          <div class="logoCompname">
+            <figure class="compIcon">
+              <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            </figure>
+            <h4>{{ item?.item_name || 'Item Name' }}</h4>
+          </div>
+          <p>
+            Dealer Name<br />
+            <b *ngIf="item?.company_name">{{ item.company_name }}</b>
+            <b *ngIf="item?.full_name">{{ item.full_name }}</b>
+          </p>
+          <h3>{{ item?.price || '0' }}</h3>
+        </div>
+      
+        <!-- Keep this manually as-is -->
+        <div class="more-card">
+          <div class="title">More Wanted Items</div>
+          <div class="logo-group">
+            <figure class="compIcon">
+              <img src="assets/img/mrf.png" />
+            </figure>
+            <figure class="compIcon">
+              <img src="assets/img/mgm.png" />
+            </figure>
+            <figure class="compIcon">
+              <img src="assets/img/tata.png" />
+            </figure>
+            <figure class="compIcon">
+              <img src="assets/img/sail.png" />
+            </figure>
+          </div>
+          <ion-button
+            fill="clear"
+            class="btn no-style see-more-btn"
+            (click)="goToLiveBids()"
+          >
+            See More <img src="assets/img/icons/arrow_yellow.svg" />
+          </ion-button>
+        </div>
+      </div>
+      
+    </div>
+  
 
   <!-- Recent Listed -->
   <div class="section">
     <div class="section-title">Recent Listed</div>
     <div class="cards-row">
-      <div class="product-card">
-        <ion-badge class="worning_badg">Wanted</ion-badge>
+      <div
+        class="product-card"
+        *ngFor="let item of ((dashboardData?.recentListedItems?.results) ? dashboardData.recentListedItems.results : []) | slice:0:2"
+      >
+        <ion-badge class="success_badg">On Buy</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img src="assets/img/tata.png" />
+            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
-          <h4>TATA Consultancy Services</h4>
+          <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
-        <h3>25,195.80</h3>
-      </div>
-
-      <div class="product-card">
-        <ion-badge class="worning_badg">Wanted</ion-badge>
-        <div class="logoCompname">
-          <figure class="compIcon">
-            <img src="assets/img/mrf.png" />
-          </figure>
-          <h4>Madras Rubber Factory</h4>
-        </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
-        <h3>25,195.80</h3>
+        <p>
+          Dealer Name<br />
+          <b *ngIf="item?.company_name">{{ item?.company_name }}</b>
+          <b *ngIf="item?.full_name">{{ item?.full_name }}</b>
+        </p>
+        <h3>{{ item?.price || '0' }}</h3>
       </div>
     </div>
 
@@ -132,7 +219,10 @@
           </figure>
           <h4>TATA Consultancy Services</h4>
         </div>
-        <p>Dealer Name<br><b>NP Enterprise PVT. LTD.</b></p>
+        <p>
+          Dealer Name<br />
+          <b>NP Enterprise PVT. LTD.</b>
+        </p>
         <h3>25,195.80</h3>
       </div>
 

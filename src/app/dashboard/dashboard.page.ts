@@ -15,6 +15,38 @@ import { register } from 'swiper/element/bundle';
 import { Platform } from '@ionic/angular';
 declare var StatusBar: any;
 
+// Interfaces for type safety
+interface DashboardItem {
+  item_image: string[];
+  item_name: string;
+  company_name?: string;
+  full_name?: string;
+  price: string;
+}
+
+interface RubberRate {
+  description: string;
+  rate: string;
+  rate_deviation: string;
+  rate_deviation_percentage: number;
+  direction: string;
+}
+
+interface DashboardData {
+  rubberRates: {
+    results: RubberRate[];
+  };
+  topSellerItems: {
+    results: DashboardItem[];
+  };
+  topBuyerItems: {
+    results: DashboardItem[];
+  };
+  recentListedItems: {
+    results: DashboardItem[];
+  };
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
@@ -27,7 +59,12 @@ export class DashboardPage implements OnInit, AfterViewInit {
   public enableLoader: boolean = false;
   private subscription: Subscription = new Subscription();
   public profileName: string = '';
-
+  public dashboardData: DashboardData = {
+    rubberRates: { results: [] },
+    topSellerItems: { results: [] },
+    topBuyerItems: { results: [] },
+    recentListedItems: { results: [] }
+  };
   // Market cards data for swiper
   public marketCards = [
     {
@@ -91,13 +128,14 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private router: Router,
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
-    private platform: Platform
+    private platform: Platform,
+    private commonService: CommonService,
   ) { }
 
   ngOnInit() {
     // Register Swiper elements
     register();
-    
+    this.getDashboardData();
     // Set the page title when the page loads
     this.pageTitleService.setPageTitle('Dashboard');
     this.subscription.add(
@@ -141,7 +179,35 @@ export class DashboardPage implements OnInit, AfterViewInit {
   }
 
 
-
+  getDashboardData() {
+    this.enableLoader = true;
+    let url = `user/dashboard`;
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          // Safely assign the response data with proper typing
+          this.dashboardData = {
+            rubberRates: response.rubberRates || { results: [] },
+            topSellerItems: response.topSellerItems || { results: [] },
+            topBuyerItems: response.topBuyerItems || { results: [] },
+            recentListedItems: response.recentListedItems || { results: [] }
+          };
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error', error);
+        // Set default data on error
+        this.dashboardData = {
+          rubberRates: { results: [] },
+          topSellerItems: { results: [] },
+          topBuyerItems: { results: [] },
+          recentListedItems: { results: [] }
+        };
+      }
+    );
+  }
 
 
 
