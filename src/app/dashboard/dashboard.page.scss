@@ -1,7 +1,7 @@
 // Market Stats Swiper Styles
 .market-stats-swiper {
   margin: 20px 0;
-  padding: 0 16px;
+  // padding: 0 16px;
   
   .swiper-header {
     display: flex;
@@ -94,32 +94,32 @@
 }
 
 // Mobile responsive adjustments
-@media (max-width: 768px) {
-  .market-stats-swiper {
-    padding: 0 12px;
+// @media (max-width: 768px) {
+//   .market-stats-swiper {
+//     padding:0;
     
-    .market-swiper {
-      .market-slide {
-        .market-card {
-          padding: 10px 12px;
-          min-height: 80px;
+//     .market-swiper {
+//       .market-slide {
+//         .market-card {
+//           padding: 10px 12px;
+//           min-height: 80px;
           
-          p {
-            font-size: 12px;
-          }
+//           p {
+//             font-size: 12px;
+//           }
           
-          h2 {
-            font-size: 13px;
+//           h2 {
+//             font-size: 13px;
             
-            span {
-              font-size: 11px;
-            }
-          }
-        }
-      }
-    }
-  }
-}
+//             span {
+//               font-size: 11px;
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
 // Swiper pagination dots (optional)
 .swiper-pagination {
