@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { register } from 'swiper/element/bundle';
 import { Platform } from '@ionic/angular';
-declare var StatusBar: any;
+
 
 // Interfaces for type safety
 interface DashboardItem {
@@ -121,7 +121,20 @@ export class DashboardPage implements OnInit, AfterViewInit {
     },
     loop: true,
     speed: 800,
-  
+    breakpoints: {
+      320: {
+        slidesPerView: 1,
+        spaceBetween: 8
+      },
+      480: {
+        slidesPerView: 2,
+        spaceBetween: 10
+      },
+      768: {
+        slidesPerView: 2,
+        spaceBetween: 12
+      }
+    }
   };
 
   constructor(
@@ -147,11 +160,43 @@ export class DashboardPage implements OnInit, AfterViewInit {
         }
       })
     );
-    if (this.platform.is('cordova')) {
-      // Configure StatusBar color
-      StatusBar.backgroundColorByHexString('#1a8135');
-      StatusBar.styleDefault();
-    }
+    
+    // Add fallback data for testing if no data from API
+    setTimeout(() => {
+      if (!this.dashboardData.rubberRates.results || this.dashboardData.rubberRates.results.length === 0) {
+        console.log('No data from API, using fallback data for Swiper testing');
+        this.dashboardData.rubberRates.results = [
+          {
+            description: 'Natural Rubber',
+            rate: '25,195.80',
+            rate_deviation: '+113.80',
+            rate_deviation_percentage: 0.45,
+            direction: 'up'
+          },
+          {
+            description: 'Synthetic Rubber',
+            rate: '18,750.50',
+            rate_deviation: '-245.30',
+            rate_deviation_percentage: -1.29,
+            direction: 'down'
+          },
+          {
+            description: 'Butyl Rubber',
+            rate: '32,450.75',
+            rate_deviation: '+567.20',
+            rate_deviation_percentage: 1.78,
+            direction: 'up'
+          },
+          {
+            description: 'Neoprene Rubber',
+            rate: '28,900.25',
+            rate_deviation: '-89.45',
+            rate_deviation_percentage: -0.31,
+            direction: 'down'
+          }
+        ];
+      }
+    }, 2000);
   }
 
   goToLiveBids(){
@@ -163,19 +208,49 @@ export class DashboardPage implements OnInit, AfterViewInit {
     setTimeout(() => {
       const swiperEl = document.querySelector('swiper-container');
       if (swiperEl) {
-        Object.assign(swiperEl, this.swiperOptions);
-        swiperEl.initialize();
-        console.log('✅ Swiper initialized with autoplay');
+        console.log('Found swiper element, initializing...');
+        console.log('Data available:', this.dashboardData.rubberRates.results?.length || 0);
         
-        // Ensure autoplay is working
+        // Initialize the swiper
+        swiperEl.initialize();
+        
+        console.log('✅ Swiper initialized with direct attributes');
+        
+        // Wait for swiper to be fully initialized
         setTimeout(() => {
-          if (swiperEl.swiper && swiperEl.swiper.autoplay) {
-            swiperEl.swiper.autoplay.start();
-            console.log('🚀 Autoplay started');
+          if (swiperEl.swiper) {
+            console.log('Swiper instance created successfully');
+            console.log('Current slidesPerView:', swiperEl.swiper.params.slidesPerView);
+            console.log('Total slides:', swiperEl.swiper.slides?.length || 0);
+            
+            // Force update to ensure proper rendering
+            swiperEl.swiper.update();
+            console.log('Swiper updated');
+            
+            // Additional force refresh after a delay
+            setTimeout(() => {
+              if (swiperEl.swiper) {
+                swiperEl.swiper.update();
+                console.log('Swiper force refreshed');
+              }
+            }, 1000);
+          } else {
+            console.error('Swiper instance not found');
           }
-        }, 500);
+        }, 300);
+      } else {
+        console.error('Swiper container element not found');
       }
-    }, 200);
+    }, 500);
+    
+    // Additional initialization after data loads
+    setTimeout(() => {
+      const swiperEl = document.querySelector('swiper-container');
+      if (swiperEl && swiperEl.swiper) {
+        console.log('Re-initializing swiper after data load');
+        swiperEl.swiper.update();
+      }
+    }, 3000);
   }
 
 

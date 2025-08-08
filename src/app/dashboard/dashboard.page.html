@@ -19,7 +19,11 @@
     </div>
     <swiper-container 
       class="market-swiper"
-      [options]="swiperOptions">
+      slides-per-view="2"
+      space-between="12"
+      loop="true"
+      autoplay-delay="3000"
+      autoplay-disable-on-interaction="false">
       <swiper-slide *ngFor="let card of dashboardData.rubberRates.results" class="market-slide">
         <div class="market-card" [ngClass]="card.rate_deviation_percentage > 0 ? 'up' : 'down'">
           <p>{{ card.description }}</p>
