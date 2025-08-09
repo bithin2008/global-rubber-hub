@@ -12,6 +12,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
+import { RejectReasonModalComponent } from './reject-reason-modal/reject-reason-modal.component';
 
 @Component({
   selector: 'app-bid-request',
@@ -73,8 +74,16 @@ export class BidRequestPage implements OnInit {
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
-          this.itemList = this.itemList.concat(response.results);
-          this.itemList = _.uniqBy(this.itemList, 'id');
+          if (this.page === 0) {
+            // Replace list on a fresh load so updated items are reflected
+            this.itemList = response.results || [];
+          } else {
+            // Concatenate for pagination and de-duplicate
+            this.itemList = _.uniqBy(
+              this.itemList.concat(response.results || []),
+              'id'
+            );
+          }
           this.totalCount = response.total_count;
           if (this.itemList.length > 0) {
             this.showNoRecord = false;
@@ -181,47 +190,68 @@ export class BidRequestPage implements OnInit {
     this.getItemList();
   }
 
-  async acceptBidConfirmation(item: any) {
+  
 
+  async confirmBidAction(item: any, action: 'accept' | 'reject') {
+    const isAcceptAction = action === 'accept';
     const alert = await this.alertController.create({
-      header: 'Accept Bid',
-      message: 'Are you sure you want to accept bid?',
+      header: isAcceptAction ? 'Accept Bid' : 'Reject Bid',
+      message: isAcceptAction
+        ? 'Are you sure you want to accept bid?'
+        : 'Are you sure you want to reject bid?',
       buttons: [
         {
           text: 'Cancel',
           role: 'cancel',
           cssClass: 'alert-cancel',
-          handler: (blah:any) => {
-
-          }
+          handler: (blah:any) => {}
         }, {
           text: 'Ok',
           cssClass: 'alert-ok',
-          handler: () => {
-            this.acceptBid(item);
+          handler: async () => {
+            if (!isAcceptAction) {
+              // Open reason modal for rejection
+              const modal = await this.modalController.create({
+                component: RejectReasonModalComponent,
+                cssClass: 'bid-modal'
+              });
+              await modal.present();
+              const { data } = await modal.onWillDismiss();
+              if (!data || !data.reason) {
+                return; // user cancelled or empty
+              }
+              this.submitBidStatus(item, 2, data.reason);
+            } else {
+              this.submitBidStatus(item, 1);
+            }
           }
         }
       ]
     });
-    await alert.present();   
+    await alert.present();  
   }
 
-  acceptBid(item: any) {
-    let url = 'bids/add';
-    let data = {
-      item_id: item.id,
+  private submitBidStatus(item: any, bidStatus: number, cancelRejectionReason?: string) {
+    const url = 'bids/add';
+    const data = {
+      id: item.id,
       bid_amount: item.bid_amount,
       actual_bid_amount: item.actual_bid_amount,
-      bid_quantity: parseInt(item.bid_quantity),
-      bid_status: 1
-    }
+      bid_quantity: parseInt(item.bid_quantity, 10),
+      bid_status: bidStatus,
+      cancel_rejection_reason: cancelRejectionReason ?? null
+    };
     this.enableLoader = true;
     this.commonService.post(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
-          this.showToast('success', response.message, '', 2500, '');
+          // Reset pagination and reload fresh list so UI reflects changes
+          this.page = 0;
+          this.itemList = [];
           this.getItemList();
+          this.showToast('success', response.message, '', 2500, '');
+          
         } else {
           this.showToast('error', response.message, '', 2500, '');
         }
@@ -229,9 +259,16 @@ export class BidRequestPage implements OnInit {
       (error) => {
         this.enableLoader = false;
         console.log('error ts: ', error.error);
-        // this.toastr.error(error);
       }
     );
+  }
+
+  acceptBid(item: any) {
+    this.submitBidStatus(item, 1);
+  }
+
+  rejectBid(item: any) {
+    this.submitBidStatus(item, 2);
   }
 
   async showToast(

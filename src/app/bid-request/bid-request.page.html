@@ -54,10 +54,10 @@
           </ion-button>
         </div>
         <div class="btnCont multi" *ngIf="item.bid_status==0">
-          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg" (click)="confirmBidAction(item,'reject')">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg" (click)="acceptBidConfirmation(item)">
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg" (click)="confirmBidAction(item,'accept')">
             <ion-icon name="checkmark-outline"></ion-icon>
           </ion-button>
         </div>

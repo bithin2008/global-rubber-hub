@@ -1,0 +1,38 @@
+<ion-content class="modal-content">
+  <div class="popupOuter">
+    <div class="popup-wrapper">
+      <div class="popup-header">
+        <h2>Cancellation Reason</h2>
+        <img src="assets/img/icons/cancel.svg" alt="" title="" (click)="dismiss()">
+      </div>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <ion-item class="no-style">
+        <div class="custom-inner">
+       
+
+
+          <ion-label class="formlebel">Why are you rejecting this bid? </ion-label>
+          <ion-textarea 
+            class="form-field" 
+            formControlName="reason"
+            placeholder="Type your reason">
+          </ion-textarea>
+        </div>
+      </ion-item>
+      <div class="validation-error" *ngIf="f['reason'].invalid && (f['reason'].touched || f['reason'].dirty)">
+        <span *ngIf="f['reason'].errors?.['required']">Reason is required</span>
+        <span *ngIf="f['reason'].errors?.['minlength']">Minimum 3 characters</span>
+        <span *ngIf="f['reason'].errors?.['maxlength']">Maximum 300 characters</span>
+      </div>
+  
+      <div class="buttons">
+        <ion-button type="submit" class="btn btn-grn">Submit</ion-button>
+      </div>
+    </form>
+    </div>
+  </div>
+
+ 
+</ion-content>
+
+
