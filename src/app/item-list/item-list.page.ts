@@ -47,30 +47,15 @@ export class ItemListPage implements OnInit {
     private pageTitleService: PageTitleService
     // private sharedService: SharedService,
   ) {
-    // Register Swiper custom elements
-    register();
-
-    // this.activatedRoute.params.subscribe(async val => {
-
-    //   this.hasLoggin = await this.isLoggedIn();
-    //   if (this.hasLoggin.status == 200) {
-    //     this.itemList = [];
-    //     this.page = 0;
-    //     this.sharedService.updateUserProfile(this.hasLoggin);
-    //     this.getItemFilterList();
-    //     this.getItemList();
-    //   }
-    // });
-
-    //  this.getItemFilterList();
-    this.getItemList();
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('Live Bid');
+      register();
+      this.getItemList();
+    });   
   }
 
-  ngOnInit() {
-    this.pageTitleService.setPageTitle('Live Bid');
-  }
-
- 
+  ngOnInit() {   
+  } 
 
   getItemList() {
     let data = {

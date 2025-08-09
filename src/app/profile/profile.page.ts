@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 // Camera plugin declarations
 declare var navigator: any;
 declare var Camera: any;
+declare var cordova: any;
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
@@ -31,8 +32,10 @@ export class ProfilePage implements OnInit {
   public showCountryDropdown: boolean = false;
   public uploadedFiles: any[] = [];
   public isDragOver: boolean = false;
+  private isDeviceReady: boolean = false;
   constructor(
     public router: Router,
+    public activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
     public modalController: ModalController,
@@ -40,42 +43,47 @@ export class ProfilePage implements OnInit {
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
     private platform: Platform
-  ) { }
-
-  ngOnInit() {
-    this.pageTitleService.setPageTitle('Update Profile');
-    this.getProfileData()
-    this.loadCountries()
-    
-    this.profileForm = this.formBuilder.group({
-      full_name: ['', [Validators.required, Validators.maxLength(60)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      company: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
-      pan: ['', [Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]],
-      id_proof_type: ['', [Validators.required]],
-      id_proof_image: [[], [Validators.required, Validators.minLength(1)]],
-      country: ['', [Validators.required]],
-      company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
-      city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
-      state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
-      zip: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+  ) { 
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('Update Profile');
+      this.platform.ready().then(() => {
+        this.isDeviceReady = true;
+      });
+      this.getProfileData()
+      this.loadCountries();
+      this.profileForm = this.formBuilder.group({
+        full_name: ['', [Validators.required, Validators.maxLength(60)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required]],
+        company: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
+        pan: ['', [Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]],
+        id_proof_type: ['', [Validators.required]],
+        id_proof_image: [[], [Validators.required, Validators.minLength(1)]],
+        country: ['', [Validators.required]],
+        company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
+        city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
+        state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
+        zip: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+      });
+  
+      // Listen for country changes to update PAN validation
+      this.profileForm.get('country')?.valueChanges.subscribe(country => {
+        console.log('Country changed to:', country);
+        const panControl = this.profileForm.get('pan');
+        if (country === 'India') {
+          console.log('Setting PAN as required for India');
+          panControl?.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+        } else {
+          console.log('Clearing PAN validation for non-India country');
+          panControl?.clearValidators();
+          panControl?.setValue(''); // Clear the value when not India
+        }
+        panControl?.updateValueAndValidity();
+      });
     });
+  }
 
-    // Listen for country changes to update PAN validation
-    this.profileForm.get('country')?.valueChanges.subscribe(country => {
-      console.log('Country changed to:', country);
-      const panControl = this.profileForm.get('pan');
-      if (country === 'India') {
-        console.log('Setting PAN as required for India');
-        panControl?.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
-      } else {
-        console.log('Clearing PAN validation for non-India country');
-        panControl?.clearValidators();
-        panControl?.setValue(''); // Clear the value when not India
-      }
-      panControl?.updateValueAndValidity();
-    });
+  ngOnInit() {   
   }
 
   get f() { return this.profileForm.controls; }
@@ -336,8 +344,9 @@ export class ProfilePage implements OnInit {
 
   async takePicture(source: string) {
     try {
-      // Check if running on device
-      if (!this.platform.is('cordova')) {
+      // Check if running on a device (Cordova/Capacitor hybrid)
+      const isHybrid = this.platform.is('hybrid') || this.platform.is('cordova');
+      if (!isHybrid || !this.isDeviceReady) {
         console.log('Not on device, using file input');
         this.openFileInput();
         return;
@@ -350,10 +359,17 @@ export class ProfilePage implements OnInit {
         return;
       }
 
+      // Ensure runtime permissions on Android
+      const hasPermission = await this.ensureCameraPermissions(source);
+      if (!hasPermission) {
+        this.showToast('error', 'Camera permission denied. Please allow camera access in settings.', '', 3500, '');
+        return;
+      }
+
       // Camera options
       const options = {
         quality: 90,
-        allowEdit: true,
+        allowEdit: false,
         encodingType: Camera.EncodingType.JPEG,
         targetWidth: 1000,
         targetHeight: 1000,
@@ -403,6 +419,57 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  private ensureCameraPermissions(source: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!(this.platform.is('android') && (window as any).cordova && (cordova as any).plugins && (cordova as any).plugins.permissions)) {
+        resolve(true);
+        return;
+      }
+
+      const permissions = (cordova as any).plugins.permissions;
+      const requiredPermissions: string[] = [permissions.CAMERA];
+      // For gallery access on newer Android versions
+      if (source !== 'camera') {
+        if (permissions.READ_MEDIA_IMAGES) {
+          requiredPermissions.push(permissions.READ_MEDIA_IMAGES);
+        } else if (permissions.READ_EXTERNAL_STORAGE) {
+          requiredPermissions.push(permissions.READ_EXTERNAL_STORAGE);
+        }
+      }
+
+      const checkAll = (perms: string[], cb: (granted: boolean) => void) => {
+        let remaining = perms.length;
+        let allGranted = true;
+        perms.forEach((p) => {
+          permissions.checkPermission(p, (status: any) => {
+            if (!status.hasPermission) {
+              allGranted = false;
+            }
+            remaining -= 1;
+            if (remaining === 0) cb(allGranted);
+          }, () => {
+            allGranted = false;
+            remaining -= 1;
+            if (remaining === 0) cb(allGranted);
+          });
+        });
+      };
+
+      checkAll(requiredPermissions, (granted) => {
+        if (granted) {
+          resolve(true);
+        } else {
+          permissions.requestPermissions(requiredPermissions, (status: any) => {
+            const ok = Array.isArray(status.hasPermission)
+              ? status.hasPermission.every((v: boolean) => v)
+              : !!status.hasPermission;
+            resolve(ok);
+          }, () => resolve(false));
+        }
+      });
+    });
+  }
+
   private isCameraAvailable(): boolean {
     return this.platform.is('cordova') && 
            typeof navigator !== 'undefined' && 
@@ -435,11 +502,15 @@ export class ProfilePage implements OnInit {
 
   private async processImageURI(imageURI: string): Promise<void> {
     try {
-      // Store the image URI directly in the variable
-      this.profileImage = imageURI;
+      // Convert file/content URI to a displayable path in WebView
+      const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
+        ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
+        : imageURI;
+      // Store the displayable image URI directly in the variable
+      this.profileImage = displaySrc;
       this.showPlaceholder = false;
       // Update the service immediately so header shows the new image
-      this.profileService.updateProfileImage(imageURI);
+      this.profileService.updateProfileImage(displaySrc);
 
       // Convert to PNG format using canvas
       const canvas = document.createElement('canvas');
@@ -529,7 +600,7 @@ export class ProfilePage implements OnInit {
         this.profileService.updateProfileImage('');
       };
 
-      img.src = imageURI;
+      img.src = displaySrc;
     } catch (error: any) {
       console.error('Image processing error:', error);
       this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');

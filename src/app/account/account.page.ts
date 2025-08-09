@@ -6,7 +6,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController
 import { IonicModule } from '@ionic/angular';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
@@ -34,24 +34,26 @@ export class AccountPage implements OnInit, OnDestroy {
   constructor(public router: Router,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
+    activatedRoute: ActivatedRoute,
     public modalController: ModalController,
      private alertController: AlertController,
      private location: Location,
      private pageTitleService: PageTitleService,
      private profileService: ProfileService,
-     private razorpayService: RazorpayService) { }
+     private razorpayService: RazorpayService) { 
+      activatedRoute.params.subscribe(val => { 
+        this.pageTitleService.setPageTitle('Account');
+        this.subscription.add(
+          this.profileService.profileImage$.subscribe((imageUrl) => {
+            this.profileImage = imageUrl;
+            this.showPlaceholder = !imageUrl;
+          })
+        );
+        this.getProfileData();
+      });
+     }
 
-  ngOnInit() {
-    this.pageTitleService.setPageTitle('Account');
-    this.getProfileData();
-    
-    // Subscribe to profile image changes from the service
-    this.subscription.add(
-      this.profileService.profileImage$.subscribe((imageUrl) => {
-        this.profileImage = imageUrl;
-        this.showPlaceholder = !imageUrl;
-      })
-    );
+  ngOnInit() { 
   }
 
   ngOnDestroy() {

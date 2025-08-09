@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton,IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -44,12 +44,14 @@ export class BidHistoryPage implements OnInit {
     private authenticationService: AuthService,
     private pageTitleService: PageTitleService
     // private sharedService: SharedService,
-  ) { 
-    this.getItemList();
+  ) {
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('Bid History');
+      this.getItemList();
+    });
   }
 
   ngOnInit() {
-    this.pageTitleService.setPageTitle('Bid History');
   }
 
   getItemList() {
@@ -57,10 +59,10 @@ export class BidHistoryPage implements OnInit {
       module: 1,
       start: this.page,
       limit: 10,
-      orderfield: this.searchField==5 ? 'item_master.added_on':this.searchField,
+      orderfield: this.searchField == 5 ? 'item_master.added_on' : this.searchField,
       orderby: this.orderBy,
       keyword: this.searchKeyword ? this.searchKeyword : '',
-      options:  this.searchField==5 ? 'item_master.added_on':this.searchField
+      options: this.searchField == 5 ? 'item_master.added_on' : this.searchField
 
     }
     if (this.page == 0) {
@@ -131,10 +133,10 @@ export class BidHistoryPage implements OnInit {
     if (this.searchField) {
       this.filterWarning = false;
     }
-    
+
     // Update current filter value
     this.searchFieldControl = event;
-    
+
     // Switch case based on dropdown value
     switch (event) {
       case 1: // Price (Low to High)
@@ -142,42 +144,42 @@ export class BidHistoryPage implements OnInit {
         this.orderBy = 'asc';
         console.log('Filtering by Price (Low to High)');
         break;
-        
+
       case 2: // Price (High to Low)
         this.searchField = 'item_master.price';
         this.orderBy = 'desc';
         console.log('Filtering by Price (High to Low)');
         break;
-        
+
       case 3: // Quantity (Low to High)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'asc';
         console.log('Filtering by Quantity (Low to High)');
         break;
-        
+
       case 4: // Quantity (High to Low)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'desc';
         console.log('Filtering by Quantity (High to Low)');
         break;
-        
+
       case 5: // Most Recent
         this.searchField = 'item_master.added_on';
         this.orderBy = 'desc';
         console.log('Filtering by Most Recent');
         break;
-        
+
       default:
         this.searchField = 'item_master.price';
         this.orderBy = 'asc';
         console.log('Default filter: Price (Low to High)');
         break;
     }
-    
+
     this.page = 0;
     this.itemList = [];
     this.getItemList();
-  } 
+  }
 
 }
 

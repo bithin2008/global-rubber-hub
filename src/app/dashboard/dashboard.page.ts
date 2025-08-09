@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
@@ -70,50 +70,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
     otherItems: { results: [] }
   };
   // Market cards data for swiper
-  public marketCards = [
-    {
-      name: 'Natural Rubber',
-      price: '25,195.80',
-      change: '+113.80',
-      percentage: '0.45%',
-      direction: 'up'
-    },
-    {
-      name: 'Synthetic Rubber',
-      price: '18,750.50',
-      change: '-245.30',
-      percentage: '1.29%',
-      direction: 'down'
-    },
-    {
-      name: 'Butyl Rubber',
-      price: '32,450.75',
-      change: '+567.20',
-      percentage: '1.78%',
-      direction: 'up'
-    },
-    {
-      name: 'Neoprene Rubber',
-      price: '28,900.25',
-      change: '-89.45',
-      percentage: '0.31%',
-      direction: 'down'
-    },
-    {
-      name: 'EPDM Rubber',
-      price: '22,150.90',
-      change: '+334.60',
-      percentage: '1.53%',
-      direction: 'up'
-    },
-    {
-      name: 'Nitrile Rubber',
-      price: '19,875.40',
-      change: '-156.80',
-      percentage: '0.78%',
-      direction: 'down'
-    }
-  ];
+
 
   // Swiper options for automatic sliding
   public swiperOptions = {
@@ -143,64 +100,31 @@ export class DashboardPage implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
+    activatedRoute: ActivatedRoute,
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
     private platform: Platform,
     private commonService: CommonService,
-  ) { }
+  ) { 
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('Dashboard');   
+      register();
+      this.getDashboardData();  
+      this.subscription.add(
+        this.profileService.userName$.subscribe((data) => {
+          if (data && typeof data === 'string' && data.trim() !== '') {
+            this.profileName = data.split(' ')[0];
+          } else {
+            this.profileName = 'User';
+          }
+        })
+      );     
+
+    });
+  }
 
   ngOnInit() {
-    // Register Swiper elements
-    register();
-    this.getDashboardData();
-    // Set the page title when the page loads
-    this.pageTitleService.setPageTitle('Dashboard');
-    this.subscription.add(
-      this.profileService.userName$.subscribe((data) => {
-        if (data && typeof data === 'string' && data.trim() !== '') {
-          this.profileName = data.split(' ')[0];
-        } else {
-          this.profileName = 'User';
-        }
-      })
-    );
-    
-    // Add fallback data for testing if no data from API
-    setTimeout(() => {
-      if (!this.dashboardData.rubberRates.results || this.dashboardData.rubberRates.results.length === 0) {
-        console.log('No data from API, using fallback data for Swiper testing');
-        this.dashboardData.rubberRates.results = [
-          {
-            description: 'Natural Rubber',
-            rate: '25,195.80',
-            rate_deviation: '+113.80',
-            rate_deviation_percentage: 0.45,
-            direction: 'up'
-          },
-          {
-            description: 'Synthetic Rubber',
-            rate: '18,750.50',
-            rate_deviation: '-245.30',
-            rate_deviation_percentage: -1.29,
-            direction: 'down'
-          },
-          {
-            description: 'Butyl Rubber',
-            rate: '32,450.75',
-            rate_deviation: '+567.20',
-            rate_deviation_percentage: 1.78,
-            direction: 'up'
-          },
-          {
-            description: 'Neoprene Rubber',
-            rate: '28,900.25',
-            rate_deviation: '-89.45',
-            rate_deviation_percentage: -0.31,
-            direction: 'down'
-          }
-        ];
-      }
-    }, 2000);
+   
   }
 
   goToLiveBids(){

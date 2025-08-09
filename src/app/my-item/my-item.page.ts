@@ -46,11 +46,13 @@ export class MyItemPage implements OnInit {
     private pageTitleService: PageTitleService
     // private sharedService: SharedService,
   ) { 
-    this.getItemList();
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('My Items');
+      this.getItemList();
+    }); 
   }
 
-  ngOnInit() {
-    this.pageTitleService.setPageTitle('My Items');
+  ngOnInit() {  
   }
 
   goToAddItem(){
