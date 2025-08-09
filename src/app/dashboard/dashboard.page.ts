@@ -45,6 +45,9 @@ interface DashboardData {
   recentListedItems: {
     results: DashboardItem[];
   };
+  otherItems: {
+    results: DashboardItem[];
+  };
 }
 
 @Component({
@@ -63,7 +66,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     rubberRates: { results: [] },
     topSellerItems: { results: [] },
     topBuyerItems: { results: [] },
-    recentListedItems: { results: [] }
+    recentListedItems: { results: [] },
+    otherItems: { results: [] }
   };
   // Market cards data for swiper
   public marketCards = [
@@ -266,7 +270,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
             rubberRates: response.rubberRates || { results: [] },
             topSellerItems: response.topSellerItems || { results: [] },
             topBuyerItems: response.topBuyerItems || { results: [] },
-            recentListedItems: response.recentListedItems || { results: [] }
+            recentListedItems: response.recentListedItems || { results: [] },
+            otherItems: response.otherItems || { results: [] }
           };
         }
       },
@@ -278,7 +283,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
           rubberRates: { results: [] },
           topSellerItems: { results: [] },
           topBuyerItems: { results: [] },
-          recentListedItems: { results: [] }
+          recentListedItems: { results: [] },
+          otherItems: { results: [] }
         };
       }
     );

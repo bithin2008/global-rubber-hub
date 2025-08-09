@@ -32,6 +32,7 @@ export class BidHistoryPage implements OnInit {
   public totalCount: number = 0;
   public searchKeyword: string = '';
   public searchField: any = 5;
+  public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   constructor(
     public router: Router,
@@ -132,7 +133,7 @@ export class BidHistoryPage implements OnInit {
     }
     
     // Update current filter value
-    this.searchField = event;
+    this.searchFieldControl = event;
     
     // Switch case based on dropdown value
     switch (event) {

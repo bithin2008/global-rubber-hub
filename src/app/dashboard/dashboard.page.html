@@ -257,10 +257,35 @@
   <div class="section">
     <div class="section-title">
       Other Items
-      <ion-button size="small" class="btn no-style see-all-btn">See All</ion-button>
+      <ion-button *ngIf="(dashboardData?.otherItems?.results?.length || 0) > 5" size="small" class="btn no-style see-all-btn">See All</ion-button>
     </div>
-    <div class="other-list">
-      <ion-item class="no-style">
+    <div class="other-list" *ngIf="dashboardData && dashboardData.otherItems && dashboardData.otherItems.results && dashboardData.otherItems.results.length > 0">
+      <ion-item class="no-style" *ngFor="let item of (dashboardData.otherItems.results | slice:0:5)">
+        <ion-avatar slot="start">
+          <!-- <img src="assets/img/sail.png" /> -->
+          <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+        </ion-avatar>
+        <ion-label>
+          <h4>{{ item?.item_name || 'Item Name' }}</h4>
+          <p *ngIf="item?.company_name">{{ item.company_name }}</p>
+          <p *ngIf="item?.full_name">{{ item.full_name }}</p>
+          <h3>{{ item?.price || '0' }}</h3>
+        </ion-label>
+        <div class="btnCont">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+            <ion-icon class="edit" name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="btnCont multi" style="display: none;">
+          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+      <!-- <ion-item class="no-style">
         <ion-avatar slot="start">
           <img src="assets/img/sail.png" />
         </ion-avatar>
@@ -351,30 +376,7 @@
             <ion-icon name="checkmark-outline"></ion-icon>
           </ion-button>
         </div>
-      </ion-item>
-      <ion-item class="no-style">
-        <ion-avatar slot="start">
-          <img src="assets/img/sail.png" />
-        </ion-avatar>
-        <ion-label>
-          <h4>TATA Consultancy Services</h4>
-          <p>Dealer Name NP Enterprise PVT. LTD.</p>
-          <h3>25,195.80</h3>
-        </ion-label>
-        <div class="btnCont">
-          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
-            <ion-icon class="edit" name="create-outline"></ion-icon>
-          </ion-button>
-        </div>
-        <div class="btnCont multi" style="display: none;">
-          <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
-            <ion-icon name="checkmark-outline"></ion-icon>
-          </ion-button>
-        </div>
-      </ion-item>
+      </ion-item> -->
     </div>
   </div>
 </ion-content>
