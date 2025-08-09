@@ -10,6 +10,8 @@ import {
   IonTextarea,
   ModalController
 } from '@ionic/angular/standalone';
+import { CommonService } from '../services/common-service';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 
 @Component({
   selector: 'app-bid-modal',
@@ -33,20 +35,32 @@ export class BidModalComponent implements OnInit {
   
   public bidForm!: FormGroup;
   public submitted: boolean = false;
+  public enableLoader: boolean = false;
 
   constructor(
     private modalController: ModalController,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private commonService: CommonService,
   ) {}
 
   ngOnInit() {
 
     console.log(this.item);
     // Initialize the reactive form
+    const maxAllowedQuantity = Number(this.item?.quantity ?? Number.MAX_SAFE_INTEGER);
+
     this.bidForm = this.formBuilder.group({
       bid_amount: ['', [Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
-      bid_quantity: ['', [Validators.required,Validators.min(1), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
-      remark: ['', [Validators.required,Validators.minLength(5),Validators.maxLength(100)]]
+      bid_quantity: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(maxAllowedQuantity),
+          Validators.pattern(/^\d+(\.\d{1,2})?$/)
+        ]
+      ],
+      remark: ['', [Validators.minLength(5), Validators.maxLength(100)]]
     });
 
     // Ensure modal has proper bottom spacing after initialization
@@ -87,8 +101,36 @@ export class BidModalComponent implements OnInit {
       actual_bid_amount: parseFloat(this.item.price),
       remark: formValues.remark
     };
+
+    let url = 'bids/add';
+      let data={
+          item_id: bidData.item_id,
+          bid_amount: bidData.bid_amount,
+          bid_quantity: bidData.bid_quantity,
+          actual_bid_amount: bidData.actual_bid_amount,
+          remark: bidData.remark,
+          cancel_rejection_reason: null
+        
+      }
+    //this.enableLoader = true;
+    this.commonService.filepost(url, data).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.showToast('success', response.message, '', 2500, '');
+          this.modalController.dismiss(bidData);
+        } else {
+          this.showToast('error', response.message, '', 2500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
     
-    this.modalController.dismiss(bidData);
+    
   }
 
   // Convert UOM ID to display text
@@ -103,5 +145,26 @@ export class BidModalComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 } 

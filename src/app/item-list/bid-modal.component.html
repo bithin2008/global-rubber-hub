@@ -58,14 +58,17 @@
       </ion-item>
       <div class="validation-error" >
         <span *ngIf="submitted && f['bid_quantity'].errors">
-        <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
-      </span>
+          <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
+          <span *ngIf="f['bid_quantity'].errors['min']">Quantity must be at least 1</span>
+          <span *ngIf="f['bid_quantity'].errors['max']">Quantity cannot exceed {{ item?.quantity }} {{ getUOMText(item?.uom_id) }}</span>
+          <span *ngIf="f['bid_quantity'].errors['pattern']">Please enter a valid number</span>
+        </span>
       </div>
 
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Message to <span *ngIf="item.item_listed_for == 1">Seller</span> <span
-            *ngIf="item.item_listed_for == 2">Buyer</span><span class="required">*</span></ion-label>
+            *ngIf="item.item_listed_for == 2">Buyer</span></ion-label>
           <ion-textarea 
             class="form-field" 
             formControlName="remark"
@@ -95,3 +98,12 @@
     </div>
   </div>
 </ion-content> 
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/ajax-loader.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->

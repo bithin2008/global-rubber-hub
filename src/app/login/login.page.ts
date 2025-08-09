@@ -787,7 +787,7 @@ export class LoginPage implements OnInit {
         this.enableLoader = false;
         if (response.code == 200) {
           localStorage.setItem('token', response.access_token);
-          this.showToast('success', response.message, '', 4000, '/dashboard');
+          this.showToast('success', response.message, '', 2000, '/dashboard');
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');
         } else if (response.code == 423) {
@@ -823,7 +823,7 @@ export class LoginPage implements OnInit {
         this.enableLoader = false;
         if (response.code == 201) {
           localStorage.setItem('token', response.access_token);
-          this.showToast('success', response.message, '', 4000, '/dashboard');
+          this.showToast('success', response.message, '', 2000, '/dashboard');
         } else if (response.code == 423) {
           this.showToast('error', response.message, '', 2500, '');
         } else {

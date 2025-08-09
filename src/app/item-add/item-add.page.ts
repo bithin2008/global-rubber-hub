@@ -209,10 +209,7 @@ export class ItemAddPage implements OnInit {
             console.log('error ts: ', error.error);
             // this.toastr.error(error);
           }
-        );
-        
-     
-        
+        );          
   }
 
   async showToast(

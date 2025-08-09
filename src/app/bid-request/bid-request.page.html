@@ -40,7 +40,7 @@
     <div class="other-list" *ngIf="itemList.length > 0">
       <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
         <ion-avatar slot="start">
-          <img [src]="item.user_image" />
+          <img [src]="item.item_image[0]" />
         </ion-avatar>
         <ion-label>
           <h4 *ngIf="item.item_name">{{item.item_name}}</h4>
@@ -53,11 +53,11 @@
             <ion-icon class="edit" name="create-outline"></ion-icon>
           </ion-button>
         </div>
-        <div class="btnCont multi" style="display: none;">
+        <div class="btnCont multi" *ngIf="item.bid_status==0">
           <ion-button fill="clear" slot="end" class="btn no-style edit danger_badg">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg">
+          <ion-button fill="clear" slot="end" class="btn no-style edit success_badg" (click)="acceptBidConfirmation(item)">
             <ion-icon name="checkmark-outline"></ion-icon>
           </ion-button>
         </div>

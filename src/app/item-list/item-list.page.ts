@@ -245,8 +245,6 @@ export class ItemListPage implements OnInit {
       if (result.data) {
         // Handle the bid submission
         console.log('Bid submitted:', result.data);
-        // You can add your bid submission logic here
-        this.handleBidSubmission(result.data);
       }
     });
 
@@ -255,36 +253,7 @@ export class ItemListPage implements OnInit {
 
 
 
-  // Handle bid submission (you can customize this method)
-  handleBidSubmission(bidData: any) {
-    console.log('Processing bid:', bidData);
-    let url = 'bids/add';
-      let data={
-          item_id: bidData.item_id,
-          bid_amount: bidData.bid_amount,
-          bid_quantity: bidData.bid_quantity,
-          actual_bid_amount: bidData.actual_bid_amount,
-          remark: bidData.remark,
-          cancel_rejection_reason: null
-        
-      }
-    //this.enableLoader = true;
-    this.commonService.filepost(url, data).subscribe(
-      (response: any) => {
-        this.enableLoader = false;
-        if (response.code == 200) {
-          this.showToast('success', response.message, '', 2500, '');
-        } else {
-          this.showToast('error', response.message, '', 2500, '');
-        }
-      },
-      (error) => {
-        this.enableLoader = false;
-        console.log('error ts: ', error.error);
-        // this.toastr.error(error);
-      }
-    );
-  }
+ 
 
   async showToast(
     status: string,

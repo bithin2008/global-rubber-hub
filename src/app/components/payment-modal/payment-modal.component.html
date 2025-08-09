@@ -74,60 +74,10 @@
       </div>
     </div>
 
-    <!-- Selected Plan Summary -->
-    <div class="selected-plan-summary" *ngIf="selectedPlan">
-      <h3>You've Selected: {{ selectedPlan.name }}</h3>
-      <div class="summary-details">
-        <div class="summary-item">
-          <span>Plan:</span>
-          <span>{{ selectedPlan.name }}</span>
-        </div>
-        <div class="summary-item">
-          <span>Duration:</span>
-          <span>{{ selectedPlan.duration }}</span>
-        </div>
-        <div class="summary-item">
-          <span>Amount:</span>
-          <span class="amount">{{ formatAmount(selectedPlan.amount) }}</span>
-        </div>
-        <div class="summary-item" *ngIf="selectedPlan.originalPrice">
-          <span>You Save:</span>
-          <span class="savings">{{ formatAmount(calculateSavings(selectedPlan)) }}</span>
-        </div>
-      </div>
-    </div>
+  
+   
 
-    <!-- Payment Methods Info -->
-    <div class="payment-methods-section">
-      <h3>Available Payment Methods</h3>
-      <div class="payment-methods-grid">
-        <div class="payment-method" *ngFor="let method of paymentMethods">
-          <ion-icon [name]="method.icon" class="method-icon"></ion-icon>
-          <div class="method-info">
-            <div class="method-name">{{ method.name }}</div>
-            <div class="method-description">{{ method.description }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Security Info -->
-    <div class="security-info">
-      <ion-icon name="shield-checkmark" class="security-icon"></ion-icon>
-      <div class="security-text">
-        <strong>100% Secure Payment</strong>
-        <p>Your payment is secured by Razorpay with bank-level security</p>
-      </div>
-    </div>
-
-    <!-- Auto-Capture Info -->
-    <div class="auto-capture-info">
-      <ion-icon name="flash" class="auto-capture-icon"></ion-icon>
-      <div class="auto-capture-text">
-        <strong>Instant Payment Processing</strong>
-        <p>{{ getAutoCaptureInfo() }}</p>
-      </div>
-    </div>
+   
 
     <!-- Action Buttons -->
     <div class="action-buttons">

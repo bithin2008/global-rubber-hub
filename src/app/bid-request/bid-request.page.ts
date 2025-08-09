@@ -1,9 +1,9 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton,IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController, AlertController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AlertController, MenuController, PopoverController } from '@ionic/angular';
+import { MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { CommonService } from '../services/common-service';
 import * as _ from 'lodash';
@@ -39,13 +39,14 @@ export class BidRequestPage implements OnInit {
     public router: Router,
     public modalController: ModalController,
     public activatedRoute: ActivatedRoute,
+    private alertController: AlertController,
     private menu: MenuController,
     private commonService: CommonService,
     private popoverController: PopoverController,
     private authenticationService: AuthService,
     private pageTitleService: PageTitleService
     // private sharedService: SharedService,
-  ) { 
+  ) {
     this.getItemList();
   }
 
@@ -58,10 +59,10 @@ export class BidRequestPage implements OnInit {
       module: 2,
       start: this.page,
       limit: 10,
-      orderfield: this.searchField==5 ? 'item_master.added_on':this.searchField,
+      orderfield: this.searchField == 5 ? 'item_master.added_on' : this.searchField,
       orderby: this.orderBy,
       keyword: this.searchKeyword ? this.searchKeyword : '',
-      options:  this.searchField==5 ? 'item_master.added_on':this.searchField
+      options: this.searchField == 5 ? 'item_master.added_on' : this.searchField
 
     }
     if (this.page == 0) {
@@ -132,10 +133,10 @@ export class BidRequestPage implements OnInit {
     if (this.searchField) {
       this.filterWarning = false;
     }
-    
+
     // Update current filter value
     this.searchFieldControl = event;
-    
+
     // Switch case based on dropdown value
     switch (event) {
       case 1: // Price (Low to High)
@@ -143,42 +144,116 @@ export class BidRequestPage implements OnInit {
         this.orderBy = 'asc';
         console.log('Filtering by Price (Low to High)');
         break;
-        
+
       case 2: // Price (High to Low)
         this.searchField = 'item_master.price';
         this.orderBy = 'desc';
         console.log('Filtering by Price (High to Low)');
         break;
-        
+
       case 3: // Quantity (Low to High)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'asc';
         console.log('Filtering by Quantity (Low to High)');
         break;
-        
+
       case 4: // Quantity (High to Low)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'desc';
         console.log('Filtering by Quantity (High to Low)');
         break;
-        
+
       case 5: // Most Recent
         this.searchField = 'item_master.added_on';
         this.orderBy = 'desc';
         console.log('Filtering by Most Recent');
         break;
-        
+
       default:
         this.searchField = 'item_master.price';
         this.orderBy = 'asc';
         console.log('Default filter: Price (Low to High)');
         break;
     }
-    
+
     this.page = 0;
     this.itemList = [];
     this.getItemList();
-  } 
+  }
+
+  async acceptBidConfirmation(item: any) {
+
+    const alert = await this.alertController.create({
+      header: 'Accept Bid',
+      message: 'Are you sure you want to accept bid?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'alert-cancel',
+          handler: (blah:any) => {
+
+          }
+        }, {
+          text: 'Ok',
+          cssClass: 'alert-ok',
+          handler: () => {
+            this.acceptBid(item);
+          }
+        }
+      ]
+    });
+    await alert.present();   
+  }
+
+  acceptBid(item: any) {
+    let url = 'bids/add';
+    let data = {
+      item_id: item.id,
+      bid_amount: item.bid_amount,
+      actual_bid_amount: item.actual_bid_amount,
+      bid_quantity: parseInt(item.bid_quantity),
+      bid_status: 1
+    }
+    this.enableLoader = true;
+    this.commonService.post(url, data).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.showToast('success', response.message, '', 2500, '');
+          this.getItemList();
+        } else {
+          this.showToast('error', response.message, '', 2500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
+  }
 
 }
 
