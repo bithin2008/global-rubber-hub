@@ -40,7 +40,7 @@
     <div class="other-list" *ngIf="itemList.length > 0">
       <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
         <ion-avatar slot="start">
-          <img [src]="item.item_image[0]" />
+          <img [src]="item.item_image[0]" (error)="onImageError($event)" />
         </ion-avatar>
         <ion-label>
           <h4 *ngIf="item.item_name">{{item.item_name}}</h4>

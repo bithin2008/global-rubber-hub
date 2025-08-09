@@ -35,6 +35,7 @@ export class MyItemPage implements OnInit {
   public searchField: any = 5;
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
+  public fallbackImg: string = 'assets/img/item-placeholder.jpg';
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -57,6 +58,13 @@ export class MyItemPage implements OnInit {
 
   goToAddItem(){
     this.router.navigate(['/item-add']);
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement | null;
+    if (target && target.src !== this.fallbackImg) {
+      target.src = this.fallbackImg;
+    }
   }
 
   getItemList() {
