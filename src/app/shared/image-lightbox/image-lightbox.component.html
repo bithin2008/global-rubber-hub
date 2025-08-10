@@ -1,0 +1,14 @@
+<ion-content class="image-lightbox">
+  <div class="lightbox-header">
+    <ion-button fill="clear" class="close-btn" (click)="dismiss()">Close</ion-button>
+  </div>
+  <swiper-container pagination="true" slides-per-view="1" [initial-slide]="startIndex">
+    <swiper-slide *ngFor="let img of images">
+      <div class="img-wrapper">
+        <img [src]="img" />
+      </div>
+    </swiper-slide>
+  </swiper-container>
+</ion-content>
+
+

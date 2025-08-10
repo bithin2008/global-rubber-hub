@@ -1,0 +1,59 @@
+.plans-bottom-sheet::part(content) {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.plans-modal {
+  padding: 12px 12px 24px;
+}
+
+.drag-handle {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: #cfd8dc;
+  margin: 8px auto 12px;
+}
+
+.plan {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 10px 8px;
+  background: #fff;
+}
+
+.plan.active {
+  background: #e8f5e9;
+  border-color: #2DD36F;
+}
+
+.plan-title {
+  font-size: 12px;
+  color: #78909c;
+  letter-spacing: 0.6px;
+}
+
+.plan-price {
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.badge {
+  background: #2DD36F;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 10px;
+  margin-left: 8px;
+}
+
+.pay-btn {
+  margin: 14px 8px 8px;
+}
+
+.cancel-btn {
+  margin: 0 8px;
+}
+
+

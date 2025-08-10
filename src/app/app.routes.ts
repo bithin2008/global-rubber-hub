@@ -62,4 +62,8 @@ export const routes: Routes = [
     path: 'bid-request',
     loadComponent: () => import('./bid-request/bid-request.page').then( m => m.BidRequestPage)
   },
+  {
+    path: 'trusted-seller',
+    loadComponent: () => import('./trusted-seller/trusted-seller.page').then( m => m.TrustedSellerPage)
+  },
 ];

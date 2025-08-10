@@ -93,6 +93,10 @@
   }
 }
 
+.dashboard-wrapper .worning_badg{
+  --border-radius: 50% !important;
+}
+
 // Mobile responsive adjustments
 // @media (max-width: 768px) {
 //   .market-stats-swiper {

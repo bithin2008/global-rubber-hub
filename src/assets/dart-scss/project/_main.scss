@@ -1665,6 +1665,9 @@ ion-card-content {
           --background: red;
           margin-right: 5px;
         }
+        &.worning_badg {
+          --background: #fb7805 !important;
+        }
         &.success_badg {
           --background: #05611d;
         }

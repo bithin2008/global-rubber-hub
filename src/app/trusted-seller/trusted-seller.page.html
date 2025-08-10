@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>trusted-seller</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">trusted-seller</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</ion-content>
+<ion-footer>
+  <ion-button class="btn btn-grn no-style" expand="block" type="button" (click)="openPlanModal()">Upgrade Now</ion-button>
+</ion-footer>
+
+<!-- Bottom Sheet Modal (inline, no extra component) -->
+<ion-modal [isOpen]="isPlanModalOpen" (didDismiss)="closePlanModal()" cssClass="plans-bottom-sheet" [initialBreakpoint]="0.35" [breakpoints]="[0.35, 0.75]">
+  <ng-template>
+    <div class="plans-modal">
+      <div class="drag-handle"></div>
+
+      <div class="plan plan--monthly" *ngFor="let package of packageList"  (click)="selectPlan(package)" [class.active]="selectedPackage===package">
+        <div class="plan-title">{{package.name}}<br> <small>{{package.description}}</small></div>
+        <div class="plan-price">₹ {{package.price}}/{{ formatDuration(package.duration) }}</div>
+      </div>
+
+    
+
+      <ion-button class="btn btn-grn no-style pay-btn" expand="block" type="button" (click)="paySelectedPlan()">
+        Pay ₹ {{ selectedPackage?.price | number:'1.0-0' }}
+      </ion-button>
+      <ion-button class="btn no-style cancel-btn" expand="block" type="button" (click)="closePlanModal()">Cancel</ion-button>
+    </div>
+  </ng-template>
+</ion-modal>

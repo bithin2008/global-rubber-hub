@@ -13,6 +13,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
+import { ImageLightboxComponent } from '../shared/image-lightbox/image-lightbox.component';
 
 @Component({
   selector: 'app-item-list',
@@ -94,6 +95,15 @@ export class ItemListPage implements OnInit {
         console.log('error', error);
       }
     );
+  }
+
+  async openLightbox(images: string[], startIndex: number = 0) {
+    const modal = await this.modalController.create({
+      component: ImageLightboxComponent,
+      componentProps: { images, startIndex },
+      cssClass: 'image-lightbox-modal'
+    });
+    return await modal.present();
   }
 
   loadData(event: any) {
