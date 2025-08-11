@@ -128,7 +128,7 @@ export class TrustedSellerPage implements OnInit {
 
     try {
       // Generate order ID from backend API
-      const orderId = await this.generateOrderId(this.selectedPackage.price);
+      const orderId = await this.generateOrderId(this.selectedPackage.price + this.selectedPackage.price*18/100);
       console.log('✅ Order ID generated:', orderId);
 
       // Get user details from local storage or service
@@ -142,7 +142,7 @@ export class TrustedSellerPage implements OnInit {
       // Initialize Razorpay payment directly
       const options = {
         key: 'rzp_test_pukxv7Ki2WgVYL',
-        amount: this.selectedPackage.price * 100, // ₹1 for testing
+        amount: (this.selectedPackage.price + this.selectedPackage.price*18/100) * 100, // ₹1 for testing
         currency: 'INR',
         name: 'Global Rubber Hub',
         description: 'Test Payment',

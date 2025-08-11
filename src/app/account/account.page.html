@@ -15,7 +15,7 @@
       <div class="content">
         <ion-title class="name">{{profileDetails.full_name}}</ion-title>
         <div class="addressCall">
-            <p class="address" *ngIf="profileDetails.city && profileDetails.state"><img src="assets/img/icons/location_on.svg" alt="" title="" >{{profileDetails.city}}, {{profileDetails.state}}</p>
+            <p class="address" *ngIf="profileDetails.city && profileDetails.state"><img src="assets/img/icons/location_on.svg" alt="" title="" >{{profileDetails.state}}</p>
             <p class="address" *ngIf="!profileDetails.city && !profileDetails.state">N/A</p>
             <ion-button class="btn no-style"><img src="assets/img/icons/mobile.svg" alt="" title="">{{profileDetails.country_code}}{{profileDetails.phone}}</ion-button>
         </div>
@@ -30,7 +30,7 @@
           <h3>Wallet Balance</h3>
           <h3 style="color: #2b8a3e">{{profileDetails.points}}</h3>
         </ion-label>
-        <ion-button class="btn no-style subscribe"><ion-icon name="refresh-circle-outline"></ion-icon>&nbsp;Add</ion-button>
+        <ion-button class="btn no-style subscribe" (click)="openWalletModal()"><ion-icon name="refresh-circle-outline"></ion-icon>&nbsp;Add</ion-button>
       </ion-item> 
 
       <ion-item class="account-row no-style accountItem">
@@ -149,4 +149,34 @@
 </ion-content>
 
 <app-footer></app-footer>
+
+<!-- Wallet Recharge Bottom Sheet -->
+<ion-modal [isOpen]="isWalletModalOpen" (didDismiss)="closeWalletModal()" cssClass="plans-bottom-sheet" [initialBreakpoint]="0.35" [breakpoints]="[0.35, 0.6]">
+  <ng-template>
+    <div class="plans-modal">
+      <div class="drag-handle"></div>
+
+      <div class="plan plan--monthly" *ngFor="let package of packageList"  (click)="selectPlan(package)" [class.active]="selectedPackage===package">
+        <div class="plan-title">{{package.name}}<br> <small>{{package.description}}</small></div>
+        <div class="plan-price">₹ {{package.price}}</div>
+      </div>
+
+    
+
+      <ion-button class="btn btn-grn no-style pay-btn" expand="block" type="button" (click)="paySelectedPlan()">
+        Pay ₹ {{ totalWithGst | number:'1.2-2' }}
+      </ion-button>
+      <ion-button class="btn no-style cancel-btn" expand="block" type="button" (click)="closeWalletModal()">Cancel</ion-button>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/ajax-loader.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->
 
