@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar,ModalController} from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { IonicModule } from '@ionic/angular';
@@ -9,6 +9,7 @@ import { CommonService } from '../services/common-service';
 import { ActivatedRoute } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
 import { RazorpayService } from '../services/razorpay.service';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 @Component({
   selector: 'app-trusted-seller',
   templateUrl: './trusted-seller.page.html',
@@ -148,12 +149,12 @@ export class TrustedSellerPage implements OnInit {
         email: 'customer@example.com',  // ✅ required
         contact: '9999999999'           // ✅ required
       };
-
+      console.log("selectedPackage", this.selectedPackage);
 
       // Initialize Razorpay payment directly
       const options = {
         key: 'rzp_test_pukxv7Ki2WgVYL',
-        amount: this.selectedPackage.price*100, // ₹1 for testing
+        amount: this.selectedPackage.price * 100, // ₹1 for testing
         currency: 'INR',
         name: 'Global Rubber Hub',
         description: 'Test Payment',
@@ -169,15 +170,8 @@ export class TrustedSellerPage implements OnInit {
         handler: (response: any) => {
           console.log('🎉 Payment successful:', response);
           this.isProcessing = false;
-          
-          // Close modal with success response
-          this.modalController.dismiss({
-            success: true,
-            plan: this.selectedPackage,
-            payment: response,
-            orderId: orderId,
-            message: `Payment successful! Payment ID: ${response.razorpay_payment_id}`
-          });
+          this.capturePayment(response)
+
         },
         modal: {
           ondismiss: () => {
@@ -201,7 +195,7 @@ export class TrustedSellerPage implements OnInit {
       // Create and open Razorpay instance
       console.log('🚀 Opening Razorpay payment gateway...');
       const rzp = new (window as any).Razorpay(options);
-      
+
       // Handle payment failures
       rzp.on('payment.failed', (response: any) => {
         console.error('❌ Payment failed:', response);
@@ -213,7 +207,7 @@ export class TrustedSellerPage implements OnInit {
           message: response.error?.description || 'Payment failed'
         });
       });
-      
+
       rzp.open();
 
     } catch (error: any) {
@@ -225,6 +219,57 @@ export class TrustedSellerPage implements OnInit {
         error: error.message || error.error || 'Payment failed. Please try again.'
       });
     }
+  }
+
+  capturePayment(razorPay: any) {
+    let url = "general/capture-payment";
+    let data = {
+      recharge_for: 2,
+      razorpay_order_id: razorPay.razorpay_order_id,
+      razorpay_payment_id: razorPay.razorpay_payment_id,
+      razorpay_signature: razorPay.razorpay_signature,
+      total_amount: this.selectedPackage.price + this.selectedPackage.price*18/100,
+      package_amount: this.selectedPackage.price,
+     tax_amount: this.selectedPackage.price*18/100,
+      package_id: this.selectedPackage.id
+    }
+    this.commonService.post(url, data).subscribe(
+      (response) => {
+        console.log("response", response);
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.modalController.dismiss();
+          this.showToast('success', response.message, '', 2000, '');
+        } else {
+          this.showToast('error', response.message, '', 2000, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log("error ts: ", error);
+      }
+    );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 
 }
