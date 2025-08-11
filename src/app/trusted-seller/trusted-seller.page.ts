@@ -64,7 +64,7 @@ export class TrustedSellerPage implements OnInit {
     let data = {
       package_for: 2
     }
-    let url = `user/package-details`;
+    let url = `general/package-details`;
     this.commonService.post(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
