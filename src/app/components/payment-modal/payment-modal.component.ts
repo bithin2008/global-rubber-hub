@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { RazorpayService, PaymentPlan } from '../../services/razorpay.service';
 import { CommonService } from '../../services/common-service';
+import { ActivatedRoute } from '@angular/router';
+import { PageTitleService } from 'src/app/services/page-title.service';
+import { ToastModalComponent } from 'src/app/toast-modal/toast-modal.component';
 
 @Component({
   selector: 'app-payment-modal',
@@ -13,159 +15,64 @@ import { CommonService } from '../../services/common-service';
   imports: [IonicModule, CommonModule]
 })
 export class PaymentModalComponent implements OnInit {
-  plans: PaymentPlan[] = [];
-  selectedPlan: PaymentPlan | null = null;
-  isProcessing: boolean = false;
+  public enableLoader: boolean = false;
+  public packageList: any[] = [];
+  public selectedPackage: any | null = null;
+  public isProcessing: boolean = false;
+
   userDetails: any = {};
-
-  // Payment method options
-  paymentMethods = [
-    { id: 'card', name: 'Credit/Debit Card', icon: 'card-outline', description: 'Visa, Mastercard, Rupay' },
-    { id: 'upi', name: 'UPI', icon: 'phone-portrait-outline', description: 'Google Pay, PhonePe, Paytm' },
-    { id: 'netbanking', name: 'Net Banking', icon: 'business-outline', description: 'All major banks' },
-    { id: 'wallet', name: 'Wallets', icon: 'wallet-outline', description: 'Paytm, Mobikwik, Amazon Pay' },
-    { id: 'emi', name: 'EMI', icon: 'card', description: 'No cost EMI available' }
-  ];
-
   constructor(
-    private modalController: ModalController,
-    private razorpayService: RazorpayService,
-    private commonService: CommonService
-  ) { }
+    private commonService: CommonService,
+    private activatedRoute: ActivatedRoute,
+    private pageTitleService: PageTitleService,
+    private modalController: ModalController
+  ) {
+    activatedRoute.params.subscribe(val => {
+      this.pageTitleService.setPageTitle('Payment Seller');
+      this.getPackageList();
+    });
+  }
 
   ngOnInit() {
-    this.plans = this.razorpayService.getPlans();
-    this.selectedPlan = this.plans.find(plan => plan.popular) || this.plans[0];
+   
+  }
 
-    // Check if Razorpay is available
-    if (!this.razorpayService.isRazorpayAvailable()) {
-      console.error('Razorpay not available in payment modal');
+  get totalWithGst(): number {
+    const price = Number(this.selectedPackage?.price ?? 0);
+    const tax = price * 0.18;
+    return price + tax;
+  }
+
+  getPackageList() {
+    let data = {
+      package_for: 1
     }
+    let url = `general/package-details`;
+    this.commonService.post(url, data).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.packageList = response.results;
+          if (this.packageList && this.packageList.length > 0) {
+            this.selectedPackage = this.packageList[0];
+          }
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error', error);
+      }
+    );
+  }
+
+  selectPackage(pkg: any) {
+    this.selectedPackage = pkg;
   }
 
   closeModal() {
     this.modalController.dismiss();
   }
 
-  selectPlan(plan: PaymentPlan) {
-    this.selectedPlan = plan;
-  }
-
-  formatAmount(amount: number): string {
-    return this.razorpayService.formatAmount(amount);
-  }
-
-  async proceedToPay() {
-    if (!this.selectedPlan) {
-      return;
-    }
-
-    // Check if Razorpay is available
-    if (!this.razorpayService.isRazorpayAvailable()) {
-      this.modalController.dismiss({
-        success: false,
-        error: 'Razorpay payment gateway is not available. Please refresh the page and try again.'
-      });
-      return;
-    }
-
-    this.isProcessing = true;
-
-    try {
-      // Generate order ID from backend API
-      const orderId = await this.generateOrderId(this.selectedPlan.amount);
-      console.log('✅ Order ID generated:', orderId);
-
-      // Get user details from local storage or service
-      const userDetails = {
-        name: 'Customer',
-        email: 'customer@example.com',  // ✅ required
-        contact: '9999999999'           // ✅ required
-      };
-
-
-      // Initialize Razorpay payment directly
-      const options = {
-        key: 'rzp_test_pukxv7Ki2WgVYL',
-        amount: 100, // ₹1 for testing
-        currency: 'INR',
-        name: 'Global Rubber Hub',
-        description: 'Test Payment',
-        order_id: orderId,
-        prefill: {
-          name: userDetails.name,
-          email: userDetails.email,
-          contact: userDetails.contact
-        },
-        theme: {
-          color: '#2DD36F'
-        },
-        handler: (response: any) => {
-          console.log('🎉 Payment successful:', response);
-          this.isProcessing = false;
-          
-          // Close modal with success response
-          this.modalController.dismiss({
-            success: true,
-            plan: this.selectedPlan,
-            payment: response,
-            orderId: orderId,
-            message: `Payment successful! Payment ID: ${response.razorpay_payment_id}`
-          });
-        },
-        modal: {
-          ondismiss: () => {
-            console.log('⚠️ Payment dismissed by user');
-            this.isProcessing = false;
-            this.modalController.dismiss({
-              success: false,
-              error: 'Payment cancelled by user',
-              orderId: orderId,
-              message: 'Payment was cancelled'
-            });
-          }
-        }
-      };
-
-      // Check if Razorpay is available
-      if (typeof (window as any).Razorpay === 'undefined') {
-        throw new Error('Razorpay is not loaded. Please refresh the page and try again.');
-      }
-
-      // Create and open Razorpay instance
-      console.log('🚀 Opening Razorpay payment gateway...');
-      const rzp = new (window as any).Razorpay(options);
-      
-      // Handle payment failures
-      rzp.on('payment.failed', (response: any) => {
-        console.error('❌ Payment failed:', response);
-        this.isProcessing = false;
-        this.modalController.dismiss({
-          success: false,
-          error: response.error,
-          orderId: orderId,
-          message: response.error?.description || 'Payment failed'
-        });
-      });
-      
-      rzp.open();
-
-    } catch (error: any) {
-      // Payment failed
-      this.isProcessing = false;
-      console.error('Payment error in modal:', error);
-      this.modalController.dismiss({
-        success: false,
-        error: error.message || error.error || 'Payment failed. Please try again.'
-      });
-    }
-  }
-
-  /**
-   * Generate order ID from backend API
-   * @param amount - Payment amount in paise
-   * @returns Promise<string> - Generated order ID
-   */
   private async generateOrderId(amount: number): Promise<string> {
     try {
       console.log('🔄 Generating order ID for amount:', amount);
@@ -205,48 +112,153 @@ export class PaymentModalComponent implements OnInit {
     }
   }
 
+  async proceedToPay(){
+    if (!this.selectedPackage) {
+      return;
+    }
+    this.isProcessing = true;
 
-
-
-  // Get current auto-capture status info
-  getAutoCaptureInfo(): string {
-    return 'Payments are automatically captured immediately upon successful transaction.';
-  }
-
-  calculateSavings(plan: PaymentPlan): number {
-    if (!plan.originalPrice || !plan.discount) return 0;
-    return plan.originalPrice - plan.amount;
-  }
-
-  /**
-   * Get user details from local storage or service
-   */
-  private async getUserDetails(): Promise<any> {
     try {
-      // Try to get user details from local storage
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        const user = JSON.parse(userData);
-        return {
-          full_name: user.full_name || user.name || 'Customer',
-          email: user.email || '',
-          phone: user.phone || user.contact || ''
-        };
+      // Generate order ID from backend API
+      const orderId = await this.generateOrderId(this.totalWithGst);
+      console.log('✅ Order ID generated:', orderId);
+
+      // Get user details from local storage or service
+      const userDetails = {
+        name: 'Customer',
+        email: 'customer@example.com',  // ✅ required
+        contact: '9999999999'           // ✅ required
+      };
+      console.log("selectedPackage", this.selectedPackage);
+
+      // Initialize Razorpay payment directly
+      const options = {
+        key: 'rzp_test_pukxv7Ki2WgVYL',
+        amount: this.totalWithGst * 100, // ₹1 for testing
+        currency: 'INR',
+        name: 'Global Rubber Hub',
+        description: 'Test Payment',
+        order_id: orderId,
+        prefill: {
+          name: userDetails.name,
+          email: userDetails.email,
+          contact: userDetails.contact
+        },
+        theme: {
+          color: '#2DD36F'
+        },
+        handler: (response: any) => {
+          console.log('🎉 Payment successful:', response);
+          this.isProcessing = false;
+          this.capturePayment(response)
+
+        },
+        modal: {
+          ondismiss: () => {
+            console.log('⚠️ Payment dismissed by user');
+            this.isProcessing = false;
+            this.modalController.dismiss({
+              success: false,
+              error: 'Payment cancelled by user',
+              orderId: orderId,
+              message: 'Payment was cancelled'
+            });
+          }
+        }
+      };
+
+      // Check if Razorpay is available
+      if (typeof (window as any).Razorpay === 'undefined') {
+        throw new Error('Razorpay is not loaded. Please refresh the page and try again.');
       }
 
-      // Fallback to default values
-      return {
-        full_name: 'Customer',
-        email: '',
-        phone: ''
-      };
-    } catch (error) {
-      console.error('Error getting user details:', error);
-      return {
-        full_name: 'Customer',
-        email: '',
-        phone: ''
-      };
+      // Create and open Razorpay instance
+      console.log('🚀 Opening Razorpay payment gateway...');
+      const rzp = new (window as any).Razorpay(options);
+
+      // Handle payment failures
+      rzp.on('payment.failed', (response: any) => {
+        console.error('❌ Payment failed:', response);
+        this.isProcessing = false;
+        this.modalController.dismiss({
+          success: false,
+          error: response.error,
+          orderId: orderId,
+          message: response.error?.description || 'Payment failed'
+        });
+      });
+
+      rzp.open();
+
+    } catch (error: any) {
+      // Payment failed
+      this.isProcessing = false;
+      console.error('Payment error in modal:', error);
+      this.modalController.dismiss({
+        success: false,
+        error: error.message || error.error || 'Payment failed. Please try again.'
+      });
     }
   }
+
+  capturePayment(razorPay: any) {
+    let url = "general/capture-payment";
+    const price = Number(this.selectedPackage?.price ?? 0);
+    const tax = price * 0.18;
+    const total = price + tax;
+    let data = {
+      recharge_for: 1,
+      razorpay_order_id: razorPay.razorpay_order_id,
+      razorpay_payment_id: razorPay.razorpay_payment_id,
+      razorpay_signature: razorPay.razorpay_signature,
+      total_amount: total,
+      package_amount: price,
+     tax_amount: tax,
+      package_id: this.selectedPackage.id
+    }
+    this.commonService.post(url, data).subscribe(
+      (response) => {
+        console.log("response", response);
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.modalController.dismiss(response);
+       // this.showToast('success', response.message, '', 2000, '/account');
+        } else {
+          this.showToast('error', response.message, '', 2000, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log("error ts: ", error);
+      }
+    );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
+  }
+ 
+
+
+
+
+ 
+
 }

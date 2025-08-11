@@ -8,7 +8,6 @@ import { IonicModule } from '@ionic/angular';
 import { CommonService } from '../services/common-service';
 import { ActivatedRoute } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
-import { RazorpayService } from '../services/razorpay.service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 @Component({
   selector: 'app-trusted-seller',
@@ -28,7 +27,6 @@ export class TrustedSellerPage implements OnInit {
     private commonService: CommonService,
     private activatedRoute: ActivatedRoute,
     private pageTitleService: PageTitleService,
-    private razorpayService: RazorpayService,
     private modalController: ModalController
   ) {
     activatedRoute.params.subscribe(val => {
@@ -126,16 +124,6 @@ export class TrustedSellerPage implements OnInit {
     if (!this.selectedPackage) {
       return;
     }
-
-    // Check if Razorpay is available
-    if (!this.razorpayService.isRazorpayAvailable()) {
-      this.modalController.dismiss({
-        success: false,
-        error: 'Razorpay payment gateway is not available. Please refresh the page and try again.'
-      });
-      return;
-    }
-
     this.isProcessing = true;
 
     try {
@@ -239,7 +227,7 @@ export class TrustedSellerPage implements OnInit {
         this.enableLoader = false;
         if (response.code == 200) {
           this.modalController.dismiss();
-          this.showToast('success', response.message, '', 2000, '');
+        this.showToast('success', response.message, '', 2000, '/account');
         } else {
           this.showToast('error', response.message, '', 2000, '');
         }

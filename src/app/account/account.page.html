@@ -28,7 +28,7 @@
         <div class="icon"><img src="assets/img/icons/wallet.svg" alt="" title=""></div>
         <ion-label>
           <h3>Wallet Balance</h3>
-          <h3 style="color: #2b8a3e">50.000</h3>
+          <h3 style="color: #2b8a3e">{{profileDetails.points}}</h3>
         </ion-label>
         <ion-button class="btn no-style subscribe"><ion-icon name="refresh-circle-outline"></ion-icon>&nbsp;Add</ion-button>
       </ion-item> 
@@ -37,20 +37,21 @@
         <div class="icon"><img src="assets/img/icons/legend_toggle.svg" alt="" title=""></div>
         <ion-label>
           <h3>Mandi Pro</h3>
-          <p>No Active Plan</p>
+          <p *ngIf="profileDetails.is_pro_user != 1">No Active Plan</p>
+          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDateMandiPro">Package expired on {{profileDetails.pro_user_expiry | date:'dd-MM-yyyy'}}</p>
         </ion-label>
-        <ion-button class="btn no-style subscribe" (click)="onMandiProSubscribe()">Subscribe</ion-button>
+        <ion-button class="btn no-style subscribe" *ngIf="profileDetails.is_pro_user != 1" (click)="onMandiProSubscribe()">Subscribe</ion-button>
       </ion-item>
 
       <ion-item class="account-row no-style accountItem">
         <div class="icon"><img src="assets/img/icons/gpp_maybe.svg" alt="" title=""></div>
         <ion-label>
           <h3>Trusted Seller</h3>
-          <p>No Active Plan</p>
+          <p *ngIf="profileDetails.is_trusted != 1">No Active Plan</p>
+          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDate">Package expired on {{profileDetails.trusted_package_expiry | date:'dd-MM-yyyy'}}</p>
         </ion-label>
-        <ion-button class="btn no-style subscribe" (click)="onTrustedSellerSubscribe()">Subscribe</ion-button>
-      </ion-item>
-      
+        <ion-button class="btn no-style subscribe" *ngIf="profileDetails.is_trusted != 1" (click)="onTrustedSellerSubscribe()">Subscribe</ion-button>
+      </ion-item>      
     </ion-list>
 
     <ion-list class="no-style card">

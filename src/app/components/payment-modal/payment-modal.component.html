@@ -21,11 +21,10 @@
     <!-- Plans Grid -->
     <div class="plans-grid">
       <div 
-        *ngFor="let plan of plans" 
+        *ngFor="let package of packageList" 
         class="plan-card"
-        [class.selected]="selectedPlan?.id === plan.id"
-        [class.popular]="plan.popular"
-        (click)="selectPlan(plan)">
+        [class.selected]="selectedPackage?.id === package.id"
+        (click)="selectPackage(package)">
         
         <!-- Popular Badge -->
         <!-- <div class="popular-badge" *ngIf="plan.popular">
@@ -35,40 +34,38 @@
 
         <!-- Plan Header -->
         <div class="plan-header">
-          <h3>{{ plan.name }}</h3>
+          <h3>{{ package.name }}</h3>
           <!-- <p class="plan-description">{{ plan.description }}</p> -->
         </div>
-
         <!-- Pricing -->
         <div class="pricing">
           <div class="current-price">
-            {{ formatAmount(plan.amount) }}
-            <!-- <span class="duration">/ {{ plan.duration }}</span> -->
+            ₹{{ package.price | number:'1.2-2' }}  <small>(+ 18% GST)           </small>
           </div>
-          
-          <!-- <div class="original-price" *ngIf="plan.originalPrice">
-            <span class="crossed-price">{{ formatAmount(plan.originalPrice) }}</span>
-            <span class="discount">{{ plan.discount }}% OFF</span>
-          </div> -->
-          
-          <!-- <div class="savings" *ngIf="plan.originalPrice">
-            Save {{ formatAmount(calculateSavings(plan)) }}
-          </div> -->
         </div>
 
         <!-- Features -->
         <div class="features">
-          <div class="feature" *ngFor="let feature of plan.features.slice(0, 4)">
+          <div class="feature" *ngIf="package.coin>0">
             <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
-            {{ feature }}
+            Coins: <b>{{ package.coin }}</b>
           </div>
-          <!-- <div class="more-features" *ngIf="plan.features.length > 4">
-            +{{ plan.features.length - 4 }} more features
-          </div> -->
+         <div class="feature" >
+            <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+            Participate in live bidding & promotions
+          </div>
+          <div class="feature" >
+            <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+            Verified visibility to buyers and sellers
+          </div>
+           <div class="feature" >
+            <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+            Priority Customer Support
+          </div>
         </div>
 
         <!-- Selection Indicator -->
-        <div class="selection-indicator" *ngIf="selectedPlan?.id === plan.id">
+        <div class="selection-indicator" *ngIf="selectedPackage?.id === package.id">
           <ion-icon name="checkmark-circle"></ion-icon>
         </div>
       </div>
@@ -85,12 +82,10 @@
         expand="block" 
         size="large" 
         (click)="proceedToPay()" 
-        [disabled]="isProcessing || !selectedPlan"
+        [disabled]="isProcessing || !selectedPackage"
         class="btn no-style btn-grn pay-button">
         <ion-spinner *ngIf="isProcessing" slot="start"></ion-spinner>
-        <span *ngIf="!isProcessing">
-          Pay {{ selectedPlan ? formatAmount(selectedPlan.amount) : '' }} Securely
-        </span>
+          <span *ngIf="!isProcessing">Pay ₹ {{ totalWithGst | number:'1.2-2' }}</span>
         <span *ngIf="isProcessing">Processing...</span>
       </ion-button>
       
@@ -105,6 +100,6 @@
         class="btn no-style cancel-button">
         Cancel
       </ion-button>
-    </div>
+    </div> 
   </div>
 </ion-content>

@@ -11,7 +11,6 @@ import { Location } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
-import { RazorpayService } from '../services/razorpay.service';
 import { PaymentModalComponent } from '../components/payment-modal/payment-modal.component';
 import { Subscription } from 'rxjs';
 import { PageTitleService } from '../services/page-title.service';
@@ -29,7 +28,8 @@ export class AccountPage implements OnInit, OnDestroy {
   public showPlaceholder: boolean = true;
   public profileDetails:any={}
   private subscription: Subscription = new Subscription();
-
+ public checkExpiryDate:boolean=false;
+ public checkExpiryDateMandiPro:boolean=false;
 
   constructor(public router: Router,
     private formBuilder: FormBuilder,
@@ -39,8 +39,7 @@ export class AccountPage implements OnInit, OnDestroy {
      private alertController: AlertController,
      private location: Location,
      private pageTitleService: PageTitleService,
-     private profileService: ProfileService,
-     private razorpayService: RazorpayService) { 
+     private profileService: ProfileService ) { 
       activatedRoute.params.subscribe(val => { 
         this.pageTitleService.setPageTitle('Account');
         this.subscription.add(
@@ -68,6 +67,8 @@ export class AccountPage implements OnInit, OnDestroy {
         this.enableLoader = false;
         if (response.code == 200) {
           this.profileDetails=response.user;
+          this.checkExpiryDate=this.profileDetails.trusted_package_expiry < new Date();
+          this.checkExpiryDateMandiPro=this.profileDetails.pro_user_expiry < new Date();
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
@@ -186,29 +187,28 @@ export class AccountPage implements OnInit, OnDestroy {
 
     modal.onDidDismiss().then((result) => {
       console.log('Payment modal dismissed with result:', result);
-      if (result.data) {
-        if (result.data.success) {
+      if (result.data.code == 200) {
+ 
           // Payment successful
           this.showToast(
             'success',
-            'Payment Successful!',
-            `Successfully subscribed to ${result.data.plan?.name}`,
+            result.data.message,
+            ``,
             4000,
             ''
           );
           // Refresh profile data to get updated subscription status
           this.getProfileData();
-        } else {
-          // Payment failed or cancelled
-          console.error('Payment failed:', result.data.error);
-          this.showToast(
-            'error',
-            'Payment Failed',
-            result.data.error || 'Please try again',
-            3000,
-            ''
-          );
-        }
+       
+      }else{
+        console.error('Payment failed:', result.data.error);
+        this.showToast(
+          'error',
+          'Payment Failed',
+          result.data.error || 'Please try again',
+          3000,
+          ''
+        );
       }
     });
 
