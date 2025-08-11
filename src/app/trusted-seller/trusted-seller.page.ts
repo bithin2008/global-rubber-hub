@@ -9,6 +9,7 @@ import { CommonService } from '../services/common-service';
 import { ActivatedRoute } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
 import { RazorpayService } from '../services/razorpay.service';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 @Component({
   selector: 'app-trusted-seller',
   templateUrl: './trusted-seller.page.html',
@@ -169,7 +170,7 @@ export class TrustedSellerPage implements OnInit {
         handler: (response: any) => {
           console.log('🎉 Payment successful:', response);
           this.isProcessing = false;
-          
+          this.capturePayment(response)
 
         },
         modal: {
@@ -221,28 +222,54 @@ export class TrustedSellerPage implements OnInit {
   }
 
   capturePayment(razorPay: any) {
-    let url = "users/payment-success";
+    let url = "general/capture-payment";
     let data = {
       recharge_for: 2,
       razorpay_order_id: razorPay.razorpay_order_id,
       razorpay_payment_id: razorPay.razorpay_payment_id,
       razorpay_signature: razorPay.razorpay_signature,
-      total_amount: 2360,
-      package_amount: 2000,
-   //   tax_amount: this.selectedPackage.id,
+      total_amount: this.selectedPackage.price + this.selectedPackage.price*18/100,
+      package_amount: this.selectedPackage.price,
+     tax_amount: this.selectedPackage.price*18/100,
       package_id: this.selectedPackage.id
     }
     this.commonService.post(url, data).subscribe(
       (response) => {
         console.log("response", response);
         this.enableLoader = false;
-
+        if (response.code == 200) {
+          this.modalController.dismiss();
+          this.showToast('success', response.message, '', 2000, '');
+        } else {
+          this.showToast('error', response.message, '', 2000, '');
+        }
       },
       (error) => {
         this.enableLoader = false;
         console.log("error ts: ", error);
       }
     );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 
 }
