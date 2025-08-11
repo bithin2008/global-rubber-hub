@@ -1,7 +1,26 @@
 .payment-modal {
   --background: #f8fafc;
 }
-
+ion-header.planPgheader{
+  background-color: #1a8135 !important;
+  color: #fff;
+  padding-left: 15px;
+  ion-title{
+    font-size: 18px;
+    --color: #fff;
+  }
+  ion-icon{
+    color: #fff;
+  }
+}
+ion-toolbar::part(background) {
+  background-color: #1a8135;
+  
+}
+ion-content{
+      height: 100vh !important;
+    max-height: 100vh !important;
+}
 .modal-container {
   padding: 20px;
   max-width: 600px;
@@ -13,8 +32,8 @@
   margin-bottom: 25px;
   
   h2 {
-    margin: 0 0 8px;
-    font-size: 24px;
+    margin: 15px 0 8px;
+    font-size: 18px;
     font-weight: 600;
     color: #1a202c;
   }
@@ -22,7 +41,7 @@
   p {
     margin: 0;
     color: #64748b;
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
@@ -329,23 +348,22 @@
 }
 
 .action-buttons {
-  margin-bottom: 20px;
   
-  .pay-button {
-    --background: linear-gradient(135deg, #2dd36f 0%, #16a34a 100%);
-    --background-hover: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    --color: white;
-    font-weight: 600;
-    height: 50px;
-    margin-bottom: 12px;
+  // .pay-button {
+  //   --background: linear-gradient(135deg, #2dd36f 0%, #16a34a 100%);
+  //   --background-hover: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  //   --color: white;
+  //   font-weight: 600;
+  //   height: 50px;
+  //   margin-bottom: 12px;
     
-    ion-spinner {
-      margin-right: 8px;
-    }
-  }
+  //   ion-spinner {
+  //     margin-right: 8px;
+  //   }
+  // }
   
   .cancel-button {
-    --color: #64748b;
+    --color: red;
     height: 45px;
   }
 }
