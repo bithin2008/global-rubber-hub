@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="planPgheader">
   <ion-toolbar>
     <ion-title>Choose Your Plan</ion-title>
     <ion-buttons slot="end">
@@ -28,32 +28,32 @@
         (click)="selectPlan(plan)">
         
         <!-- Popular Badge -->
-        <div class="popular-badge" *ngIf="plan.popular">
+        <!-- <div class="popular-badge" *ngIf="plan.popular">
           <ion-icon name="star"></ion-icon>
           Most Popular
-        </div>
+        </div> -->
 
         <!-- Plan Header -->
         <div class="plan-header">
           <h3>{{ plan.name }}</h3>
-          <p class="plan-description">{{ plan.description }}</p>
+          <!-- <p class="plan-description">{{ plan.description }}</p> -->
         </div>
 
         <!-- Pricing -->
         <div class="pricing">
           <div class="current-price">
             {{ formatAmount(plan.amount) }}
-            <span class="duration">/ {{ plan.duration }}</span>
+            <!-- <span class="duration">/ {{ plan.duration }}</span> -->
           </div>
           
-          <div class="original-price" *ngIf="plan.originalPrice">
+          <!-- <div class="original-price" *ngIf="plan.originalPrice">
             <span class="crossed-price">{{ formatAmount(plan.originalPrice) }}</span>
             <span class="discount">{{ plan.discount }}% OFF</span>
-          </div>
+          </div> -->
           
-          <div class="savings" *ngIf="plan.originalPrice">
+          <!-- <div class="savings" *ngIf="plan.originalPrice">
             Save {{ formatAmount(calculateSavings(plan)) }}
-          </div>
+          </div> -->
         </div>
 
         <!-- Features -->
@@ -62,9 +62,9 @@
             <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
             {{ feature }}
           </div>
-          <div class="more-features" *ngIf="plan.features.length > 4">
+          <!-- <div class="more-features" *ngIf="plan.features.length > 4">
             +{{ plan.features.length - 4 }} more features
-          </div>
+          </div> -->
         </div>
 
         <!-- Selection Indicator -->
@@ -86,7 +86,7 @@
         size="large" 
         (click)="proceedToPay()" 
         [disabled]="isProcessing || !selectedPlan"
-        class="pay-button">
+        class="btn no-style btn-grn pay-button">
         <ion-spinner *ngIf="isProcessing" slot="start"></ion-spinner>
         <span *ngIf="!isProcessing">
           Pay {{ selectedPlan ? formatAmount(selectedPlan.amount) : '' }} Securely
@@ -102,15 +102,9 @@
         size="large" 
         (click)="closeModal()"
         [disabled]="isProcessing"
-        class="cancel-button">
+        class="btn no-style cancel-button">
         Cancel
       </ion-button>
     </div>
-
-    <!-- Terms & Conditions -->
-    <div class="terms">
-      <p>By proceeding, you agree to our <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></p>
-    </div>
-
   </div>
 </ion-content>

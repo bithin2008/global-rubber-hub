@@ -43,12 +43,12 @@ export class RazorpayService {
   public plans: PaymentPlan[] = [
     {
       id: 'mandi_pro_monthly',
-      name: 'Mandi Pro Monthly',
+      name: 'Mandi Pro 1 Year',
       description: 'Professional monthly subscription',
-      amount: 999, // ₹999 in paise
+      amount: 3000, // ₹999 in paise
       originalPrice: 1299, // ₹1299
       discount: 23,
-      duration: '1 Month',
+      duration: '12 Month',
       features: [
         'Unlimited Market Access',
         'Real-time Price Updates',
