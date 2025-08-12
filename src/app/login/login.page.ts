@@ -96,7 +96,8 @@ export class LoginPage implements OnInit {
   public forgotPasswordForm!: FormGroup;
   public otpForm!: FormGroup;
   public resetPasswordForm!: FormGroup;
-
+  public profileDetails: any = {};
+  token: any;
   constructor(
     private formBuilder: FormBuilder,
     public router: Router,
@@ -110,13 +111,20 @@ export class LoginPage implements OnInit {
   ) {
     this.activatedRoute.params.subscribe(async val => {
       let hasLoggin: any = await this.alreadyLoggedIn();
-      if (hasLoggin.status === 200) {
+      if (hasLoggin.code === 200) {
         this.router.navigate(['/dashboard'])
+      }else{
+        localStorage.clear();
+        this.router.navigate(['/login']);
       }
     });
   }
 
   async ngOnInit() {
+    this.token = localStorage.getItem('token');
+    if (this.token) {
+      this.getProfileData();
+    }
     this.initializeForms();
     await this.initializeGoogleAuth();
     // Add diagnostic information
@@ -159,6 +167,27 @@ export class LoginPage implements OnInit {
     }, {
       validator: MustMatch('password', 'confirmPassword')
     });
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.profileDetails = response.user;
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
   // Tab change handler
@@ -447,7 +476,7 @@ export class LoginPage implements OnInit {
         }
       }
       
-      this.showToast('error', errorMessage, errorDetail, 5000, '');
+      this.showToast('error', errorMessage, errorDetail, 3000, '');
     }
   }
 

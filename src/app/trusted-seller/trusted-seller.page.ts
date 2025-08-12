@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
@@ -27,7 +28,8 @@ export class TrustedSellerPage implements OnInit {
     private commonService: CommonService,
     private activatedRoute: ActivatedRoute,
     private pageTitleService: PageTitleService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private authGuardService: AuthGuardService
   ) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Trusted Seller');
@@ -35,7 +37,9 @@ export class TrustedSellerPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Check authentication on component initialization
+    await this.authGuardService.checkTokenAndAuthenticate();
   }
 
   openPlanModal() { this.isPlanModalOpen = true; }

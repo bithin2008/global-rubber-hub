@@ -38,7 +38,7 @@
         <ion-label>
           <h3>Mandi Pro</h3>
           <p *ngIf="profileDetails.is_pro_user != 1">No Active Plan</p>
-          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDateMandiPro">Package expired on {{profileDetails.pro_user_expiry | date:'dd-MM-yyyy'}}</p>
+          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDateMandiPro">Package expired on {{profileDetails.pro_user_expiry | date:'dd/MM/yyyy'}}</p>
         </ion-label>
         <ion-button class="btn no-style subscribe" *ngIf="profileDetails.is_pro_user != 1" (click)="onMandiProSubscribe()">Subscribe</ion-button>
       </ion-item>
@@ -48,7 +48,7 @@
         <ion-label>
           <h3>Trusted Seller</h3>
           <p *ngIf="profileDetails.is_trusted != 1">No Active Plan</p>
-          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDate">Package expired on {{profileDetails.trusted_package_expiry | date:'dd-MM-yyyy'}}</p>
+          <p *ngIf="profileDetails.is_trusted == 1 && !checkExpiryDate">Package expired on {{profileDetails.trusted_package_expiry | date:'dd/MM/yyyy'}}</p>
         </ion-label>
         <ion-button class="btn no-style subscribe" *ngIf="profileDetails.is_trusted != 1" (click)="onTrustedSellerSubscribe()">Subscribe</ion-button>
       </ion-item>      
@@ -97,7 +97,7 @@
         <div class="icon"><img src="assets/img/icons/shield_person.svg" alt="" title=""></div>
         <ion-label>
           <h3>Trusted Seller <ion-icon name="star" class="crown-mark" *ngIf="profileDetails.is_trusted == 1"></ion-icon></h3>
-          <p>To get more calls/chats</p>
+          <!-- <p>To get more calls/chats</p> -->
         </ion-label>
         <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>

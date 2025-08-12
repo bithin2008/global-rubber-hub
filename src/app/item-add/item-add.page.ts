@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
   IonToolbar,
-  IonButton, 
+  IonButton,
   IonButtons,
-  IonItem, 
-  IonLabel, 
-  IonInput, 
-  IonSelect, 
-  IonSelectOption, 
-  IonRadioGroup, 
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonRadioGroup,
   IonRadio,
   IonTextarea,
   IonIcon,
@@ -36,21 +37,21 @@ import { PageTitleService } from '../services/page-title.service';
   styleUrls: ['./item-add.page.scss'],
   standalone: true,
   imports: [
-    IonContent, 
-    IonHeader, 
-    IonTitle, 
-    IonToolbar, 
-    CommonModule, 
-    FormsModule, 
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
     ReactiveFormsModule,
-    IonButton, 
-    IonButtons, 
-    IonItem, 
-    IonLabel, 
-    IonInput, 
-    IonSelect, 
-    IonSelectOption, 
-    IonRadioGroup, 
+    IonButton,
+    IonButtons,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonSelect,
+    IonSelectOption,
+    IonRadioGroup,
     IonRadio,
     IonTextarea,
     IonIcon,
@@ -67,6 +68,7 @@ export class ItemAddPage implements OnInit {
   isSubmitting = false;
   submitted = false;
   enableLoader = false;
+  profileDetails: any = {};
 
   constructor(
     private formBuilder: FormBuilder,
@@ -74,10 +76,14 @@ export class ItemAddPage implements OnInit {
     private toastService: ToastService,
     private router: Router,
     public modalController: ModalController,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private authGuardService: AuthGuardService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Check authentication on component initialization
+    await this.authGuardService.checkTokenAndAuthenticate();
+    
     this.pageTitleService.setPageTitle('Add Item');
     this.initForm();
   }
@@ -95,6 +101,27 @@ export class ItemAddPage implements OnInit {
     });
   }
 
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.profileDetails = response.user;
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
+  }
+
   get f() { return this.itemForm.controls; }
 
   onImageChange(event: any) {
@@ -102,19 +129,19 @@ export class ItemAddPage implements OnInit {
     if (files) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // Validate file type
         if (!file.type.startsWith('image/')) {
           this.showToast('danger', 'Please select only image files', '', 2500, '/login');
           continue;
         }
-        
+
         // Validate file size (2MB limit)
         if (file.size > 2000 * 1024) {
           this.showToast('danger', 'Image size should be less than 100KB', '', 2500, '/login');
           continue;
         }
-        
+
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.selectedImages.push({
@@ -135,13 +162,13 @@ export class ItemAddPage implements OnInit {
         // this.showToast('Please select only video files', 'danger');
         return;
       }
-      
+
       // Validate file size (100MB limit)
       if (file.size > 100 * 1024 * 1024) {
         this.showToast('danger', 'Video size should be less than 100MB', '', 2500, '/login');
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.selectedVideo = {
@@ -166,50 +193,46 @@ export class ItemAddPage implements OnInit {
     if (this.itemForm.invalid) {
       return;
     }
+    const formData = new FormData();
 
+    // Add form fields
+    // formData.append('id', this.itemForm.get('id')?.value || '');
+    formData.append('item_name', this.itemForm.get('item_name')?.value);
+    formData.append('hsn_code', this.itemForm.get('hsn_code')?.value);
+    formData.append('item_listed_for', this.itemForm.get('item_listed_for')?.value);
+    formData.append('uom_id', this.itemForm.get('uom_id')?.value);
+    formData.append('description', this.itemForm.get('description')?.value || '');
+    formData.append('price', this.itemForm.get('price')?.value);
+    formData.append('quantity', this.itemForm.get('quantity')?.value);
 
-      
+    // Add images
+    this.selectedImages.forEach((image, index) => {
+      formData.append('image[]', image.file);
+    });
 
-        const formData = new FormData();
-        
-                 // Add form fields
-        // formData.append('id', this.itemForm.get('id')?.value || '');
-         formData.append('item_name', this.itemForm.get('item_name')?.value);
-         formData.append('hsn_code', this.itemForm.get('hsn_code')?.value);
-         formData.append('item_listed_for', this.itemForm.get('item_listed_for')?.value);
-         formData.append('uom_id', this.itemForm.get('uom_id')?.value);
-         formData.append('description', this.itemForm.get('description')?.value || '');
-         formData.append('price', this.itemForm.get('price')?.value);
-         formData.append('quantity', this.itemForm.get('quantity')?.value);
-        
-        // Add images
-        this.selectedImages.forEach((image, index) => {
-          formData.append('image[]', image.file);
-        });
-        
-        // Add video if selected
-        if (this.selectedVideo) {
-          formData.append('video', this.selectedVideo.file);
+    // Add video if selected
+    if (this.selectedVideo) {
+      formData.append('video', this.selectedVideo.file);
+    }
+
+    let url = 'items/add';
+
+    this.enableLoader = true;
+    this.commonService.filepost(url, formData).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.showToast('success', response.message, '', 2500, '/item-list');
+        } else {
+          this.showToast('error', response.message, '', 2500, '');
         }
-        
-        let url = 'items/add';
-      
-        this.enableLoader = true;
-        this.commonService.filepost(url, formData).subscribe(
-          (response: any) => {
-            this.enableLoader = false;
-            if (response.code == 200) {
-              this.showToast('success', response.message, '', 2500, '/item-list');
-            } else {
-              this.showToast('error', response.message, '', 2500, '');
-            }
-          },
-          (error) => {
-           this.enableLoader = false;
-            console.log('error ts: ', error.error);
-            // this.toastr.error(error);
-          }
-        );          
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
   }
 
   async showToast(

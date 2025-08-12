@@ -13,6 +13,8 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { register } from 'swiper/element/bundle';
 import { Platform } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
+import { AuthGuardService } from '../services/auth-guard.service';
 
 
 // Interfaces for type safety
@@ -55,7 +57,7 @@ interface DashboardData {
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [ IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent ],
+  imports: [IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DashboardPage implements OnInit, AfterViewInit {
@@ -105,29 +107,53 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private pageTitleService: PageTitleService,
     private platform: Platform,
     private commonService: CommonService,
-  ) { 
-    activatedRoute.params.subscribe(val => {
-      this.pageTitleService.setPageTitle('Dashboard');   
-      register();
-      this.getDashboardData();  
-      this.subscription.add(
-        this.profileService.userName$.subscribe((data) => {
-          if (data && typeof data === 'string' && data.trim() !== '') {
-            this.profileName = data.split(' ')[0];
-          } else {
-            this.profileName = 'User';
-          }
-        })
-      );     
+    private authenticationService: AuthService,
+    private authGuardService: AuthGuardService
+  ) {
+    activatedRoute.params.subscribe(async val => {
+      let hasLoggin: any = await this.alreadyLoggedIn();
+      if (hasLoggin.code !== 200) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      } else {
+        this.pageTitleService.setPageTitle('Dashboard');
+        register();
+        this.getDashboardData();
+        this.subscription.add(
+          this.profileService.userName$.subscribe((data) => {
+            if (data && typeof data === 'string' && data.trim() !== '') {
+              this.profileName = data.split(' ')[0];
+            } else {
+              this.profileName = 'User';
+            }
+          })
+        );
+
+      }
 
     });
   }
 
-  ngOnInit() {
-   
+  async ngOnInit() {
+    // Check authentication on component initialization
+    //  await this.authGuardService.checkTokenAndAuthenticate();
+
   }
 
-  goToLiveBids(){
+  alreadyLoggedIn() {
+    return new Promise((resolve) => {
+      this.authenticationService.checkUserIsLoggedin().subscribe(
+        (response: any) => {
+          resolve(response);
+        },
+        (error) => {
+          console.log('error', error);
+        }
+      );
+    });
+  }
+
+  goToLiveBids() {
     this.router.navigate(['/item-list']);
   }
 
@@ -138,23 +164,23 @@ export class DashboardPage implements OnInit, AfterViewInit {
       if (swiperEl) {
         console.log('Found swiper element, initializing...');
         console.log('Data available:', this.dashboardData.rubberRates.results?.length || 0);
-        
+
         // Initialize the swiper
         swiperEl.initialize();
-        
+
         console.log('✅ Swiper initialized with direct attributes');
-        
+
         // Wait for swiper to be fully initialized
         setTimeout(() => {
           if (swiperEl.swiper) {
             console.log('Swiper instance created successfully');
             console.log('Current slidesPerView:', swiperEl.swiper.params.slidesPerView);
             console.log('Total slides:', swiperEl.swiper.slides?.length || 0);
-            
+
             // Force update to ensure proper rendering
             swiperEl.swiper.update();
             console.log('Swiper updated');
-            
+
             // Additional force refresh after a delay
             setTimeout(() => {
               if (swiperEl.swiper) {
@@ -170,7 +196,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
         console.error('Swiper container element not found');
       }
     }, 500);
-    
+
     // Additional initialization after data loads
     setTimeout(() => {
       const swiperEl = document.querySelector('swiper-container');

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform } from '@ionic/angular/standalone';
@@ -42,7 +43,8 @@ export class ProfilePage implements OnInit {
     private actionSheetController: ActionSheetController,
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
-    private platform: Platform
+    private platform: Platform,
+    private authGuardService: AuthGuardService
   ) { 
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Update Profile');
@@ -83,7 +85,9 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  ngOnInit() {   
+  async ngOnInit() {
+    // Check authentication on component initialization
+    await this.authGuardService.checkTokenAndAuthenticate();
   }
 
   get f() { return this.profileForm.controls; }

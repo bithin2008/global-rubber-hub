@@ -1,4 +1,5 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton,IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
@@ -44,7 +45,8 @@ export class MyItemPage implements OnInit {
     private commonService: CommonService,
     private popoverController: PopoverController,
     private authenticationService: AuthService,
-    private pageTitleService: PageTitleService
+    private pageTitleService: PageTitleService,
+    private authGuardService: AuthGuardService
     // private sharedService: SharedService,
   ) { 
     activatedRoute.params.subscribe(val => {
@@ -53,7 +55,9 @@ export class MyItemPage implements OnInit {
     }); 
   }
 
-  ngOnInit() {  
+  async ngOnInit() {
+    // Check authentication on component initialization
+    await this.authGuardService.checkTokenAndAuthenticate();
   }
 
   goToAddItem(){

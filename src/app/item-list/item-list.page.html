@@ -58,7 +58,7 @@
                 <div class="location">
                   <img src="assets/img/icons/location_on_color.svg" alt="" title="">
                   <span *ngIf="item.city && item.state">{{item.city}}, {{item.state}}</span>
-                  <span *ngIf="!item.city || !item.state">N/A</span>
+                  <span *ngIf="!item.city || !item.state">{{item.user_city}}, {{item.user_state}}</span>
                 </div>
                 <div class="date_wrap">
                   <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on">

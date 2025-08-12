@@ -12,6 +12,7 @@ import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } 
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { AuthGuardService } from './auth-guard.service';
 
 
 @Injectable({
@@ -21,7 +22,10 @@ export class CommonService {
   token: any;
   headersObj: any;
   options: any;
-  constructor(private _http: HttpClient) { }
+  constructor(
+    private _http: HttpClient,
+    private authGuardService: AuthGuardService
+  ) { }
   getHeader() {
     this.token = localStorage.getItem('token');
     this.headersObj = new HttpHeaders()
@@ -62,6 +66,12 @@ export class CommonService {
       console.error(
         `Backend returned code ${error.status}, ` + `body was: ${error.error}`
       );
+      
+      // Handle 401 Unauthorized errors globally
+      if (error.status === 401) {
+        console.log('401 error detected, handling authentication failure');
+        this.authGuardService.handle401Error('Session expired. Please login again');
+      }
     }
     return throwError('Something bad happened; please try again later.');
   }

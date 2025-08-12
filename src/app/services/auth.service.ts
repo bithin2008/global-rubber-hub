@@ -23,9 +23,6 @@ export class AuthService {
   getHeader() {
     this.token = localStorage.getItem('token');
     this.headersObj = new HttpHeaders()
-      .set('username', 'gstsof')
-      .set('password', 'Gstsof@2017')
-      .set('api_key', '6j2N5vl2HXUam3vKHpmAQTAh95aigL52')
       .set('Authorization', 'Bearer ' + this.token);
     let header = {
       headers: this.headersObj,

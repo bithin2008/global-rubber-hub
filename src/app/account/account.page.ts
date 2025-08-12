@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonBackButton, IonToolbar } from '@ionic/angular/standalone';
@@ -45,7 +46,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private location: Location,
     private pageTitleService: PageTitleService,
-    private profileService: ProfileService) {
+    private profileService: ProfileService,
+    private authGuardService: AuthGuardService) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Account');
       this.subscription.add(
@@ -58,7 +60,9 @@ export class AccountPage implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Check authentication on component initialization
+    await this.authGuardService.checkTokenAndAuthenticate();
   }
 
   get totalWithGst(): number {
@@ -79,6 +83,7 @@ export class AccountPage implements OnInit, OnDestroy {
         this.enableLoader = false;
         if (response.code == 200) {
           this.profileDetails = response.user;
+          this.profileDetails.points = parseInt(this.profileDetails.points)
           this.checkExpiryDate = this.profileDetails.trusted_package_expiry < new Date();
           this.checkExpiryDateMandiPro = this.profileDetails.pro_user_expiry < new Date();
           // Set profile image if available, otherwise show placeholder
