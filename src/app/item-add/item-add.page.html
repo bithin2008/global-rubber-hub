@@ -2,7 +2,13 @@
 
 <ion-content class="add-page">
   <div class="add-container">
-    <form class="form" [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+    <!-- Loading state while form initializes -->
+    <div *ngIf="!itemForm" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading form...</p>
+    </div>
+    
+    <form class="form" [formGroup]="itemForm" (ngSubmit)="onSubmit()" *ngIf="itemForm">
        <!-- Hidden ID field for new items -->
        <ion-input type="hidden" formControlName="id" style="display: none;"></ion-input>
        

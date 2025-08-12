@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -20,6 +20,7 @@ import {
   IonIcon,
   IonLoading,
   IonToast,
+  IonSpinner,
   ModalController,
   ToastController
 } from '@ionic/angular/standalone';
@@ -57,11 +58,12 @@ import { PageTitleService } from '../services/page-title.service';
     IonIcon,
     IonLoading,
     IonToast,
+    IonSpinner,
     HeaderComponent,
     FooterComponent
   ]
 })
-export class ItemAddPage implements OnInit {
+export class ItemAddPage implements OnInit, AfterViewInit {
   itemForm!: FormGroup;
   selectedImages: any[] = [];
   selectedVideo: any = null;
@@ -88,17 +90,29 @@ export class ItemAddPage implements OnInit {
     this.initForm();
   }
 
+  ngAfterViewInit() {
+    // Ensure form is initialized after view is ready
+    if (!this.itemForm) {
+      this.initForm();
+    }
+  }
+
   initForm() {
-    this.itemForm = this.formBuilder.group({
-      id: ['', []], // Empty for adding new item
-      item_name: ['', [Validators.required, Validators.maxLength(60)]],
-      hsn_code: ['', [Validators.required, Validators.maxLength(8), Validators.pattern(/^\d+$/)]],
-      item_listed_for: ['1', Validators.required],
-      uom_id: ['2', Validators.required],
-      description: ['', [Validators.maxLength(255)]],
-      price: ['', [Validators.required, Validators.min(0.01)]],
-      quantity: ['', [Validators.required, Validators.min(0.01)]]
-    });
+    try {
+      this.itemForm = this.formBuilder.group({
+        id: ['', []], // Empty for adding new item
+        item_name: ['', [Validators.required, Validators.maxLength(60)]],
+        hsn_code: ['', [Validators.required, Validators.maxLength(8), Validators.pattern(/^\d+$/)]],
+        item_listed_for: ['1', Validators.required],
+        uom_id: ['2', Validators.required],
+        description: ['', [Validators.maxLength(255)]],
+        price: ['', [Validators.required, Validators.min(0.01)]],
+        quantity: ['', [Validators.required, Validators.min(0.01)]]
+      });
+      console.log('Form initialized successfully:', this.itemForm);
+    } catch (error) {
+      console.error('Error initializing form:', error);
+    }
   }
 
   getProfileData() {
@@ -122,7 +136,9 @@ export class ItemAddPage implements OnInit {
 
   }
 
-  get f() { return this.itemForm.controls; }
+  get f() { 
+    return this.itemForm ? this.itemForm.controls : {}; 
+  }
 
   onImageChange(event: any) {
     const files = event.target.files;
@@ -190,6 +206,13 @@ export class ItemAddPage implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+    
+    // Check if form is properly initialized
+    if (!this.itemForm) {
+      console.error('Form is not initialized');
+      return;
+    }
+    
     if (this.itemForm.invalid) {
       return;
     }
