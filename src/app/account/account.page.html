@@ -30,7 +30,7 @@
           <h3>Wallet Balance</h3>
           <h3 style="color: #2b8a3e">{{profileDetails.points}}</h3>
         </ion-label>
-        <ion-button class="btn no-style subscribe" (click)="openWalletModal()"><ion-icon name="refresh-circle-outline"></ion-icon>&nbsp;Add</ion-button>
+        <ion-button class="btn no-style subscribe" (click)="openWalletModal()"><ion-icon name="cash-outline"></ion-icon>&nbsp;Add</ion-button>
       </ion-item> 
 
       <ion-item class="account-row no-style accountItem">
@@ -151,7 +151,13 @@
 <app-footer></app-footer>
 
 <!-- Wallet Recharge Bottom Sheet -->
-<ion-modal [isOpen]="isWalletModalOpen" (didDismiss)="closeWalletModal()" cssClass="plans-bottom-sheet" [initialBreakpoint]="0.35" [breakpoints]="[0.35, 0.6]">
+<ion-modal
+  [isOpen]="isWalletModalOpen"
+  (didDismiss)="closeWalletModal()"
+  cssClass="plans-bottom-sheet account-plans-bottom-sheet"
+  [initialBreakpoint]="0.58"
+  [breakpoints]="[0.58, 0.58]"
+>
   <ng-template>
     <div class="plans-modal">
       <div class="drag-handle"></div>

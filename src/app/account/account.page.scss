@@ -38,9 +38,13 @@
   }
   
   .plan-title {
-    font-size: 12px;
-    color: #78909c;
-    letter-spacing: 0.6px;
+    font-size: 16px;
+    color: #000;
+    font-weight: 600;
+    small{
+      font-size: 70%;
+      font-weight: 500;
+    }
   }
   
   .plan-price {
@@ -62,7 +66,8 @@
   }
   
   .cancel-btn {
-    margin: 0 8px;
+    margin: 15px 8px;
+    border: 1px solid #000;
   }
   
   

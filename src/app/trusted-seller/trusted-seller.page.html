@@ -1,4 +1,82 @@
-<ion-header [translucent]="true">
+<ion-header class="trusted-header">
+  <ion-toolbar>
+    <ion-title>Trusted Seller</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="trusted-content" fullscreen>
+  <!-- Top banner image -->
+  <div class="banner">
+    <!-- <img src="assets/img/trusted-banner.jpg" alt="banner" /> -->
+  </div>
+
+  <!-- Section title -->
+  <div class="section-title">
+    <h2>Sell Quickly</h2>
+  </div>
+
+  <!-- Three option chips -->
+  <div class="chips">
+    <div class="chip">
+      <ion-icon name="trophy-outline"></ion-icon>
+      <span>Top listing</span>
+    </div>
+
+    <div class="chip">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <span>Trusted seller badge</span>
+    </div>
+
+    <div class="chip">
+      <ion-icon name="call-outline"></ion-icon>
+      <span>10x more call</span>
+    </div>
+  </div>
+
+  <!-- Benefits card -->
+  <div class="benefits-card">
+    <div class="card-header">
+      <ion-icon name="star" class="star"></ion-icon>
+      <h3>Benefits of becoming a Trusted Seller:</h3>
+    </div>
+
+    <ul class="benefit-list">
+      <li><strong>Post unlimited Ads</strong></li>
+      <li><strong>Verified Seller Badge:</strong> Gain credibility with a verified seller badge.</li>
+      <li><strong>Priority Lead Promotion:</strong> Get your leads promoted at the top of the listings (based on plan).</li>
+      <li><strong>10x More Buyer Inquiries:</strong> Receive significantly more calls from potential buyers.</li>
+      <li><strong>Potential Buy Leads Provided:</strong> We will supply you with high-quality buy leads.</li>
+      <li><strong>Direct Buyer Contact:</strong> Your contact details will be shared directly via WhatsApp.</li>
+      <li><strong>Call Up to 100 Buyers:</strong> Access to contact up to 100 buyers (based on plan).</li>
+      <li><strong>Media Promotion:</strong> Get featured across our media channels for increased visibility.</li>
+      <li><strong>24/7 Support:</strong> 24/7 dedicated support from our team.</li>
+    </ul>
+  </div>
+
+  <!-- Note box -->
+  <div class="note-box">
+    <h4>Note:</h4>
+    <p>• commodityonline team will verify your KYC and business details.</p>
+    <p>• If the verification fails, we will refund the full amount.</p>
+  </div>
+
+  <!-- Spacer so content won't hide behind footer -->
+  <div style="height:88px;"></div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="footer-toolbar">
+    <ion-button class="btn btn-grn no-style" expand="block" type="button" (click)="openPlanModal()">Upgrade Now</ion-button>
+  </ion-toolbar>
+</ion-footer>
+
+
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>trusted-seller</ion-title>
   </ion-toolbar>
@@ -13,10 +91,10 @@
 </ion-content>
 <ion-footer>
   <ion-button class="btn btn-grn no-style" expand="block" type="button" (click)="openPlanModal()">Upgrade Now</ion-button>
-</ion-footer>
+</ion-footer> -->
 
 <!-- Bottom Sheet Modal (inline, no extra component) -->
-<ion-modal [isOpen]="isPlanModalOpen" (didDismiss)="closePlanModal()" cssClass="plans-bottom-sheet" [initialBreakpoint]="0.35" [breakpoints]="[0.35, 0.75]">
+<ion-modal [isOpen]="isPlanModalOpen" (didDismiss)="closePlanModal()" cssClass="plans-bottom-sheet" [initialBreakpoint]="0.58" [breakpoints]="[0.58, 0.58]">
   <ng-template>
     <div class="plans-modal">
       <div class="drag-handle"></div>
