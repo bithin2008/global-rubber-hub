@@ -26,7 +26,7 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonService } from '../services/common-service';
 import { ToastService } from '../services/toast.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
@@ -71,6 +71,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   submitted = false;
   enableLoader = false;
   profileDetails: any = {};
+  isEditMode = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -79,14 +80,27 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     private router: Router,
     public modalController: ModalController,
     private pageTitleService: PageTitleService,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
     
-    this.pageTitleService.setPageTitle('Add Item');
+    // Check if we're in edit mode
+    this.activatedRoute.queryParams.subscribe(params => {
+      const itemId = params['id'];
+      if (itemId) {
+        this.isEditMode = true;
+        this.pageTitleService.setPageTitle('Edit Item');
+        this.loadItemForEdit(itemId);
+      } else {
+        this.isEditMode = false;
+        this.pageTitleService.setPageTitle('Add Item');
+      }
+    });
+    
     this.initForm();
   }
 
@@ -133,7 +147,54 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         // this.toastr.error(error);
       }
     );
+  }
 
+  loadItemForEdit(itemId: number) {
+    this.isEditMode = true;
+    this.enableLoader = true;
+    let url = `items/list/${itemId}`;
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          const item = response.results;
+          // Populate the form with item data
+          this.itemForm.patchValue({
+            id: item.id,
+            item_name: item.item_name,
+            hsn_code: item.hsn_code,
+            item_listed_for: item.item_listed_for,
+            uom_id: item.uom_id,
+            description: item.description,
+            price: item.price,
+            quantity: item.quantity
+          });
+          
+          // Load existing images if any
+          if (item.images && item.images.length > 0) {
+            this.selectedImages = item.images.map((img: any) => ({
+              preview: img,
+              file: null // We don't have the actual file for existing images
+            }));
+          }
+          
+          // Load existing video if any
+          if (item.video) {
+            this.selectedVideo = {
+              preview: item.video,
+              file: null // We don't have the actual file for existing video
+            };
+          }
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error loading item:', error);
+        this.showToast('error', 'Failed to load item details', '', 3500, '');
+      }
+    );
   }
 
   get f() { 
@@ -238,14 +299,18 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       formData.append('video', this.selectedVideo.file);
     }
 
-    let url = 'items/add';
+    // Determine if this is an add or edit operation
+    const itemId = this.itemForm.get('id')?.value;
+    let url = itemId ? `items/update/${itemId}` : 'items/add';
 
     this.enableLoader = true;
     this.commonService.filepost(url, formData).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
-          this.showToast('success', response.message, '', 2500, '/item-list');
+          const successMessage = itemId ? 'Item updated successfully' : 'Item added successfully';
+          const redirectUrl = itemId ? '/my-item' : '/item-list';
+          this.showToast('success', successMessage, '', 2500, redirectUrl);
         } else {
           this.showToast('error', response.message, '', 2500, '');
         }

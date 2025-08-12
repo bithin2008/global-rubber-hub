@@ -64,6 +64,10 @@ export class MyItemPage implements OnInit {
     this.router.navigate(['/item-add']);
   }
 
+  editItem(itemId: number) {
+    this.router.navigate(['/item-add'], { queryParams: { id: itemId } });
+  }
+
   onImageError(event: Event) {
     const target = event.target as HTMLImageElement | null;
     if (target && target.src !== this.fallbackImg) {
