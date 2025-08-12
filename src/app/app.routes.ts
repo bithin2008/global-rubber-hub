@@ -66,4 +66,8 @@ export const routes: Routes = [
     path: 'trusted-seller',
     loadComponent: () => import('./trusted-seller/trusted-seller.page').then( m => m.TrustedSellerPage)
   },
+  {
+    path: 'verify-now',
+    loadComponent: () => import('./verify-now/verify-now.page').then( m => m.VerifyNowPage)
+  },
 ];
