@@ -7,7 +7,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { IonicModule } from '@ionic/angular';
 import { CommonService } from '../services/common-service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 @Component({
@@ -25,6 +25,7 @@ export class TrustedSellerPage implements OnInit {
   public selectedPackage: any | null = null;
   public isProcessing: boolean = false;
   constructor(
+    private router: Router,
     private commonService: CommonService,
     private activatedRoute: ActivatedRoute,
     private pageTitleService: PageTitleService,
@@ -63,6 +64,27 @@ export class TrustedSellerPage implements OnInit {
     return `${days} DAYS`;
   }
 
+  /**
+   * Calculate total price including 18% GST
+   */
+  getTotalPrice(): number {
+    if (!this.selectedPackage || !this.selectedPackage.price) {
+      console.log('No selected package or price available');
+      return 0;
+    }
+    const basePrice = Number(this.selectedPackage.price);
+    const gstAmount = basePrice * 18 / 100;
+    const totalPrice = basePrice + gstAmount;
+    
+    console.log('Price calculation:', {
+      basePrice: basePrice,
+      gstAmount: gstAmount,
+      totalPrice: totalPrice
+    });
+    
+    return totalPrice;
+  }
+
   getPackageList() {
     let data = {
       package_for: 2
@@ -83,6 +105,10 @@ export class TrustedSellerPage implements OnInit {
         console.log('error', error);
       }
     );
+  }
+
+  goToAccount(){
+    this.router.navigate(['/account']);
   }
 
   private async generateOrderId(amount: number): Promise<string> {
@@ -132,7 +158,7 @@ export class TrustedSellerPage implements OnInit {
 
     try {
       // Generate order ID from backend API
-      const orderId = await this.generateOrderId(this.selectedPackage.price + this.selectedPackage.price*18/100);
+      const orderId = await this.generateOrderId(this.getTotalPrice());
       console.log('✅ Order ID generated:', orderId);
 
       // Get user details from local storage or service
@@ -146,7 +172,7 @@ export class TrustedSellerPage implements OnInit {
       // Initialize Razorpay payment directly
       const options = {
         key: 'rzp_test_pukxv7Ki2WgVYL',
-        amount: (this.selectedPackage.price + this.selectedPackage.price*18/100) * 100, // ₹1 for testing
+        amount: this.getTotalPrice() * 100, // Convert to paise for Razorpay
         currency: 'INR',
         name: 'Global Rubber Hub',
         description: 'Test Payment',
