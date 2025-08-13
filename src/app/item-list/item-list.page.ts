@@ -223,6 +223,22 @@ export class ItemListPage implements OnInit {
     }
   }
 
+  // Check if trusted badge should be shown
+  isTrustedValid(item: any): boolean {
+    if (item.is_trusted !== 1) {
+      return false;
+    }
+    
+    if (!item.trusted_package_expiry) {
+      return false;
+    }
+    
+    const expiryDate = new Date(item.trusted_package_expiry);
+    const currentDate = new Date();
+    
+    return expiryDate > currentDate;
+  }
+
   // Get filter display text based on selected value
   getFilterDisplayText(filterValue: number): string {
     switch (filterValue) {
