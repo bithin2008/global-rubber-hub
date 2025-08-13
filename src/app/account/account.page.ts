@@ -86,17 +86,17 @@ export class AccountPage implements OnInit, OnDestroy {
           this.profileDetails.points = parseInt(this.profileDetails.points)
           this.checkExpiryDate = this.profileDetails.trusted_package_expiry < new Date();
           this.checkExpiryDateMandiPro = this.profileDetails.pro_user_expiry < new Date();
+          
+          // Update profile service with all data including wallet balance
+          this.profileService.updateProfileFromAPI(response.user);
+          
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
             this.showPlaceholder = false;
-            // Update the service so header reflects the change
-            this.profileService.updateProfileImage(response.user.profile_image);
           } else {
             this.profileImage = '';
             this.showPlaceholder = true;
-            // Clear the service as well
-            this.profileService.updateProfileImage('');
           }
           // Update user name in service if available
           if (response.user.full_name) {

@@ -112,13 +112,14 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private authGuardService: AuthGuardService
   ) {
     activatedRoute.params.subscribe(async val => {
-      let hasLoggin: any = await this.alreadyLoggedIn();
+      register();
+      let hasLoggin: any = await this.alreadyLoggedIn();      
       if (hasLoggin.code !== 200) {
         localStorage.clear();
         this.router.navigate(['/login']);
       } else {
         this.pageTitleService.setPageTitle('Dashboard');
-        register();
+      
         this.getDashboardData();
         this.subscription.add(
           this.profileService.userName$.subscribe((data) => {
