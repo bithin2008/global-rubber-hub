@@ -70,4 +70,8 @@ export const routes: Routes = [
     path: 'verify-now',
     loadComponent: () => import('./verify-now/verify-now.page').then( m => m.VerifyNowPage)
   },
+  {
+    path: 'verify-inner',
+    loadComponent: () => import('./verify-inner/verify-inner.page').then( m => m.VerifyInnerPage)
+  },
 ];
