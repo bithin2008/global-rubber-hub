@@ -1,0 +1,40 @@
+ion-header{
+    background-color: #1a8135 !important;
+    color: #fff;
+    padding-left: 15px;
+    ion-title{
+        font-size: 18px;
+        --color: #fff;
+    }
+    ion-icon{
+        color: #fff;
+    }
+    ion-toolbar::part(background) {
+        background-color: #1a8135;
+    
+    }
+}
+
+ion-content.verify-page{
+    height: 100vh !important;
+    max-height: 100vh !important;
+    .account-container{
+        padding: 15px !important;
+       
+        
+        .card{
+            margin-top: 0;
+            .icon{
+                img{filter: brightness(0) invert(1);}
+            }
+        }
+    }
+    .title{
+        font-size: 16px;
+        font-weight: 600;
+    }
+    p.desc{
+        font-size: 13px;
+        margin-bottom: 25px;
+    }
+}

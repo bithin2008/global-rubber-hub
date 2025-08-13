@@ -1,13 +1,45 @@
-<ion-header [translucent]="true">
+<ion-header class="trusted-header">
   <ion-toolbar>
-    <ion-title>verify-now</ion-title>
+    <ion-title>KYC, GST & Farmer ID</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" >
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">verify-now</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+<ion-content [fullscreen]="true" class="verify-page">
+  <div class="account-container">
+    <h3 class="title">Please fill in the details below</h3>
+    <p class="desc">Complete the verification to become a trustedseller</p>
+    <ion-list class="no-style card">
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/id_card.svg" alt=""></div>
+        <ion-label>
+          <h3>Aadhaar Card Details</h3>
+          <p>Tap here to fill the details</p>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item> 
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/credit_cardB.svg" alt=""></div>
+        <ion-label>
+          <h3>GST/Udyam / Farmer ID</h3>
+          <p>Tap here to fill the details</p>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item>
+
+      <ion-item class="account-row no-style accountItem">
+        <div class="icon"><img src="assets/img/icons/verified_user.svg" alt=""></div>
+        <ion-label>
+          <h3>Become a Trusted Seller Now!</h3>
+        </ion-label>
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
