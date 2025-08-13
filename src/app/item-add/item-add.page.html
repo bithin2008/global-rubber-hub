@@ -18,12 +18,12 @@
         <ion-radio-group formControlName="item_listed_for">
           <div class="button-select-container">
             <label class="button-option">
-              <ion-radio value="2" class="custom-radio"></ion-radio>
+              <ion-radio [value]="2" class="custom-radio"></ion-radio>
               <span>Buy</span>
             </label>
 
             <label class="button-option">
-              <ion-radio value="1" class="custom-radio"></ion-radio>
+              <ion-radio [value]="1" class="custom-radio"></ion-radio>
               <span>Sale</span>
             </label>
           </div>
@@ -89,22 +89,23 @@
       <div class="no-style buttonRdo uom">
         <div class="title">
           <h3>Unit of Measurement *</h3>
+         
         </div>
         <div class="radioWrap">
 
-          <ion-radio-group formControlName="uom_id">
+          <ion-radio-group formControlName="uom_id" (ionChange)="onUomChange($event)">
             <div class="button-select-container">
               <label class="button-option">
-                <ion-radio value="2" class="custom-radio"></ion-radio>
+                <ion-radio [value]="2" class="custom-radio"></ion-radio>
                 <span>KGS</span>
               </label>
   
               <label class="button-option">
-                <ion-radio value="23" class="custom-radio"></ion-radio>
+                <ion-radio [value]="23" class="custom-radio"></ion-radio>
                 <span>QUINTAL</span>
               </label>
               <label class="button-option">
-                <ion-radio value="27" class="custom-radio"></ion-radio>
+                <ion-radio [value]="27" class="custom-radio"></ion-radio>
                 <span>TON</span>
               </label>
             </div>
@@ -137,6 +138,9 @@
             <img src="assets/img/icons/upload-image.svg" alt="" title="">
             <p class="lgdesc">Upload Photos</p>
             <p class="desc">Please upload image size less than 2mb</p>
+            <p class="upload-status" *ngIf="selectedImages.length > 0">
+              {{ selectedImages.length }} image(s) selected
+            </p>
             <ion-input class="form-field" type="file" multiple accept="image/*" (change)="onImageChange($event)">
             </ion-input>
           </div>
@@ -144,6 +148,9 @@
             <img src="assets/img/icons/upload-video.svg" alt="" title="">
             <p class="lgdesc">Upload Video</p>
             <p class="desc">Please upload video size less than 100mb</p>
+            <p class="upload-status" *ngIf="selectedVideo">
+              Video selected
+            </p>
             <ion-input class="form-field" type="file" accept="video/*" (change)="onVideoChange($event)">
             </ion-input>
           </div>
@@ -155,13 +162,16 @@
 
       <!-- Display selected images -->
       <div class="selected-images" *ngIf="selectedImages.length > 0">
-        <h4>Selected Images:</h4>
+        <h4>Selected Images ({{ selectedImages.length }})</h4>
         <div class="image-preview">
           <div class="image-item" *ngFor="let image of selectedImages; let i = index">
-            <img [src]="image.preview" alt="Preview">
-            <ion-button fill="clear" size="small" (click)="removeImage(i)">
+            <img [src]="image.preview" alt="Preview" (click)="previewImage(image.preview)">
+            <ion-button fill="clear" size="small" (click)="removeImage(i)" title="Remove image">
               <ion-icon name="close"></ion-icon>
             </ion-button>
+            <div class="image-info">
+              <span class="image-number">{{ i + 1 }}</span>
+            </div>
           </div>
         </div>
       </div>

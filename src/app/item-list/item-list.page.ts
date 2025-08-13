@@ -38,6 +38,7 @@ export class ItemListPage implements OnInit {
   public searchField: any = 5;
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
+  public type: string = '';
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -50,27 +51,37 @@ export class ItemListPage implements OnInit {
     private authGuardService: AuthGuardService
     // private sharedService: SharedService,
   ) {
+ 
+
+    // Subscribe to query parameters from URL
+    activatedRoute.queryParams.subscribe(params => {      // Handle different types of parameters
+      if (params['type']) {
+        console.log('Type parameter:', params['type']);
+        this.type = params['type'];
+      }
+    });
+
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Live Bid');
       register();
       this.getItemList();
-    });   
+    });
   }
 
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
-  } 
+  }
 
   getItemList() {
     let data = {
       module: 2,
       start: this.page,
       limit: 10,
-      orderfield: this.searchField==5 ? 'item_master.added_on':this.searchField,
+      orderfield: this.searchField == 5 ? 'item_master.added_on' : this.searchField,
       orderby: this.orderBy,
-      keyword: this.searchKeyword ? this.searchKeyword : '',
-      options:  this.searchField==5 ? 'item_master.added_on':this.searchField
+      keyword:  this.type?this.type=='seller'?1:2:this.searchKeyword ? this.searchKeyword : '',
+      options: this.type? 'item_master.item_listed_for':this.searchField == 5 ? 'item_master.added_on' : this.searchField
 
     }
     if (this.page == 0) {
@@ -150,10 +161,10 @@ export class ItemListPage implements OnInit {
     if (this.searchField) {
       this.filterWarning = false;
     }
-    
+
     // Update current filter value
     this.searchFieldControl = event;
-    
+
     // Switch case based on dropdown value
     switch (event) {
       case 1: // Price (Low to High)
@@ -161,42 +172,42 @@ export class ItemListPage implements OnInit {
         this.orderBy = 'asc';
         console.log('Filtering by Price (Low to High)');
         break;
-        
+
       case 2: // Price (High to Low)
         this.searchField = 'item_master.price';
         this.orderBy = 'desc';
         console.log('Filtering by Price (High to Low)');
         break;
-        
+
       case 3: // Quantity (Low to High)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'asc';
         console.log('Filtering by Quantity (Low to High)');
         break;
-        
+
       case 4: // Quantity (High to Low)
         this.searchField = 'item_master.quantity';
         this.orderBy = 'desc';
         console.log('Filtering by Quantity (High to Low)');
         break;
-        
+
       case 5: // Most Recent
         this.searchField = 'item_master.added_on';
         this.orderBy = 'desc';
         console.log('Filtering by Most Recent');
         break;
-        
+
       default:
         this.searchField = 'item_master.price';
         this.orderBy = 'asc';
         console.log('Default filter: Price (Low to High)');
         break;
     }
-    
+
     this.page = 0;
     this.itemList = [];
     this.getItemList();
-  }  
+  }
 
   // Convert UOM ID to display text
   getUOMText(uomId: number): string {
@@ -233,7 +244,7 @@ export class ItemListPage implements OnInit {
   // Get current filter value for display
   getsearchField(): number {
     if (!this.searchField) return 0;
-    
+
     if (this.searchField === 'item_master.price') {
       return this.orderBy === 'asc' ? 1 : 2;
     } else if (this.searchField === 'item_master.quantity') {
@@ -241,7 +252,7 @@ export class ItemListPage implements OnInit {
     } else if (this.searchField === 'item_master.added_on') {
       return 5;
     }
-    
+
     return 0;
   }
 
@@ -267,7 +278,7 @@ export class ItemListPage implements OnInit {
 
 
 
- 
+
 
   async showToast(
     status: string,

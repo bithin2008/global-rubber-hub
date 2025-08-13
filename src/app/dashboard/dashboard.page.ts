@@ -24,6 +24,7 @@ interface DashboardItem {
   company_name?: string;
   full_name?: string;
   price: string;
+  item_listed_for?: number; // 1 for Sell, 2 for Buy
 }
 
 interface RubberRate {
@@ -153,8 +154,10 @@ export class DashboardPage implements OnInit, AfterViewInit {
     });
   }
 
-  goToLiveBids() {
-    this.router.navigate(['/item-list']);
+  goToLiveBids(type?: string) {
+    this.router.navigate(['/item-list'], { 
+      queryParams: { type: type || 'all' } 
+    });
   }
 
   ngAfterViewInit() {
