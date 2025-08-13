@@ -306,6 +306,14 @@
     min-height: auto;
     position: relative;
     &.addicon {
+      border: 1px solid #fff;
+      padding: 5px 10px !important;
+      border-radius: 50px;
+      --color: #fff;
+      img{
+        max-height: 20px;
+        margin-right: 5px;
+      }
       &:after {
         content: "";
         width: 17px;
@@ -315,8 +323,8 @@
         background-position: center;
         background-size: 100%;
         position: absolute;
-        right: -8px;
-        top: -6px;
+        right: -2px;
+        bottom: -8px;
         border-radius: 50%;
       }
     }
@@ -672,7 +680,7 @@ ion-content {
   margin-top: 20px;
 }
 
-.account-page {
+.account-page, .verify-page {
   .back {
     font-size: 12px;
     position: absolute;
@@ -1878,5 +1886,25 @@ ion-select::part(icon) {
   }
   100% {
     left: 120%;
+  }
+}
+
+
+.verifiedBdg{
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: #03962a;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img{
+    filter: brightness(0) invert(1);
+    width: 75%;
+    object-fit: none;
+    height: auto;
   }
 }
