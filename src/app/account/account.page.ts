@@ -116,6 +116,9 @@ export class AccountPage implements OnInit, OnDestroy {
 
   }
 
+  goToVerifyNow() {
+    this.router.navigate(['/verify-now']);
+  }
 
 
   goToEditProfile() {

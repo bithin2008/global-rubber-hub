@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, IonFooter, IonItem, IonLabel, IonInput } from '@ionic/angular/standalone';
 import { Icon } from 'ionicons/dist/types/components/icon/icon';
@@ -13,9 +13,13 @@ import { Icon } from 'ionicons/dist/types/components/icon/icon';
 })
 export class VerifyInnerPage implements OnInit {
 
-  constructor() { }
+  constructor(private location: Location) { }
 
   ngOnInit() {
+  }
+
+  goBack() {
+    this.location.back();
   }
 
 }

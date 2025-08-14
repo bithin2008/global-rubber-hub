@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-verify-now',
@@ -12,9 +13,19 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, Ion
 })
 export class VerifyNowPage implements OnInit {
 
-  constructor() { }
+  constructor(private location: Location, private router: Router) { }
 
   ngOnInit() {
   }
+
+  goBack() {
+    this.location.back();
+  }
+
+  goToAadhar() {
+    this.router.navigate(['/verify-inner']);
+  }
+
+
 
 }
