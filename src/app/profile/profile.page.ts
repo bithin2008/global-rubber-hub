@@ -59,7 +59,7 @@ export class ProfilePage implements OnInit {
         pan: [''],
         id_proof_type: [''],
         id_proof_image: [[], [Validators.minLength(1)]],
-        country: ['', [Validators.required]],
+        country: ['India', [Validators.required]],
         company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
         city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
         state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
@@ -80,6 +80,13 @@ export class ProfilePage implements OnInit {
         }
         panControl?.updateValueAndValidity();
       });
+
+      // Set initial PAN validation since India is default
+      const panControl = this.profileForm.get('pan');
+      if (panControl) {
+        panControl.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+        panControl.updateValueAndValidity();
+      }
     });
   }
 
