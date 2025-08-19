@@ -1,3 +1,29 @@
 ion-label h3 {
     font-size: 12px;
 }
+
+// Status Badge Styles
+.status-badge {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    
+    .badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &.accepted {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        &.rejected {
+            background-color: #f44336;
+            color: white;
+        }
+    }
+}

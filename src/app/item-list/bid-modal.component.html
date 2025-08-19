@@ -9,7 +9,7 @@
       <div class="bid-info-box">
         <div class="info-row">
           <span>{{item?.item_name}}</span>
-          <span class="bold">{{item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
+          <span class="bold">{{item?.item_quantity?item?.item_quantity:item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
         </div>
         <div class="info-row">
           <span>Listed By</span>
@@ -22,19 +22,20 @@
         </div>
         <div class="info-row">
           <span>Current Price</span>
-          <span class="bold">₹{{item?.price}}/{{getUOMText(item.uom_id)}}</span>
+          <span class="bold">₹{{item?.actual_bid_amount}}/{{getUOMText(item.uom_id)}}</span>
         </div>
       </div>
     <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Your bid price (₹/{{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
-          <ion-input 
-            class="form-field" 
-            type="number" 
-            formControlName="bid_amount"
-            placeholder="190.00">
-          </ion-input>
+                     <ion-input 
+             class="form-field" 
+             type="number" 
+             formControlName="bid_amount"
+             placeholder="190.00"
+             [readonly]="isEdit">
+           </ion-input>
         </div>
       </ion-item>
       <div class="validation-error">
@@ -48,12 +49,13 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Quantity Interested({{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
-          <ion-input 
-            class="form-field" 
-            type="number" 
-            formControlName="bid_quantity"
-            placeholder="50">
-          </ion-input>
+                     <ion-input 
+             class="form-field" 
+             type="number" 
+             formControlName="bid_quantity"
+             placeholder="50">
+           </ion-input>
+          
         </div>
       </ion-item>
       <div class="validation-error" >
@@ -69,17 +71,18 @@
         <div class="custom-inner">
           <ion-label class="formlebel">Message to <span *ngIf="item.item_listed_for == 1">Seller</span> <span
             *ngIf="item.item_listed_for == 2">Buyer</span></ion-label>
-          <ion-textarea 
-            class="form-field" 
-            formControlName="remark"
-            placeholder="Type your message here">
-          </ion-textarea>
+                     <ion-textarea 
+             class="form-field" 
+             formControlName="remark"
+             placeholder="Type your message here"
+             [readonly]="isEdit">
+           </ion-textarea>
         </div>
       </ion-item>
       <div class="validation-error" >
         <span *ngIf="submitted && f['remark'].errors">
         <span *ngIf="f['remark'].errors['required']">Message is required</span>
-        <span *ngIf="f['remark'].errors['minlength']">Message must be at least 10 characters</span>
+        <span *ngIf="f['remark'].errors['minlength']">Message must be at least 5 characters</span>
         <span *ngIf="f['remark'].errors['maxlength']">Message must be less than 100 characters</span>
       </span>
       </div>

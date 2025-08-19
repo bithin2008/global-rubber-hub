@@ -13,6 +13,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
+import { BidModalComponent } from '../item-list/bid-modal.component';
 
 @Component({
   selector: 'app-bid-history',
@@ -148,41 +149,63 @@ export class BidHistoryPage implements OnInit {
 
     // Update current filter value
     this.searchFieldControl = event;
+    this.searchKeyword=''
 
     // Switch case based on dropdown value
     switch (event) {
       case 1: // Price (Low to High)
-        this.searchField = 'item_master.price';
+        this.searchField = 'bidding_master.bid_amount';
         this.orderBy = 'asc';
         console.log('Filtering by Price (Low to High)');
         break;
 
       case 2: // Price (High to Low)
-        this.searchField = 'item_master.price';
+        this.searchField = 'bidding_master.bid_amount';
         this.orderBy = 'desc';
         console.log('Filtering by Price (High to Low)');
         break;
 
       case 3: // Quantity (Low to High)
-        this.searchField = 'item_master.quantity';
+        this.searchField = 'bidding_master.bid_quantity';
         this.orderBy = 'asc';
         console.log('Filtering by Quantity (Low to High)');
         break;
 
       case 4: // Quantity (High to Low)
-        this.searchField = 'item_master.quantity';
+        this.searchField = 'bidding_master.bid_quantity';
         this.orderBy = 'desc';
         console.log('Filtering by Quantity (High to Low)');
         break;
 
       case 5: // Most Recent
-        this.searchField = 'item_master.added_on';
+        this.searchField = 'bidding_master.added_on';
         this.orderBy = 'desc';
         console.log('Filtering by Most Recent');
         break;
 
+      case 6: // Accepted
+        this.searchField = 'bidding_master.bid_status';
+        this.orderBy = 'asc';
+        this.searchKeyword='1'
+        console.log('Filtering by Accepted');
+        break;
+
+      case 7: // Rejected
+        this.searchField = 'bidding_master.bid_status';
+        this.orderBy = 'desc';
+        this.searchKeyword='2'
+        console.log('Filtering by Rejected');
+        break;
+
+      case 8: // Pending
+        this.searchField = 'bidding_master.bid_status';
+        this.orderBy = 'desc';
+        this.searchKeyword='0'
+        console.log('Filtering by Pending');
+        break;
+
       default:
-        this.searchField = 'item_master.price';
+        this.searchField = 'bidding_master.bid_amount';
         this.orderBy = 'asc';
         console.log('Default filter: Price (Low to High)');
         break;
@@ -191,6 +214,26 @@ export class BidHistoryPage implements OnInit {
     this.page = 0;
     this.itemList = [];
     this.getItemList();
+  }
+
+  async openBidModal(item: any) {
+    const modal = await this.modalController.create({
+      component: BidModalComponent,
+      cssClass: 'bid-modal',
+      componentProps: {
+        item: item
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      // Refresh the list after successful bid submission
+      this.page = 0;
+      this.itemList = [];
+      this.getItemList();
+    }
   }
 
 }
