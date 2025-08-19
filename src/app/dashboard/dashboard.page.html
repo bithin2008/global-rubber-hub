@@ -38,7 +38,7 @@
     <!-- First Row: First 2 Items -->
     <div class="cards-row">
       <div class="product-card"
-        *ngFor="let item of ((dashboardData?.topSellerItems?.results) ? dashboardData.topSellerItems.results : []) | slice:0:3" (click)="goToLiveBids('seller')">
+        *ngFor="let item of ((dashboardData?.topSellerItems?.results) ? dashboardData.topSellerItems.results : []) | slice:0:3" (click)="openBidModal(item)">
         <ion-badge class="success_badg">On Sale</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
@@ -83,7 +83,7 @@
     <!-- First Row: First 2 Items -->
     <div class="cards-row">
       <div class="product-card"
-        *ngFor="let item of ((dashboardData?.topBuyerItems?.results) ? dashboardData.topBuyerItems.results : []) | slice:0:3" (click)="goToLiveBids('buyer')">
+        *ngFor="let item of ((dashboardData?.topBuyerItems?.results) ? dashboardData.topBuyerItems.results : []) | slice:0:3" (click)="openBidModal(item)">
         <ion-badge class="worning_badg">On Buy</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
@@ -118,7 +118,7 @@
     <div class="section-title">Recent Listed</div>
     <div class="cards-row">
       <div class="product-card"
-        *ngFor="let item of ((dashboardData?.recentListedItems?.results) ? dashboardData.recentListedItems.results : []) | slice:0:3" (click)="goToLiveBids('')">
+        *ngFor="let item of ((dashboardData?.recentListedItems?.results) ? dashboardData.recentListedItems.results : []) | slice:0:3" (click)="openBidModal(item)">
         <ion-badge class="{{item?.item_listed_for==1?'success_badg':'worning_badg'}}">On {{item?.item_listed_for==1?'Sell':'Buy'}}</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
@@ -156,7 +156,7 @@
     </div>
     <div class="other-list"
       *ngIf="dashboardData && dashboardData.otherItems && dashboardData.otherItems.results && dashboardData.otherItems.results.length > 0">
-      <ion-item class="no-style" *ngFor="let item of (dashboardData.otherItems.results | slice:0:5)">
+      <ion-item class="no-style" *ngFor="let item of (dashboardData.otherItems.results | slice:0:5)" (click)="openBidModal(item)">
         <ion-avatar slot="start">
           <!-- <img src="assets/img/sail.png" /> -->
           <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
