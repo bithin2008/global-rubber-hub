@@ -93,7 +93,7 @@
         <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
       </ion-item>
 
-      <ion-item class="account-row no-style accountItem">
+      <ion-item class="account-row no-style accountItem" (click)="goToTrustedSeller()">
         <div class="icon"><img src="assets/img/icons/shield_person.svg" alt="" title=""></div>
         <ion-label>
           <h3>Trusted Seller <ion-icon name="star" class="crown-mark" *ngIf="profileDetails.is_trusted == 1"></ion-icon></h3>

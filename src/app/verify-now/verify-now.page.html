@@ -1,6 +1,6 @@
 <ion-header class="trusted-header">
   <ion-toolbar>
-    <ion-title>KYC, GST & Farmer ID</ion-title>
+    <ion-title>PAN, GST & Farmer ID</ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="goBack()">
         <ion-icon name="close"></ion-icon>
@@ -21,7 +21,8 @@
           <h3>Verify With PAN</h3>
           <p>Tap here to fill the details</p>
         </ion-label>
-        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="" *ngIf="profileDetails.pan== null || profileDetails.pan== ''">
+        <img src="assets/img/icons/check_circle.svg" alt="" title="" *ngIf="profileDetails.pan">
       </ion-item> 
 
       <ion-item class="account-row no-style accountItem" (click)="goToGSTUdyam()">
@@ -30,15 +31,17 @@
           <h3>GST/Udyam / Farmer ID</h3>
           <p>Tap here to fill the details</p>
         </ion-label>
-        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="" title="" *ngIf="profileDetails.gstin== null || profileDetails.gstin== ''">
+        <img src="assets/img/icons/check_circle.svg" alt="" title="" *ngIf="profileDetails.gstin">
       </ion-item>
 
-      <ion-item class="account-row no-style accountItem">
+      <ion-item class="account-row no-style accountItem" (click)="goToTrustedSeller()">
         <div class="icon"><img src="assets/img/icons/verified_user.svg" alt=""></div>
         <ion-label>
           <h3>Become a Trusted Seller Now!</h3>
         </ion-label>
-        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="">
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="" *ngIf="profileDetails.is_trusted == 0">
+        <img src="assets/img/icons/check_circle.svg" alt="" title="" *ngIf="profileDetails.is_trusted == 1">
       </ion-item>
     </ion-list>
   </div>

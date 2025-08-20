@@ -340,6 +340,19 @@ export class AccountPage implements OnInit, OnDestroy {
     }
   }
 
+  goToTrustedSeller(){
+    if(this.profileDetails.pan== null || this.profileDetails.pan== ''){
+      this.showToast('warning', 'Please verify your PAN first', '', 3500, '');
+      return;
+    }
+
+    if(this.profileDetails.pan== null || this.profileDetails.pan== ''){
+      this.showToast('warning', 'GST or Udyam is not verified', '', 3500, '');
+      return;
+    }
+    this.router.navigate(['/trusted-seller']);
+  }
+
   async paySelectedPlan() {
     if (!this.selectedPackage) {
       return;

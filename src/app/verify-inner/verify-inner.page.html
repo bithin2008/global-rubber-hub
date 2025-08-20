@@ -16,9 +16,23 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">PAN ID*</ion-label>
-          <ion-input class="form-field" type="text" placeholder="Enter 10 Digit Number"></ion-input>
+          <ion-input 
+            class="form-field" 
+            type="text" 
+            placeholder="Enter 10 Digit Number"
+            [(ngModel)]="panNumber"
+            [ngModelOptions]="{standalone: true}"
+            (ionInput)="onPanNumberChange()"
+            [class.invalid]="panNumber && !isFormValid">
+          </ion-input>
         </div>
       </ion-item>
+      <div class="validation-message" *ngIf="panNumber && !isFormValid">
+        <ion-label color="danger">
+          <ion-icon name="alert-circle"></ion-icon>
+          Please enter a valid PAN number (10 characters)
+        </ion-label>
+      </div>
       <!-- <ion-item class="no-style">
         <div class="custom-inner OTPfieldwrap">
           <ion-label class="formlebel">OTP Number</ion-label>
@@ -45,6 +59,22 @@
 
 <ion-footer>
   <ion-toolbar class="footer-toolbar">
-    <ion-button class="btn btn-grn no-style" expand="block" type="button" >Get OTP</ion-button>
+    <ion-button 
+      class="btn btn-grn no-style" 
+      expand="block" 
+      type="button"
+      [disabled]="!isFormValid"
+      (click)="verifyNow()">
+      Verify Now
+    </ion-button>
   </ion-toolbar>
 </ion-footer>
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/ajax-loader.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->
