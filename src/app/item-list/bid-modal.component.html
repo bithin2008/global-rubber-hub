@@ -22,7 +22,7 @@
         </div>
         <div class="info-row">
           <span>Current Price</span>
-          <span class="bold">₹{{item?.actual_bid_amount}}/{{getUOMText(item.uom_id)}}</span>
+          <span class="bold">₹{{item?.actual_bid_amount?item?.actual_bid_amount:item?.price}}/{{getUOMText(item.uom_id)}}</span>
         </div>
       </div>
     <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">

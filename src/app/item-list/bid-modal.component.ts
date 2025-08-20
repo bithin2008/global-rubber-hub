@@ -57,9 +57,9 @@ export class BidModalComponent implements OnInit {
     const maxAllowedQuantity = Number(this.item?.quantity ?? Number.MAX_SAFE_INTEGER);
 
     this.bidForm = this.formBuilder.group({
-      bid_amount: [this.item.bid_amount?this.item.bid_amount:this.item.price ,[Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+      bid_amount: [this.item.bid_amount?this.item.bid_amount:null ,[Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
       bid_quantity: [
-        this.item.bid_quantity? this.item.bid_quantity: this.item.quantity,
+        this.item.bid_quantity? this.item.bid_quantity: null,
         [
           Validators.required,
           Validators.min(1),
