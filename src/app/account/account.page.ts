@@ -442,6 +442,12 @@ export class AccountPage implements OnInit, OnDestroy {
     }
   }
 
+  goToHelpVideo(){
+    // Open YouTube video in browser
+    const youtubeUrl = 'https://www.youtube.com/watch?v=qBnMoFpAiOk';
+    window.open(youtubeUrl, '_blank');
+  }
+
   capturePayment(razorPay: any) {
     let url = "general/capture-payment";
     let data = {
