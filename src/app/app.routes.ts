@@ -74,4 +74,8 @@ export const routes: Routes = [
     path: 'verify-inner',
     loadComponent: () => import('./verify-inner/verify-inner.page').then( m => m.VerifyInnerPage)
   },
+  {
+    path: 'notification',
+    loadComponent: () => import('./notification/notification.page').then( m => m.NotificationPage)
+  },
 ];
