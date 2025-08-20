@@ -78,4 +78,8 @@ export const routes: Routes = [
     path: 'notification',
     loadComponent: () => import('./notification/notification.page').then( m => m.NotificationPage)
   },
+  {
+    path: 'gst-udyam-verification',
+    loadComponent: () => import('./gst-udyam-verification/gst-udyam-verification.page').then( m => m.GstUdyamVerificationPage)
+  },
 ];

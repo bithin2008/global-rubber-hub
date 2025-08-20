@@ -22,8 +22,12 @@ export class VerifyNowPage implements OnInit {
     this.location.back();
   }
 
-  goToAadhar() {
+  goToPan() {
     this.router.navigate(['/verify-inner']);
+  }
+
+  goToGSTUdyam(){
+    this.router.navigate(['/gst-udyam-verification']);
   }
 
 

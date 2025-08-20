@@ -107,7 +107,7 @@ export class BidModalComponent implements OnInit {
       item_id: this.item.id,
       bid_amount: parseFloat(formValues.bid_amount),
       bid_quantity: parseFloat(formValues.bid_quantity),
-     // actual_bid_amount: parseFloat(this.item.price),
+      actual_bid_amount: parseFloat(this.item.price),
       remark: formValues.remark
     };
 
@@ -116,7 +116,7 @@ export class BidModalComponent implements OnInit {
       item_id: bidData.item_id,
       bid_amount: bidData.bid_amount,
       bid_quantity: bidData.bid_quantity,
-      actual_bid_amount: this.item.actual_bid_amount,
+      actual_bid_amount: this.item.actual_bid_amount? this.item.actual_bid_amount: bidData.actual_bid_amount,
       remark: bidData.remark,
       cancel_rejection_reason: null
     }
