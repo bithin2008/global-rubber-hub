@@ -4,7 +4,7 @@
     <span class="app-title">{{ pageTitle }}</span>
   </div>
   <div class="btn-container">
-    <ion-button class="btn no-style addicon"><img src="assets/img/icons/wallet.svg" alt="" title=""> {{ walletBalance | number:'1.0-0' }}</ion-button>
+    <ion-button class="btn no-style addicon"><img src="assets/img/icons/coin.svg" alt="" title=""> {{ walletBalance | number:'1.0-0' }}</ion-button>
     <ion-button class="btn no-style blink-after"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
     <ion-button class="btn no-style account {{profileImage ? 'has-image' : ''}}" (click)="goToProfile()">
       <div class="profile-container">
