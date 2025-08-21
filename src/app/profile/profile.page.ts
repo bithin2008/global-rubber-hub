@@ -6,10 +6,8 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, Modal
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
-// Camera plugin declarations
+// File input declarations
 declare var navigator: any;
-declare var Camera: any;
-declare var cordova: any;
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
@@ -61,7 +59,7 @@ export class ProfilePage implements OnInit {
         pan: [''],
         id_proof_type: [''],
         id_proof_image: [[], [Validators.minLength(1)]],
-        country: ['', [Validators.required]],
+        country: ['India', [Validators.required]],
         company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
         city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
         state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
@@ -82,6 +80,13 @@ export class ProfilePage implements OnInit {
         }
         panControl?.updateValueAndValidity();
       });
+
+      // Set initial PAN validation since India is default
+      const panControl = this.profileForm.get('pan');
+      if (panControl) {
+        panControl.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+        panControl.updateValueAndValidity();
+      }
     });
   }
 
@@ -348,155 +353,60 @@ export class ProfilePage implements OnInit {
 
   async takePicture(source: string) {
     try {
-      // Check if running on a device (Cordova/Capacitor hybrid)
-      const isHybrid = this.platform.is('hybrid') || this.platform.is('cordova');
-      if (!isHybrid || !this.isDeviceReady) {
-        console.log('Not on device, using file input');
-        this.openFileInput();
-        return;
-      }
-
-      // Check if camera plugin is available
-      if (!navigator.camera) {
-        console.log('Camera plugin not available, using file input');
-        this.openFileInput();
-        return;
-      }
-
-      // Ensure runtime permissions on Android
-      const hasPermission = await this.ensureCameraPermissions(source);
-      if (!hasPermission) {
-        this.showToast('error', 'Camera permission denied. Please allow camera access in settings.', '', 3500, '');
-        return;
-      }
-
-      // Camera options
-      const options = {
-        quality: 90,
-        allowEdit: false,
-        encodingType: Camera.EncodingType.JPEG,
-        targetWidth: 1000,
-        targetHeight: 1000,
-        sourceType: source === 'camera' ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY,
-        destinationType: Camera.DestinationType.FILE_URI,
-        correctOrientation: true
-      };
-
-      console.log('Taking picture with options:', options);
-
-      // Take picture
-      const imageURI = await new Promise<string>((resolve, reject) => {
-        navigator.camera.getPicture(
-          (imageURI: string) => {
-            console.log('Camera success:', imageURI);
-            resolve(imageURI);
-          },
-          (error: any) => {
-            console.error('Camera error:', error);
-            if (error === 'No Image Selected') {
-              reject(new Error('No image selected'));
-            } else {
-              reject(new Error(`Camera failed: ${error}`));
-            }
-          },
-          options
-        );
-      });
-
-      if (imageURI) {
-        await this.processImageURI(imageURI);
-      }
+      console.log('takePicture called with source:', source);
+      
+      // Use file input approach for better reliability and no permission issues
+      this.openFileInputWithSource(source);
+      
     } catch (error: any) {
-      console.error('Camera error:', error);
-      let errorMessage = 'Failed to capture image.';
-      
-      if (error.message && error.message.includes('No image selected')) {
-        // User cancelled, don't show error
-        return;
-      } else if (error.message && error.message.includes('permission')) {
-        errorMessage = 'Camera permission denied. Please allow camera access in settings.';
-      } else if (error.message && error.message.includes('not available')) {
-        errorMessage = 'Camera is not available on this device.';
-      }
-      
-      this.showToast('error', errorMessage, '', 4000, '');
+      console.error('Image selection error:', error);
+      this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '');
     }
   }
 
-  private ensureCameraPermissions(source: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      if (!(this.platform.is('android') && (window as any).cordova && (cordova as any).plugins && (cordova as any).plugins.permissions)) {
-        resolve(true);
-        return;
-      }
-
-      const permissions = (cordova as any).plugins.permissions;
-      const requiredPermissions: string[] = [permissions.CAMERA];
-      // For gallery access on newer Android versions
-      if (source !== 'camera') {
-        if (permissions.READ_MEDIA_IMAGES) {
-          requiredPermissions.push(permissions.READ_MEDIA_IMAGES);
-        } else if (permissions.READ_EXTERNAL_STORAGE) {
-          requiredPermissions.push(permissions.READ_EXTERNAL_STORAGE);
-        }
-      }
-
-      const checkAll = (perms: string[], cb: (granted: boolean) => void) => {
-        let remaining = perms.length;
-        let allGranted = true;
-        perms.forEach((p) => {
-          permissions.checkPermission(p, (status: any) => {
-            if (!status.hasPermission) {
-              allGranted = false;
-            }
-            remaining -= 1;
-            if (remaining === 0) cb(allGranted);
-          }, () => {
-            allGranted = false;
-            remaining -= 1;
-            if (remaining === 0) cb(allGranted);
-          });
-        });
-      };
-
-      checkAll(requiredPermissions, (granted) => {
-        if (granted) {
-          resolve(true);
-        } else {
-          permissions.requestPermissions(requiredPermissions, (status: any) => {
-            const ok = Array.isArray(status.hasPermission)
-              ? status.hasPermission.every((v: boolean) => v)
-              : !!status.hasPermission;
-            resolve(ok);
-          }, () => resolve(false));
-        }
-      });
-    });
-  }
-
-  private isCameraAvailable(): boolean {
-    return this.platform.is('cordova') && 
-           typeof navigator !== 'undefined' && 
-           navigator.camera && 
-           typeof navigator.camera.getPicture === 'function';
-  }
-
   private openFileInput(): void {
-    // Create a hidden file input for fallback
+    this.openFileInputWithSource('library');
+  }
+
+  private openFileInputWithSource(source: string): void {
+    // Create a hidden file input with camera capture support
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
     
+    // Set capture attribute for camera on mobile devices
+    if (source === 'camera') {
+      fileInput.setAttribute('capture', 'camera');
+    }
+    
     fileInput.addEventListener('change', (event: any) => {
       const file = event.target.files[0];
       if (file) {
+        console.log('File selected:', file.name, 'Size:', file.size);
+        
+        // Check file size before processing
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 4000, '');
+          document.body.removeChild(fileInput);
+          return;
+        }
+        
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.processImageURI(e.target.result);
         };
+        reader.onerror = () => {
+          this.showToast('error', 'Failed to read image file. Please try again.', '', 4000, '');
+        };
         reader.readAsDataURL(file);
       }
+      document.body.removeChild(fileInput);
+    });
+    
+    fileInput.addEventListener('cancel', () => {
+      console.log('File selection cancelled');
       document.body.removeChild(fileInput);
     });
     

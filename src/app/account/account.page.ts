@@ -86,17 +86,17 @@ export class AccountPage implements OnInit, OnDestroy {
           this.profileDetails.points = parseInt(this.profileDetails.points)
           this.checkExpiryDate = this.profileDetails.trusted_package_expiry < new Date();
           this.checkExpiryDateMandiPro = this.profileDetails.pro_user_expiry < new Date();
+          
+          // Update profile service with all data including wallet balance
+          this.profileService.updateProfileFromAPI(response.user);
+          
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
             this.showPlaceholder = false;
-            // Update the service so header reflects the change
-            this.profileService.updateProfileImage(response.user.profile_image);
           } else {
             this.profileImage = '';
             this.showPlaceholder = true;
-            // Clear the service as well
-            this.profileService.updateProfileImage('');
           }
           // Update user name in service if available
           if (response.user.full_name) {
@@ -116,6 +116,9 @@ export class AccountPage implements OnInit, OnDestroy {
 
   }
 
+  goToVerifyNow() {
+    this.router.navigate(['/verify-now']);
+  }
 
 
   goToEditProfile() {
@@ -337,6 +340,19 @@ export class AccountPage implements OnInit, OnDestroy {
     }
   }
 
+  goToTrustedSeller(){
+    if(this.profileDetails.pan== null || this.profileDetails.pan== ''){
+      this.showToast('warning', 'Please verify your PAN first', '', 3500, '');
+      return;
+    }
+
+    if(this.profileDetails.pan== null || this.profileDetails.pan== ''){
+      this.showToast('warning', 'GST or Udyam is not verified', '', 3500, '');
+      return;
+    }
+    this.router.navigate(['/trusted-seller']);
+  }
+
   async paySelectedPlan() {
     if (!this.selectedPackage) {
       return;
@@ -424,6 +440,12 @@ export class AccountPage implements OnInit, OnDestroy {
         error: error.message || error.error || 'Payment failed. Please try again.'
       });
     }
+  }
+
+  goToHelpVideo(){
+    // Open YouTube video in browser
+    const youtubeUrl = 'https://www.youtube.com/watch?v=qBnMoFpAiOk';
+    window.open(youtubeUrl, '_blank');
   }
 
   capturePayment(razorPay: any) {

@@ -18,6 +18,9 @@
                   <ion-select-option [value]="3"> quantiity (Low to High)</ion-select-option>
                   <ion-select-option [value]="4">quantiity (High to Low)</ion-select-option>
                   <ion-select-option [value]="5">Most Recent</ion-select-option>
+                  <ion-select-option [value]="6">Accepted</ion-select-option>
+                  <ion-select-option [value]="7">Rejected</ion-select-option>
+                  <ion-select-option [value]="8">Pending</ion-select-option>
                 </ion-select>
               </div>
             </ion-item>
@@ -38,7 +41,7 @@
   <div class="section">
     
     <div class="other-list" *ngIf="itemList.length > 0">
-      <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
+      <ion-item class="no-style clickable" *ngFor="let item of itemList; let i= index">
         <ion-avatar slot="start">
           <img [src]="item.item_image[0]" (error)="onImageError($event)" />
         </ion-avatar>
@@ -48,8 +51,17 @@
           <p *ngIf="item.full_name">{{item.full_name}}</p>
           <h3>Quantity: {{item.bid_quantity}} <br> Amount: {{item.bid_amount}}/ {{item.short_name}}</h3>
         </ion-label>
-        <div class="btnCont" *ngIf="item.status == 0">
-          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg">
+        
+        <!-- Status Badges -->
+        <div class="status-badge" *ngIf="item.bid_status == 1">
+          <span class="badge accepted">Accepted</span>
+        </div>
+        <div class="status-badge" *ngIf="item.bid_status == 2">
+          <span class="badge rejected">Rejected</span>
+        </div>
+        
+        <div class="btnCont" *ngIf="item.bid_status == 0">
+          <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg" (click)="openBidModal(item)">
             <ion-icon class="edit" name="create-outline"></ion-icon>
           </ion-button>
         </div>

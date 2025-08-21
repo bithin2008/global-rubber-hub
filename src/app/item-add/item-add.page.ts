@@ -72,6 +72,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   enableLoader = false;
   profileDetails: any = {};
   isEditMode = false;
+  itemId: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -90,11 +91,11 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     
     // Check if we're in edit mode
     this.activatedRoute.queryParams.subscribe(params => {
-      const itemId = params['id'];
-      if (itemId) {
+      this.itemId = params['id'];
+      if (this.itemId) {
         this.isEditMode = true;
         this.pageTitleService.setPageTitle('Edit Item');
-        this.loadItemForEdit(itemId);
+        this.loadItemForEdit(this.itemId);
       } else {
         this.isEditMode = false;
         this.pageTitleService.setPageTitle('Add Item');
@@ -109,6 +110,12 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     if (!this.itemForm) {
       this.initForm();
     }
+    
+    // Add a small delay to ensure the form is properly bound
+    setTimeout(() => {
+      console.log('After view init - UOM value:', this.itemForm?.get('uom_id')?.value);
+      console.log('Form valid:', this.itemForm?.valid);
+    }, 100);
   }
 
   initForm() {
@@ -118,12 +125,13 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         item_name: ['', [Validators.required, Validators.maxLength(60)]],
         hsn_code: ['', [Validators.required, Validators.maxLength(8), Validators.pattern(/^\d+$/)]],
         item_listed_for: ['1', Validators.required],
-        uom_id: ['2', Validators.required],
+        uom_id: [2, Validators.required], // Changed to number type
         description: ['', [Validators.maxLength(255)]],
         price: ['', [Validators.required, Validators.min(0.01)]],
         quantity: ['', [Validators.required, Validators.min(0.01)]]
       });
       console.log('Form initialized successfully:', this.itemForm);
+      console.log('UOM ID value:', this.itemForm.get('uom_id')?.value);
     } catch (error) {
       console.error('Error initializing form:', error);
     }
@@ -152,8 +160,8 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   loadItemForEdit(itemId: number) {
     this.isEditMode = true;
     this.enableLoader = true;
-    let url = `items/list/${itemId}`;
-    this.commonService.get(url).subscribe(
+    let url = `items/details`;
+    this.commonService.post(url, {id: itemId,module:1}).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
@@ -164,21 +172,22 @@ export class ItemAddPage implements OnInit, AfterViewInit {
             item_name: item.item_name,
             hsn_code: item.hsn_code,
             item_listed_for: item.item_listed_for,
-            uom_id: item.uom_id,
+            uom_id: parseInt(item.uom_id) || 2, // Convert to number and provide fallback
             description: item.description,
             price: item.price,
             quantity: item.quantity
           });
+          console.log('Form patched with UOM ID:', this.itemForm.get('uom_id')?.value);
           
           // Load existing images if any
-          if (item.images && item.images.length > 0) {
-            this.selectedImages = item.images.map((img: any) => ({
+          if (item.item_image && item.item_image.length > 0) {
+            this.selectedImages = item.item_image.map((img: any) => ({
               preview: img,
               file: null // We don't have the actual file for existing images
             }));
           }
           
-          // Load existing video if any
+         // Load existing video if any
           if (item.video) {
             this.selectedVideo = {
               preview: item.video,
@@ -203,9 +212,11 @@ export class ItemAddPage implements OnInit, AfterViewInit {
 
   onImageChange(event: any) {
     const files = event.target.files;
+    console.log('Image change event:', files);
     if (files) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        console.log('Processing file:', file.name, file.type, file.size);
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
@@ -215,7 +226,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
 
         // Validate file size (2MB limit)
         if (file.size > 2000 * 1024) {
-          this.showToast('danger', 'Image size should be less than 100KB', '', 2500, '/login');
+          this.showToast('danger', 'Image size should be less than 2MB', '', 2500, '/login');
           continue;
         }
 
@@ -225,6 +236,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
             file: file,
             preview: e.target.result
           });
+          console.log('Image added to selectedImages:', this.selectedImages.length);
         };
         reader.readAsDataURL(file);
       }
@@ -233,10 +245,13 @@ export class ItemAddPage implements OnInit, AfterViewInit {
 
   onVideoChange(event: any) {
     const file = event.target.files[0];
+    console.log('Video change event:', file);
     if (file) {
+      console.log('Processing video file:', file.name, file.type, file.size);
+      
       // Validate file type
       if (!file.type.startsWith('video/')) {
-        // this.showToast('Please select only video files', 'danger');
+        this.showToast('danger', 'Please select only video files', '', 2500, '/login');
         return;
       }
 
@@ -252,6 +267,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
           file: file,
           preview: e.target.result
         };
+        console.log('Video added to selectedVideo');
       };
       reader.readAsDataURL(file);
     }
@@ -261,11 +277,52 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     this.selectedImages.splice(index, 1);
   }
 
+  previewImage(imageSrc: string) {
+    // Open image in new tab for full preview
+    window.open(imageSrc, '_blank');
+  }
+
   removeVideo() {
     this.selectedVideo = null;
   }
 
-  onSubmit() {
+  onUomChange(event: any) {
+    console.log('UOM changed:', event.detail.value);
+    console.log('Form UOM value:', this.itemForm.get('uom_id')?.value);
+  }
+
+  // Method to manually set UOM value (for testing)
+  setUomValue(value: number) {
+    this.itemForm.patchValue({ uom_id: value });
+    console.log('UOM manually set to:', value);
+    console.log('Form UOM value after setting:', this.itemForm.get('uom_id')?.value);
+  }
+
+  // Debug method to check current state
+  debugCurrentState() {
+    console.log('=== DEBUG CURRENT STATE ===');
+    console.log('selectedImages:', this.selectedImages);
+    console.log('selectedVideo:', this.selectedVideo);
+    console.log('selectedImages.length:', this.selectedImages.length);
+    console.log('selectedVideo exists:', !!this.selectedVideo);
+    console.log('Form valid:', this.itemForm?.valid);
+    console.log('Form values:', this.itemForm?.value);
+    console.log('========================');
+  }
+
+  // Convert URL to File object
+  async urlToFile(url: string, filename: string): Promise<File> {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new File([blob], filename, { type: blob.type });
+    } catch (error) {
+      console.error('Error converting URL to file:', error);
+      throw error;
+    }
+  }
+
+    async onSubmit() {
     this.submitted = true;
     
     // Check if form is properly initialized
@@ -280,7 +337,9 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     const formData = new FormData();
 
     // Add form fields
-    // formData.append('id', this.itemForm.get('id')?.value || '');
+    if(this.itemId){
+     formData.append('id', this.itemForm.get('id')?.value || '');
+    }
     formData.append('item_name', this.itemForm.get('item_name')?.value);
     formData.append('hsn_code', this.itemForm.get('hsn_code')?.value);
     formData.append('item_listed_for', this.itemForm.get('item_listed_for')?.value);
@@ -289,27 +348,50 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     formData.append('price', this.itemForm.get('price')?.value);
     formData.append('quantity', this.itemForm.get('quantity')?.value);
 
-    // Add images
-    this.selectedImages.forEach((image, index) => {
-      formData.append('image[]', image.file);
-    });
+    // Add images - handle both new files and existing URLs
+    for (let i = 0; i < this.selectedImages.length; i++) {
+      const image = this.selectedImages[i];
+      if (image.file == null && image.preview !== null) {
+        try {
+          // Convert URL to file object
+          const file = await this.urlToFile(image.preview, `image_${i}.jpg`);
+          formData.append('image[]', file);
+        } catch (error) {
+          console.error('Error converting URL to file:', error);
+          // Fallback: append the URL as string
+          formData.append('image[]', image.preview);
+        }
+      } else {
+        formData.append('image[]', image.file);
+      }
+    }
 
     // Add video if selected
     if (this.selectedVideo) {
-      formData.append('video', this.selectedVideo.file);
+      if (this.selectedVideo.file == null && this.selectedVideo.preview !== null) {
+        try {
+          // Convert video URL to file object
+          const videoFile = await this.urlToFile(this.selectedVideo.preview, 'video.mp4');
+          formData.append('video', videoFile);
+        } catch (error) {
+          console.error('Error converting video URL to file:', error);
+          // Fallback: append the URL as string
+          formData.append('video', this.selectedVideo.preview);
+        }
+      } else {
+        formData.append('video', this.selectedVideo.file);
+      }
     }
 
     // Determine if this is an add or edit operation
-    const itemId = this.itemForm.get('id')?.value;
-    let url = itemId ? `items/update/${itemId}` : 'items/add';
-
+    let url = 'items/add';
     this.enableLoader = true;
     this.commonService.filepost(url, formData).subscribe(
       (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
-          const successMessage = itemId ? 'Item updated successfully' : 'Item added successfully';
-          const redirectUrl = itemId ? '/my-item' : '/item-list';
+          const successMessage = this.itemId ? 'Item updated successfully' : 'Item added successfully';
+          const redirectUrl = this.itemId ? '/my-item' : '/item-list';
           this.showToast('success', successMessage, '', 2500, redirectUrl);
         } else {
           this.showToast('error', response.message, '', 2500, '');

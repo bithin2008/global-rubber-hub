@@ -1,6 +1,6 @@
 <ion-header class="trusted-header">
   <ion-toolbar>
-    <ion-title>PAN Verification</ion-title>
+    <ion-title>GST/Udyam / Farmer ID</ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="goBack()">
         <ion-icon name="close"></ion-icon>
@@ -12,25 +12,43 @@
 <ion-content [fullscreen]="true" class="verify-inner-container">
   <div class="account-container">
     <h3 class="title">Please verify your account</h3>
-    <form class="form">
+    
+    <div class="radio-group">
+      <ion-radio-group [(ngModel)]="selectedVerificationType" (ionChange)="onVerificationTypeChange($event.detail.value)">
+        <div class="radio-option" (click)="selectOption('gst')" [class.selected]="selectedVerificationType === 'gst'">
+          <ion-radio value="gst" class="custom-radio"></ion-radio>
+          <ion-label class="radio-label">GST</ion-label>
+        </div>
+        <div class="radio-option" (click)="selectOption('udyam')" [class.selected]="selectedVerificationType === 'udyam'">
+          <ion-radio value="udyam" class="custom-radio"></ion-radio>
+          <ion-label class="radio-label">Udyam</ion-label>
+        </div>
+        <!-- <div class="radio-option" (click)="selectOption('farmer')" [class.selected]="selectedVerificationType === 'farmer'">
+          <ion-radio value="farmer" class="custom-radio"></ion-radio>
+          <ion-label class="radio-label">Farmer ID</ion-label>
+        </div> -->
+      </ion-radio-group>
+    </div>
+    
+    <form class="form" *ngIf="selectedVerificationType">
       <ion-item class="no-style">
         <div class="custom-inner">
-          <ion-label class="formlebel">PAN ID*</ion-label>
+          <ion-label class="formlebel">{{ getLabelText() }}</ion-label>
           <ion-input 
             class="form-field" 
             type="text" 
-            placeholder="Enter 10 Digit Number"
-            [(ngModel)]="panNumber"
+            [placeholder]="getPlaceholderText()"
+            [(ngModel)]="verificationNumber"
             [ngModelOptions]="{standalone: true}"
-            (ionInput)="onPanNumberChange()"
-            [class.invalid]="panNumber && !isFormValid">
+            (ionInput)="onVerificationNumberChange()"
+            [class.invalid]="verificationNumber && !isFormValid">
           </ion-input>
         </div>
       </ion-item>
-      <div class="validation-message" *ngIf="panNumber && !isFormValid">
+      <div class="validation-message" *ngIf="verificationNumber && !isFormValid">
         <ion-label color="danger">
           <ion-icon name="alert-circle"></ion-icon>
-          Please enter a valid PAN number (10 characters)
+          Please enter a valid {{ selectedVerificationType === 'gst' ? 'GST' : selectedVerificationType === 'udyam' ? 'Udyam' : 'Farmer ID' }} number
         </ion-label>
       </div>
       <!-- <ion-item class="no-style">
@@ -50,13 +68,12 @@
     <!-- <div class="dgloc">
       <ion-button class="btn btn-grn no-style" expand="block" type="button" >Verify With Digilocker</ion-button>
     </div> -->
-    <div class="cont">
+    <!-- <div class="cont">
       <h3><ion-icon name="information-circle-outline"></ion-icon>Why PAN verification?</h3>
       <p>To protect our community from harassment and fraud. Verify your identity to join us in creating a safe and trustworthy marketplace for all.</p>
-    </div>
+    </div> -->
   </div>
 </ion-content>
-
 <ion-footer>
   <ion-toolbar class="footer-toolbar">
     <ion-button 
@@ -78,3 +95,4 @@
   </div>
 </div>
 <!--LOADER-->
+

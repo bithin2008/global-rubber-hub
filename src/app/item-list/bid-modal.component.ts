@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { 
-  IonContent, 
-  IonButton, 
-  IonItem, 
-  IonInput, 
-  IonLabel, 
+import {
+  IonContent,
+  IonButton,
+  IonItem,
+  IonInput,
+  IonLabel,
   IonTextarea,
   ModalController
 } from '@ionic/angular/standalone';
@@ -19,40 +19,47 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
   styleUrls: ['./bid-modal.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     ReactiveFormsModule,
-    IonContent, 
-    IonButton, 
-    IonItem, 
-    IonInput, 
-    IonLabel, 
+    IonContent,
+    IonButton,
+    IonItem,
+    IonInput,
+    IonLabel,
     IonTextarea
   ]
 })
 export class BidModalComponent implements OnInit {
   @Input() item: any;
-  
+
   public bidForm!: FormGroup;
   public submitted: boolean = false;
   public enableLoader: boolean = false;
+  public isEdit: boolean = false;
 
   constructor(
     private modalController: ModalController,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
-  ) {}
+  ) { }
 
   ngOnInit() {
 
     console.log(this.item);
+
+    // Check if this is an edit mode (item has bid_quantity and bid_amount values)
+    if (this.item && this.item.bid_quantity && this.item.bid_amount) {
+      this.isEdit = true;
+    }
+
     // Initialize the reactive form
     const maxAllowedQuantity = Number(this.item?.quantity ?? Number.MAX_SAFE_INTEGER);
 
     this.bidForm = this.formBuilder.group({
-      bid_amount: ['', [Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+      bid_amount: [this.item.bid_amount?this.item.bid_amount:null ,[Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
       bid_quantity: [
-        '',
+        this.item.bid_quantity? this.item.bid_quantity: null,
         [
           Validators.required,
           Validators.min(1),
@@ -60,8 +67,10 @@ export class BidModalComponent implements OnInit {
           Validators.pattern(/^\d+(\.\d{1,2})?$/)
         ]
       ],
-      remark: ['', [Validators.minLength(5), Validators.maxLength(100)]]
+      remark: [this.item.description, [Validators.minLength(5), Validators.maxLength(100)]]
     });
+
+    // Note: Fields are made readonly via HTML [readonly] attribute when isEdit is true
 
     // Ensure modal has proper bottom spacing after initialization
     this.setModalSpacing();
@@ -79,7 +88,7 @@ export class BidModalComponent implements OnInit {
       }
     }, 100);
   }
- 
+
 
   dismiss() {
     this.modalController.dismiss();
@@ -103,15 +112,17 @@ export class BidModalComponent implements OnInit {
     };
 
     let url = 'bids/add';
-      let data={
-          item_id: bidData.item_id,
-          bid_amount: bidData.bid_amount,
-          bid_quantity: bidData.bid_quantity,
-          actual_bid_amount: bidData.actual_bid_amount,
-          remark: bidData.remark,
-          cancel_rejection_reason: null
-        
-      }
+    let data:any = {
+      item_id: bidData.item_id,
+      bid_amount: bidData.bid_amount,
+      bid_quantity: bidData.bid_quantity,
+      actual_bid_amount: this.item.actual_bid_amount? this.item.actual_bid_amount: bidData.actual_bid_amount,
+      remark: bidData.remark,
+      cancel_rejection_reason: null
+    }
+    if(this.isEdit){
+      data.id = this.item.id;
+    }
     //this.enableLoader = true;
     this.commonService.filepost(url, data).subscribe(
       (response: any) => {
@@ -129,8 +140,8 @@ export class BidModalComponent implements OnInit {
         // this.toastr.error(error);
       }
     );
-    
-    
+
+
   }
 
   // Convert UOM ID to display text

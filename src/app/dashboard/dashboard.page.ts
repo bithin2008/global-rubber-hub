@@ -5,7 +5,6 @@ import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonIn
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
-import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
@@ -15,6 +14,7 @@ import { register } from 'swiper/element/bundle';
 import { Platform } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { AuthGuardService } from '../services/auth-guard.service';
+import { BidModalComponent } from '../item-list/bid-modal.component';
 
 
 // Interfaces for type safety
@@ -24,6 +24,7 @@ interface DashboardItem {
   company_name?: string;
   full_name?: string;
   price: string;
+  item_listed_for?: number; // 1 for Sell, 2 for Buy
 }
 
 interface RubberRate {
@@ -104,6 +105,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private router: Router,
     activatedRoute: ActivatedRoute,
     private profileService: ProfileService,
+    public modalController: ModalController,
     private pageTitleService: PageTitleService,
     private platform: Platform,
     private commonService: CommonService,
@@ -111,13 +113,14 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private authGuardService: AuthGuardService
   ) {
     activatedRoute.params.subscribe(async val => {
-      let hasLoggin: any = await this.alreadyLoggedIn();
+      register();
+      let hasLoggin: any = await this.alreadyLoggedIn();      
       if (hasLoggin.code !== 200) {
         localStorage.clear();
         this.router.navigate(['/login']);
       } else {
         this.pageTitleService.setPageTitle('Dashboard');
-        register();
+      
         this.getDashboardData();
         this.subscription.add(
           this.profileService.userName$.subscribe((data) => {
@@ -153,8 +156,10 @@ export class DashboardPage implements OnInit, AfterViewInit {
     });
   }
 
-  goToLiveBids() {
-    this.router.navigate(['/item-list']);
+  goToLiveBids(type?: string) {
+    this.router.navigate(['/item-list'], { 
+      queryParams: { type: type || 'all' } 
+    });
   }
 
   ngAfterViewInit() {
@@ -240,7 +245,26 @@ export class DashboardPage implements OnInit, AfterViewInit {
     );
   }
 
+  // Open bid modal
+  async openBidModal(item: any) {
+    const modal = await this.modalController.create({
+      component: BidModalComponent,
+      componentProps: {
+        item: item
+      },
+      cssClass: 'bid-modal'
+    });
 
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        // Handle the bid submission
+        console.log('Bid submitted:', result.data);
+        // Optionally refresh dashboard data after successful bid
+        this.getDashboardData();
+      }
+    });
 
+    return await modal.present();
+  }
 
 }

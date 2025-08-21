@@ -14,7 +14,16 @@
 ::ng-deep ion-content.modal-content {
   background: transparent !important;
 }
+[disabled], .disabled {
+  pointer-events: none;
+  cursor: not-allowed !important;
+  opacity: 1;
+  -webkit-text-fill-color: #000000;
+}
 
+.textarea-disabled.sc-ion-textarea-ios-h {
+  opacity: 1;
+}
 
 .modal-header {
   ion-toolbar {
