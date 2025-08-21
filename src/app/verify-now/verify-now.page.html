@@ -31,8 +31,8 @@
           <h3>GST/Udyam / Farmer ID</h3>
           <p>Tap here to fill the details</p>
         </ion-label>
-        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="" title="" *ngIf="profileDetails.gstin== null || profileDetails.gstin== ''">
-        <img src="assets/img/icons/check_circle.svg" alt="" title="" *ngIf="profileDetails.gstin">
+        <img src="assets/img/icons/arrow_circle_right.svg" alt="" title="" *ngIf="(profileDetails.gstin== null || profileDetails.gstin== '') && (profileDetails.udyam_reg_no== null || profileDetails.udyam_reg_no== '')">
+        <img src="assets/img/icons/check_circle.svg" alt="" title="" *ngIf="profileDetails.gstin || profileDetails.udyam_reg_no">
       </ion-item>
 
       <ion-item class="account-row no-style accountItem" (click)="goToTrustedSeller()">

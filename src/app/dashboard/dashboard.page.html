@@ -58,7 +58,7 @@
       <div class="more-card" *ngIf="(dashboardData?.topSellerItems?.results?.length || 0) > 3">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-        <figure class="compIcon" *ngFor="let ts of (dashboardData.topSellerItems.results | slice:3:7)">
+        <figure class="compIcon" *ngFor="let ts of (dashboardData.topSellerItems.results | slice:3:7)" (click)="openBidModal(ts)">
             <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
         </div>
@@ -101,7 +101,7 @@
       <div class="more-card" *ngIf="(dashboardData?.topBuyerItems?.results?.length || 0) > 3">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-        <figure class="compIcon" *ngFor="let ts of (dashboardData.topBuyerItems.results | slice:3:7)">
+        <figure class="compIcon" *ngFor="let ts of (dashboardData.topBuyerItems.results | slice:3:7)" (click)="openBidModal(ts)">
             <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
         </div>
@@ -136,7 +136,7 @@
       <div class="more-card" *ngIf="(dashboardData?.recentListedItems?.results?.length || 0) > 3">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-          <figure class="compIcon" *ngFor="let ts of (dashboardData.recentListedItems.results | slice:3:7)">
+          <figure class="compIcon" *ngFor="let ts of (dashboardData.recentListedItems.results | slice:3:7)" (click)="openBidModal(ts)">
             <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
           </figure>
         </div>

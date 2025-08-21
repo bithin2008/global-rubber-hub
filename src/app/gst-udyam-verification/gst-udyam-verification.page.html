@@ -12,14 +12,16 @@
 <ion-content [fullscreen]="true" class="verify-inner-container">
   <div class="account-container">
     <h3 class="title">Please verify your account</h3>
-    
+
     <div class="radio-group">
-      <ion-radio-group [(ngModel)]="selectedVerificationType" (ionChange)="onVerificationTypeChange($event.detail.value)">
+      <ion-radio-group [(ngModel)]="selectedVerificationType"
+        (ionChange)="onVerificationTypeChange($event.detail.value)">
         <div class="radio-option" (click)="selectOption('gst')" [class.selected]="selectedVerificationType === 'gst'">
           <ion-radio value="gst" class="custom-radio"></ion-radio>
           <ion-label class="radio-label">GST</ion-label>
         </div>
-        <div class="radio-option" (click)="selectOption('udyam')" [class.selected]="selectedVerificationType === 'udyam'">
+        <div class="radio-option" (click)="selectOption('udyam')"
+          [class.selected]="selectedVerificationType === 'udyam'">
           <ion-radio value="udyam" class="custom-radio"></ion-radio>
           <ion-label class="radio-label">Udyam</ion-label>
         </div>
@@ -29,28 +31,25 @@
         </div> -->
       </ion-radio-group>
     </div>
-    
+
     <form class="form" *ngIf="selectedVerificationType">
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">{{ getLabelText() }}</ion-label>
-          <ion-input 
-            class="form-field" 
-            type="text" 
-            [placeholder]="getPlaceholderText()"
-            [(ngModel)]="verificationNumber"
-            [ngModelOptions]="{standalone: true}"
-            (ionInput)="onVerificationNumberChange()"
-            [class.invalid]="verificationNumber && !isFormValid">
+          <ion-input class="form-field" type="text" [placeholder]="getPlaceholderText()"
+            [(ngModel)]="verificationNumber" [ngModelOptions]="{standalone: true}"
+            (ionInput)="onVerificationNumberChange()" [class.invalid]="verificationNumber && !isFormValid">
           </ion-input>
         </div>
       </ion-item>
       <div class="validation-message" *ngIf="verificationNumber && !isFormValid">
         <ion-label color="danger">
           <ion-icon name="alert-circle"></ion-icon>
-          Please enter a valid {{ selectedVerificationType === 'gst' ? 'GST' : selectedVerificationType === 'udyam' ? 'Udyam' : 'Farmer ID' }} number
+          Please enter a valid {{ selectedVerificationType === 'gst' ? 'GST' : selectedVerificationType === 'udyam' ?
+          'Udyam' : 'Farmer ID' }} number
         </ion-label>
       </div>
+      
       <!-- <ion-item class="no-style">
         <div class="custom-inner OTPfieldwrap">
           <ion-label class="formlebel">OTP Number</ion-label>
@@ -76,12 +75,7 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar class="footer-toolbar">
-    <ion-button 
-      class="btn btn-grn no-style" 
-      expand="block" 
-      type="button"
-      [disabled]="!isFormValid"
-      (click)="verifyNow()">
+    <ion-button class="btn btn-grn no-style" expand="block" type="button" (click)="verifyNow()">
       Verify Now
     </ion-button>
   </ion-toolbar>
@@ -95,4 +89,3 @@
   </div>
 </div>
 <!--LOADER-->
-
