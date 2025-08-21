@@ -54,7 +54,7 @@ export class BidModalComponent implements OnInit {
     }
 
     // Initialize the reactive form
-    const maxAllowedQuantity = Number(this.item?.quantity ?? Number.MAX_SAFE_INTEGER);
+    const maxAllowedQuantity = Number(this.item?.in_stock ?? Number.MAX_SAFE_INTEGER);
 
     this.bidForm = this.formBuilder.group({
       bid_amount: [this.item.bid_amount?this.item.bid_amount:null ,[Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
@@ -67,7 +67,7 @@ export class BidModalComponent implements OnInit {
           Validators.pattern(/^\d+(\.\d{1,2})?$/)
         ]
       ],
-      remark: [this.item.description, [Validators.minLength(5), Validators.maxLength(100)]]
+      remark: [this.item.description, [Validators.maxLength(150)]]
     });
 
     // Note: Fields are made readonly via HTML [readonly] attribute when isEdit is true
