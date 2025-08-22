@@ -17,6 +17,7 @@ export class VerifyInnerPage implements OnInit {
 
   panNumber: string = '';
   isFormValid: boolean = false;
+  showPanError: boolean = false;
   public enableLoader: boolean = false;
 
   constructor(
@@ -37,7 +38,43 @@ export class VerifyInnerPage implements OnInit {
   }
 
   onPanNumberChange() {
+    // Convert to uppercase immediately
+    this.panNumber = this.panNumber.toUpperCase();
     this.validateForm();
+    // Hide error when user starts typing
+    if (this.panNumber) {
+      this.showPanError = false;
+    }
+  }
+
+  buttonKeyPress(event: KeyboardEvent) {
+    const char = event.key;
+    
+    // Allow control keys (backspace, delete, etc.) regardless of length
+    if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(char)) {
+      return true;
+    }
+    
+    // Prevent input if already at 10 characters (unless it's a control key)
+    if (this.panNumber.length >= 10) {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Allow only uppercase letters and numbers
+    if (!/^[A-Z0-9]$/.test(char)) {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Convert to uppercase if it's a letter
+    if (/^[a-z]$/.test(char)) {
+      event.preventDefault();
+      this.panNumber += char.toUpperCase();
+      return false;
+    }
+    
+    return true;
   }
 
   validateForm() {
@@ -52,7 +89,15 @@ export class VerifyInnerPage implements OnInit {
   }
 
   async verifyNow() {
+    // Check if PAN number is empty
+    if (!this.panNumber || this.panNumber.trim() === '') {
+      this.showPanError = true;
+      return;
+    }
+    
+    // Check if PAN number is valid
     if (!this.isFormValid) {
+      this.showPanError = true;
       return;
     }
     try {

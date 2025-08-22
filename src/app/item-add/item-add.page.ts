@@ -124,7 +124,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         id: ['', []], // Empty for adding new item
         item_name: ['', [Validators.required, Validators.maxLength(60)]],
         hsn_code: ['', [Validators.required, Validators.maxLength(8), Validators.pattern(/^\d+$/)]],
-        item_listed_for: ['1', Validators.required],
+        item_listed_for: [1, Validators.required],
         uom_id: [2, Validators.required], // Changed to number type
         description: ['', [Validators.maxLength(255)]],
         price: ['', [Validators.required, Validators.min(0.01)]],
@@ -391,8 +391,8 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         this.enableLoader = false;
         if (response.code == 200) {
           const successMessage = this.itemId ? 'Item updated successfully' : 'Item added successfully';
-          const redirectUrl = this.itemId ? '/my-item' : '/item-list';
-          this.showToast('success', successMessage, '', 2500, redirectUrl);
+          //const redirectUrl = this.itemId ? '/my-item' : '/item-list';
+          this.showToast('success', successMessage, '', 2500, '/my-item');
         } else {
           this.showToast('error', response.message, '', 2500, '');
         }

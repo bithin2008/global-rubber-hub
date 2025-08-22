@@ -2,14 +2,14 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'intro',
-    loadComponent: () => import('./intro/intro.page').then((m) => m.IntroPage),
-  },
-  {
     path: '',
-    redirectTo: 'intro',
+    redirectTo: localStorage.getItem('has_intro') == 'yes' ? 'login' : 'intro',
     pathMatch: 'full',
   },
+  {
+    path: 'intro',
+    loadComponent: () => import('./intro/intro.page').then((m) => m.IntroPage),
+  },  
   {
     path: 'login',
     loadComponent: () => import('./login/login.page').then( m => m.LoginPage)

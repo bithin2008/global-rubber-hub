@@ -38,7 +38,8 @@
           <ion-label class="formlebel">{{ getLabelText() }}</ion-label>
           <ion-input class="form-field" type="text" [placeholder]="getPlaceholderText()"
             [(ngModel)]="verificationNumber" [ngModelOptions]="{standalone: true}"
-            (ionInput)="onVerificationNumberChange()" [class.invalid]="verificationNumber && !isFormValid">
+            (ionInput)="onVerificationNumberChange()" (keyup)="onInputKeyUp($event)" 
+            [maxlength]="getMaxLength()" [class.invalid]="verificationNumber && !isFormValid">
           </ion-input>
         </div>
       </ion-item>
@@ -54,12 +55,12 @@
         <div class="custom-inner OTPfieldwrap">
           <ion-label class="formlebel">OTP Number</ion-label>
           <div class="innerWrap">
-            <ion-input class="form-field" type="text"></ion-input>
-            <ion-input class="form-field" type="text"></ion-input>
-            <ion-input class="form-field" type="text"></ion-input>
-            <ion-input class="form-field" type="text"></ion-input>
-            <ion-input class="form-field" type="text"></ion-input>
-            <ion-input class="form-field" type="text"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
+            <ion-input class="form-field" type="text" maxlength="1"></ion-input>
           </div>
         </div>
       </ion-item> -->

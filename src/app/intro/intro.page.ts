@@ -60,6 +60,9 @@ export class IntroPage implements OnInit {
   }
 
   goToLogin() {
+    localStorage.setItem('has_intro', 'yes')
     this.router.navigate(['/login']);
   }
+
+
 }

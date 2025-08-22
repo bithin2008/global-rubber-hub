@@ -8,11 +8,11 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
+<form class="form">
 <ion-content [fullscreen]="true" class="verify-inner-container">
   <div class="account-container">
     <h3 class="title">Please verify your account</h3>
-    <form class="form">
+    
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">PAN ID*</ion-label>
@@ -23,14 +23,16 @@
             [(ngModel)]="panNumber"
             [ngModelOptions]="{standalone: true}"
             (ionInput)="onPanNumberChange()"
+            (keypress)="buttonKeyPress($event)"
             [class.invalid]="panNumber && !isFormValid">
           </ion-input>
         </div>
       </ion-item>
-      <div class="validation-message" *ngIf="panNumber && !isFormValid">
+      <div class="validation-message" *ngIf="showPanError">
         <ion-label color="danger">
           <ion-icon name="alert-circle"></ion-icon>
-          Please enter a valid PAN number (10 characters)
+          <span *ngIf="!panNumber">Please enter your PAN number</span>
+          <span *ngIf="panNumber && !isFormValid">Please enter a valid PAN number (10 characters)</span>
         </ion-label>
       </div>
       <!-- <ion-item class="no-style">
@@ -46,7 +48,7 @@
           </div>
         </div>
       </ion-item> -->
-    </form>
+ 
     <!-- <div class="dgloc">
       <ion-button class="btn btn-grn no-style" expand="block" type="button" >Verify With Digilocker</ion-button>
     </div> -->
@@ -62,13 +64,14 @@
     <ion-button 
       class="btn btn-grn no-style" 
       expand="block" 
-      type="button"
-      [disabled]="!isFormValid"
+      type="submit"
+     
       (click)="verifyNow()">
       Verify Now
     </ion-button>
   </ion-toolbar>
 </ion-footer>
+</form>
 
 <!--LOADER-->
 <div class="loader-overlay" *ngIf="enableLoader">

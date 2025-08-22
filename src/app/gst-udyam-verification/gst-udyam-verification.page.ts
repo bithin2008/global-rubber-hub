@@ -52,6 +52,21 @@ export class GstUdyamVerificationPage implements OnInit {
     this.validateForm();
   }
 
+  onInputKeyUp(event: any) {
+    // Prevent lowercase characters from being entered
+    const input = event.target;
+    const value = input.value;
+    
+    // Remove any lowercase characters that might have been entered
+    const filteredValue = value.replace(/[a-z]/g, '');
+    
+    // Only update if there's a change (lowercase was entered)
+    if (value !== filteredValue) {
+      this.verificationNumber = filteredValue;
+      input.value = filteredValue;
+    }
+  }
+
   validateForm() {
     if (!this.selectedVerificationType || !this.verificationNumber) {
       this.isFormValid = false;
@@ -102,6 +117,19 @@ export class GstUdyamVerificationPage implements OnInit {
         return 'Farmer ID*';
       default:
         return 'Verification Number*';
+    }
+  }
+
+  getMaxLength(): number {
+    switch (this.selectedVerificationType) {
+      case 'gst':
+        return 15; // GST number is exactly 15 characters
+      case 'udyam':
+        return 18; // UDYAM-MH-12-1234567 format (18 characters)
+      case 'farmer':
+        return 12; // Farmer ID is 12 digits
+      default:
+        return 20; // Default max length
     }
   }
 
