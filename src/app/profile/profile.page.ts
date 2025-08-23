@@ -12,6 +12,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
 import { PageTitleService } from '../services/page-title.service';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -351,16 +352,108 @@ export class ProfilePage implements OnInit {
     await actionSheet.present();
   }
 
+  private checkCameraAvailability(): boolean {
+    // Check if we're on a mobile device or web with camera support
+    if (!this.platform.is('mobile') && !this.platform.is('pwa')) {
+      console.log('Camera check: Not on mobile device or PWA');
+      return false;
+    }
+    
+    // Check if Capacitor Camera plugin is available
+    if (!Camera) {
+      console.log('Camera check: Capacitor Camera plugin not available');
+      return false;
+    }
+    
+    console.log('Camera check: Capacitor Camera is available');
+    return true;
+  }
+
   async takePicture(source: string) {
     try {
       console.log('takePicture called with source:', source);
       
-      // Use file input approach for better reliability and no permission issues
+      // Check if native camera is available
+      if (this.checkCameraAvailability()) {
+        try {
+          await this.useNativeCamera(source);
+        } catch (cameraError) {
+          console.error('Native camera failed, falling back to file input:', cameraError);
+          this.openFileInputWithSource(source);
+        }
+      } else {
+        // Fallback to file input for web, desktop, or when camera is not available
+        console.log('Native camera not available, using file input');
       this.openFileInputWithSource(source);
+      }
       
     } catch (error: any) {
       console.error('Image selection error:', error);
       this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
+    }
+  }
+
+  private async useNativeCamera(source: string): Promise<void> {
+    try {
+      console.log('Attempting to use Capacitor camera for source:', source);
+      
+      // Check if camera is available
+      if (!Camera) {
+        console.log('Capacitor Camera plugin not available, falling back to file input');
+        this.openFileInputWithSource(source);
+        return;
+      }
+
+      const cameraSource = source === 'camera' ? CameraSource.Camera : CameraSource.Photos;
+      
+      console.log('Using Capacitor camera with source:', cameraSource);
+      
+      const image = await Camera.getPhoto({
+        quality: 80,
+        allowEditing: true,
+        resultType: CameraResultType.Uri,
+        source: cameraSource,
+        width: 800,
+        height: 800,
+        correctOrientation: true
+      });
+      
+      console.log('Camera returned image:', image);
+      console.log('Image webPath:', image.webPath);
+      console.log('Image path:', image.path);
+      
+      if (image.webPath) {
+        // Show loading indicator
+        this.enableLoader = true;
+        this.processImageURI(image.webPath);
+      } else {
+        this.showToast('error', 'No image selected', '', 3000, '/profile');
+      }
+    } catch (error: any) {
+      console.error('Capacitor camera error:', error);
+      
+      // Handle specific camera errors
+      if (error.message && error.message.includes('cancelled')) {
+        console.log('User cancelled image selection');
+        return;
+      }
+      
+      // Handle permission errors
+      if (error.message && (error.message.includes('permission') || error.message.includes('Permission'))) {
+        this.showToast('error', 'Camera permission is required. Please enable camera access in your device settings.', '', 5000, '/profile');
+        return;
+      }
+      
+      // Handle hardware errors
+      if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
+        this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.openFileInputWithSource('library');
+        return;
+      }
+      
+      // Fallback to file input if native camera fails
+      console.log('Falling back to file input due to camera error');
+      this.openFileInputWithSource(source);
     }
   }
 
@@ -416,10 +509,15 @@ export class ProfilePage implements OnInit {
 
   private async processImageURI(imageURI: string): Promise<void> {
     try {
+      console.log('Processing image URI:', imageURI);
+      
       // Convert file/content URI to a displayable path in WebView
       const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
         ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
         : imageURI;
+      
+      console.log('Display source:', displaySrc);
+      
       // Store the displayable image URI directly in the variable
       this.profileImage = displaySrc;
       this.showPlaceholder = false;
@@ -431,21 +529,37 @@ export class ProfilePage implements OnInit {
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
+      // Set crossOrigin to anonymous to handle CORS issues
+      img.crossOrigin = 'anonymous';
+
+      // Add timeout to prevent hanging
+      const timeout = setTimeout(() => {
+        console.error('Image load timeout');
+        this.showToast('error', 'Image loading timed out. Please try again.', '', 4000, '/profile');
+        this.resetImageDisplay();
+      }, 10000); // 10 second timeout
+
       img.onload = () => {
+        clearTimeout(timeout);
+        console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height);
+        
+        // Set canvas dimensions
         canvas.width = img.width;
         canvas.height = img.height;
+        
+        // Clear canvas and draw image
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
         ctx?.drawImage(img, 0, 0);
 
         canvas.toBlob((pngBlob) => {
           if (pngBlob) {
+            console.log('PNG blob created, size:', pngBlob.size);
+            
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
             const maxSize = 2 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
               this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
-              // Reset the image display
-              this.profileImage = '';
-              this.showPlaceholder = true;
-              this.profileService.updateProfileImage('');
+              this.resetImageDisplay();
               return;
             }
 
@@ -501,24 +615,230 @@ export class ProfilePage implements OnInit {
                 this.getProfileData()
               }
             );
+          } else {
+            console.error('Failed to create PNG blob');
+            this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
+            this.resetImageDisplay();
           }
-        }, 'image/png');
+        }, 'image/png', 0.9); // Add quality parameter for better compression
       };
 
-      img.onerror = () => {
-        console.error('Error loading image');
+      img.onerror = (error) => {
+        console.error('Error loading image:', error);
+        console.error('Image source that failed:', displaySrc);
+        
+        // Check if this is a camera image (file:// URI)
+        if (imageURI.startsWith('file://') || imageURI.startsWith('content://')) {
+          console.log('Detected camera image, trying alternative processing');
+          this.handleImageLoadError(imageURI);
+        } else {
+          // For other types of images, show generic error
         this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
-        // Reset the image display
-        this.profileImage = '';
-        this.showPlaceholder = true;
-        this.profileService.updateProfileImage('');
+          this.resetImageDisplay();
+        }
       };
 
       img.src = displaySrc;
     } catch (error: any) {
       console.error('Image processing error:', error);
       this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
+      this.resetImageDisplay();
     }
+  }
+
+  private handleImageLoadError(originalURI: string): void {
+    console.log('Attempting alternative image processing for:', originalURI);
+    
+    // For file:// URIs, try to convert to blob URL
+    if (originalURI.startsWith('file://')) {
+      this.convertFileUriToBlob(originalURI);
+    } else if (originalURI.startsWith('content://')) {
+      // For content:// URIs, try to read as base64
+      this.convertContentUriToBlob(originalURI);
+    } else {
+      // For other URIs, try fetch
+      this.convertUriToBlob(originalURI);
+    }
+  }
+
+  private convertFileUriToBlob(fileUri: string): void {
+    // For file:// URIs, we need to use a different approach
+    console.log('Converting file URI to blob:', fileUri);
+    
+    // Try to read the file using FileReader
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', fileUri, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      } else {
+        console.error('Failed to load file URI:', xhr.status);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.resetImageDisplay();
+      }
+    };
+    
+    xhr.onerror = () => {
+      console.error('XHR error loading file URI');
+      this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+      this.resetImageDisplay();
+    };
+    
+    xhr.send();
+  }
+
+  private convertContentUriToBlob(contentUri: string): void {
+    console.log('Converting content URI to blob:', contentUri);
+    
+    // For content:// URIs, try to use fetch with special handling
+    fetch(contentUri)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      })
+      .catch(error => {
+        console.error('Failed to convert content URI to blob:', error);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.resetImageDisplay();
+      });
+  }
+
+  private convertUriToBlob(uri: string): void {
+    console.log('Converting URI to blob:', uri);
+    
+    fetch(uri)
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      })
+      .catch(error => {
+        console.error('Failed to create blob from URI:', error);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.resetImageDisplay();
+      });
+  }
+
+  private processImageFromBlobUrl(blobUrl: string): void {
+    console.log('Processing image from blob URL:', blobUrl);
+    
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      console.log('Image loaded via blob URL');
+      this.processImageWithCanvas(img);
+      URL.revokeObjectURL(blobUrl); // Clean up
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load image via blob URL');
+      URL.revokeObjectURL(blobUrl); // Clean up
+      this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+      this.resetImageDisplay();
+    };
+    
+    img.src = blobUrl;
+  }
+
+  private processImageWithCanvas(img: HTMLImageElement): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas dimensions
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Clear canvas and draw image
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    ctx?.drawImage(img, 0, 0);
+
+    canvas.toBlob((pngBlob) => {
+      if (pngBlob) {
+        console.log('PNG blob created via alternative method, size:', pngBlob.size);
+        
+        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (pngBlob.size > maxSize) {
+          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
+          this.resetImageDisplay();
+          return;
+        }
+
+        const file = new File([pngBlob], 'profile-photo.png', { type: 'image/png' });
+
+        // Upload the image to server using FormData
+        let url = 'user/update-profile-image';
+        const formData = new FormData();
+        formData.append('profile_image', file);
+
+        this.commonService.filepost(url, formData).subscribe(
+          (res: any) => {
+            this.enableLoader = false;
+            console.log('Response type:', typeof res);
+            console.log('Response:', res);
+
+            // Handle different response types
+            let responseData;
+            if (res instanceof Blob) {
+              // If response is a blob, try to parse it as JSON
+              const reader = new FileReader();
+              reader.onload = () => {
+                try {
+                  responseData = JSON.parse(reader.result as string);
+                  if (responseData.code == 200) {
+                    this.showToast('success', responseData.message, '', 2500, '');
+                  } else {
+                    this.showToast('error', responseData.message, '', 2500, '/profile');
+                    this.getProfileData()
+                  }
+                } catch (e) {
+                  console.error('Error parsing blob response:', e);
+                  this.showToast('error', 'Invalid response format', '', 2500, '/profile');
+                  this.getProfileData()
+                }
+              };
+              reader.readAsText(res);
+            } else {
+              // Handle regular JSON response
+              responseData = res;
+              if (responseData.code == 200) {
+                this.showToast('success', responseData.message, '', 2500, '');
+              } else {
+                this.showToast('error', responseData.message, '', 2500, '/profile');
+              }
+              this.getProfileData()
+            }
+          },
+          (error) => {
+            this.enableLoader = false;
+            console.log('error ts: ', error.error);
+            this.showToast('error', 'Upload failed', '', 2500, '');
+            this.getProfileData()
+          }
+        );
+      } else {
+        console.error('Failed to create PNG blob via alternative method');
+        this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
+        this.resetImageDisplay();
+      }
+    }, 'image/png', 0.9);
+  }
+
+  private resetImageDisplay(): void {
+    this.profileImage = '';
+    this.showPlaceholder = true;
+    this.profileService.updateProfileImage('');
   }
 
   onImageError(event: Event) {

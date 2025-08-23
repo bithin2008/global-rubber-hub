@@ -27,6 +27,8 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@capacitor/camera": "^7.0.2",
+    "@capacitor/core": "^7.4.3",
     "@ionic/angular": "^8.0.0",
     "cordova-sqlite-storage": "^7.0.0",
     "ionicons": "^7.0.0",
@@ -58,6 +60,7 @@
     "@typescript-eslint/parser": "^8.18.0",
     "cordova": "^12.0.0",
     "cordova-android": "^14.0.1",
+    "cordova-plugin-camera": "^8.0.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-googleplus": "^8.5.2",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
@@ -90,7 +93,10 @@
         "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2",
         "PLAY_SERVICES_VERSION": "15.0.1"
       },
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      }
     },
     "platforms": [
       "android"
