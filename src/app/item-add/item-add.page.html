@@ -140,8 +140,8 @@
             <p class="upload-status" *ngIf="selectedImages.length > 0">
               {{ selectedImages.length }} image(s) selected
             </p>
-            <ion-input class="form-field" type="file" multiple accept="image/*" (change)="onImageChange($event)">
-            </ion-input>
+            <ion-button fill="clear" class="camera-btn" (click)="openCamera()" title="Take Photo or Select from Gallery">
+            </ion-button>
           </div>
           <div class="uploadBox">
             <img src="assets/img/icons/upload-video.svg" alt="" title="">

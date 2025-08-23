@@ -15,6 +15,7 @@ import { Platform } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { BidModalComponent } from '../item-list/bid-modal.component';
+import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 
 
 // Interfaces for type safety
@@ -114,13 +115,13 @@ export class DashboardPage implements OnInit, AfterViewInit {
   ) {
     activatedRoute.params.subscribe(async val => {
       register();
+      this.pageTitleService.setPageTitle('Dashboard');   
+      this.getProfileData();
       let hasLoggin: any = await this.alreadyLoggedIn();      
       if (hasLoggin.code !== 200) {
         localStorage.clear();
         this.router.navigate(['/login']);
-      } else {
-        this.pageTitleService.setPageTitle('Dashboard');
-      
+      } else {          
         this.getDashboardData();
         this.subscription.add(
           this.profileService.userName$.subscribe((data) => {
@@ -154,6 +155,32 @@ export class DashboardPage implements OnInit, AfterViewInit {
         }
       );
     });
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {          
+          // Update profile service with all data including wallet balance
+          this.profileService.updateProfileFromAPI(response.user); 
+          // Update user name in service if available
+          if (response.user.full_name) {
+            this.profileService.updateUserName(response.user.full_name);
+          }
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
   goToLiveBids(type?: string) {
@@ -243,6 +270,27 @@ export class DashboardPage implements OnInit, AfterViewInit {
         };
       }
     );
+  }
+
+  async showToast(
+    status: string,
+    message: string,
+    submessage: string,
+    timer: number,
+    redirect: string
+  ) {
+    const modal = await this.modalController.create({
+      component: ToastModalComponent,
+      cssClass: 'toast-modal',
+      componentProps: {
+        status: status,
+        message: message,
+        submessage: submessage,
+        timer: timer,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 
   // Open bid modal

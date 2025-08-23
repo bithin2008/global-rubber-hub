@@ -22,8 +22,11 @@ import {
   IonToast,
   IonSpinner,
   ModalController,
-  ToastController
+  ToastController,
+  ActionSheetController,
+  Platform
 } from '@ionic/angular/standalone';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { CommonService } from '../services/common-service';
 import { ToastService } from '../services/toast.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -73,6 +76,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   profileDetails: any = {};
   isEditMode = false;
   itemId: any;
+  private isDeviceReady: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -82,8 +86,14 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     public modalController: ModalController,
     private pageTitleService: PageTitleService,
     private authGuardService: AuthGuardService,
-    private activatedRoute: ActivatedRoute
-  ) { }
+    private activatedRoute: ActivatedRoute,
+    private actionSheetController: ActionSheetController,
+    private platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      this.isDeviceReady = true;
+    });
+  }
 
   async ngOnInit() {
     // Check authentication on component initialization
@@ -210,38 +220,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     return this.itemForm ? this.itemForm.controls : {}; 
   }
 
-  onImageChange(event: any) {
-    const files = event.target.files;
-    console.log('Image change event:', files);
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        console.log('Processing file:', file.name, file.type, file.size);
 
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          this.showToast('danger', 'Please select only image files', '', 2500, '/login');
-          continue;
-        }
-
-        // Validate file size (2MB limit)
-        if (file.size > 2000 * 1024) {
-          this.showToast('danger', 'Image size should be less than 2MB', '', 2500, '/login');
-          continue;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.selectedImages.push({
-            file: file,
-            preview: e.target.result
-          });
-          console.log('Image added to selectedImages:', this.selectedImages.length);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  }
 
   onVideoChange(event: any) {
     const file = event.target.files[0];
@@ -284,6 +263,280 @@ export class ItemAddPage implements OnInit, AfterViewInit {
 
   removeVideo() {
     this.selectedVideo = null;
+  }
+
+  // Camera functionality methods
+  async openCamera() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Select Image Source (Max 2MB)',
+      subHeader: 'Images larger than 2MB will be automatically rejected',
+      buttons: [
+        {
+          text: 'Camera',
+          icon: 'camera',
+          handler: () => {
+            this.takePicture('camera');
+          }
+        },
+        {
+          text: 'Photo Library',
+          icon: 'images',
+          handler: () => {
+            this.takePicture('library');
+          }
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  private checkCameraAvailability(): boolean {
+    // Check if we're on a mobile device or web with camera support
+    if (!this.platform.is('mobile') && !this.platform.is('pwa')) {
+      console.log('Camera check: Not on mobile device or PWA');
+      return false;
+    }
+    
+    // Check if Capacitor Camera plugin is available
+    if (!Camera) {
+      console.log('Camera check: Capacitor Camera plugin not available');
+      return false;
+    }
+    
+    console.log('Camera check: Capacitor Camera is available');
+    return true;
+  }
+
+  async takePicture(source: string) {
+    try {
+      console.log('takePicture called with source:', source);
+      
+      // Check if native camera is available
+      if (this.checkCameraAvailability()) {
+        try {
+          await this.useNativeCamera(source);
+        } catch (cameraError) {
+          console.error('Native camera failed, falling back to file input:', cameraError);
+          this.openFileInputWithSource(source);
+        }
+      } else {
+        // Fallback to file input for web, desktop, or when camera is not available
+        console.log('Native camera not available, using file input');
+        this.openFileInputWithSource(source);
+      }
+      
+    } catch (error: any) {
+      console.error('Image selection error:', error);
+      this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '');
+    }
+  }
+
+  private async useNativeCamera(source: string): Promise<void> {
+    try {
+      console.log('Attempting to use Capacitor camera for source:', source);
+      
+      // Check if camera is available
+      if (!Camera) {
+        console.log('Capacitor Camera plugin not available, falling back to file input');
+        this.openFileInputWithSource(source);
+        return;
+      }
+
+      const cameraSource = source === 'camera' ? CameraSource.Camera : CameraSource.Photos;
+      
+      console.log('Using Capacitor camera with source:', cameraSource);
+      
+      const image = await Camera.getPhoto({
+        quality: 70, // Reduced quality to help stay under 2MB
+        allowEditing: true,
+        resultType: CameraResultType.Uri,
+        source: cameraSource,
+        width: 1200, // Optimized for 2MB limit
+        height: 1200, // Optimized for 2MB limit
+        correctOrientation: true
+      });
+      
+      console.log('Camera returned image:', image);
+      console.log('Image webPath:', image.webPath);
+      console.log('Image path:', image.path);
+      
+      if (image.webPath) {
+        // Show loading indicator
+        this.enableLoader = true;
+        
+        // Check file size before processing
+        await this.checkImageSizeAndProcess(image.webPath);
+      } else {
+        this.showToast('error', 'No image selected', '', 3000, '');
+      }
+    } catch (error: any) {
+      console.error('Capacitor camera error:', error);
+      
+      // Handle specific camera errors
+      if (error.message && error.message.includes('cancelled')) {
+        console.log('User cancelled image selection');
+        return;
+      }
+      
+      // Handle permission errors
+      if (error.message && (error.message.includes('permission') || error.message.includes('Permission'))) {
+        this.showToast('error', 'Camera permission is required. Please enable camera access in your device settings.', '', 5000, '');
+        return;
+      }
+      
+      // Handle hardware errors
+      if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
+        this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '');
+        this.openFileInputWithSource('library');
+        return;
+      }
+      
+      // Fallback to file input if native camera fails
+      console.log('Falling back to file input due to camera error');
+      this.openFileInputWithSource(source);
+      this.enableLoader = false;
+    }
+  }
+
+  private openFileInputWithSource(source: string): void {
+    // Create a hidden file input with camera capture support
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.multiple = true; // Allow multiple selection for images
+    
+    // Set capture attribute for camera on mobile devices
+    if (source === 'camera') {
+      fileInput.setAttribute('capture', 'camera');
+    }
+    
+    fileInput.addEventListener('change', (event: any) => {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        this.processFiles(files);
+      }
+      document.body.removeChild(fileInput);
+    });
+    
+    fileInput.addEventListener('cancel', () => {
+      console.log('File selection cancelled');
+      document.body.removeChild(fileInput);
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+  }
+
+  private async checkImageSizeAndProcess(imageUri: string): Promise<void> {
+    try {
+      // Fetch the image to check its size
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      
+      console.log('Image size before processing:', this.formatFileSize(blob.size));
+      
+      // Check if image is already under 2MB
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (blob.size > maxSize) {
+        this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 5000, '');
+        this.enableLoader = false;
+        return;
+      }
+      
+      // If size is acceptable, process the image
+      this.processImageURI(imageUri);
+      
+    } catch (error) {
+      console.error('Error checking image size:', error);
+      this.enableLoader = false;
+      // If we can't check the size, proceed with processing and let the existing size check handle it
+      this.processImageURI(imageUri);
+    }
+  }
+
+  private async processImageURI(imageURI: string): Promise<void> {
+    try {
+      console.log('Processing image URI:', imageURI);
+      
+      // Convert file/content URI to a displayable path in WebView
+      const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
+        ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
+        : imageURI;
+      
+      console.log('Display source:', displaySrc);
+      
+      // Convert to file object and add to selectedImages
+      const response = await fetch(displaySrc);
+      const blob = await response.blob();
+      const file = new File([blob], `camera-image-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      
+      // Create image object similar to onImageChange
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImages.push({
+          file: file,
+          preview: e.target.result
+        });
+        console.log('Camera image added to selectedImages:', this.selectedImages.length);
+        this.enableLoader = false;
+      };
+      reader.readAsDataURL(file);
+      
+    } catch (error: any) {
+      console.error('Image processing error:', error);
+      this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
+      this.enableLoader = false;
+    }
+  }
+
+  private processFiles(files: FileList): void {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      console.log('Processing file:', file.name, file.type, file.size);
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.showToast('error', 'Please select only image files', '', 2500, '');
+        continue;
+      }
+
+      // Validate file size (2MB limit)
+      if (file.size > 2 * 1024 * 1024) {
+        this.showToast('error', `Image ${file.name} is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 4000, '');
+        continue;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImages.push({
+          file: file,
+          preview: e.target.result
+        });
+        console.log('Image added to selectedImages:', this.selectedImages.length);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  private formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    if (bytes < 1024) return bytes + ' Bytes';
+    if (bytes < 1024 * 1024) {
+      const kb = bytes / 1024;
+      return kb.toFixed(2) + ' KB';
+    }
+    if (bytes < 1024 * 1024 * 1024) {
+      const mb = bytes / (1024 * 1024);
+      return mb.toFixed(2) + ' MB';
+    }
+    const gb = bytes / (1024 * 1024 * 1024);
+    return gb.toFixed(2) + ' GB';
   }
 
   onUomChange(event: any) {
