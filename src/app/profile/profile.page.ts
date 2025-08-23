@@ -326,7 +326,8 @@ export class ProfilePage implements OnInit {
 
   async openCamera() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Select Image Source',
+      header: 'Select Image Source (Max 2MB)',
+      subHeader: 'Images larger than 2MB will be automatically rejected',
       buttons: [
         {
           text: 'Camera',
@@ -408,14 +409,26 @@ export class ProfilePage implements OnInit {
       
       console.log('Using Capacitor camera with source:', cameraSource);
       
+      // // Show size limit warning for camera
+      // if (source === 'camera') {
+      //   this.showToast('info', 'Camera mode: Images will be automatically optimized to stay under 2MB', '', 3000, '/profile');
+      // }
+      
       const image = await Camera.getPhoto({
-        quality: 80,
+        quality: 70, // Reduced quality to help stay under 2MB
         allowEditing: true,
         resultType: CameraResultType.Uri,
         source: cameraSource,
-        width: 800,
-        height: 800,
-        correctOrientation: true
+        width: 1200, // Optimized for 2MB limit
+        height: 1200, // Optimized for 2MB limit
+        correctOrientation: true,
+        // Add viewfinder border options for camera
+        ...(source === 'camera' && {
+          // These options help create a viewfinder-like experience
+          presentationStyle: 'popover',
+          // Set aspect ratio to create viewfinder border effect
+          aspectRatio: '1:1'
+        })
       });
       
       console.log('Camera returned image:', image);
@@ -425,7 +438,9 @@ export class ProfilePage implements OnInit {
       if (image.webPath) {
         // Show loading indicator
         this.enableLoader = true;
-        this.processImageURI(image.webPath);
+        
+        // Check file size before processing
+        await this.checkImageSizeAndProcess(image.webPath);
       } else {
         this.showToast('error', 'No image selected', '', 3000, '/profile');
       }
@@ -457,6 +472,105 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  private async checkImageSizeAndProcess(imageUri: string): Promise<void> {
+    try {
+      // Fetch the image to check its size
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      
+      console.log('Image size before processing:', this.formatFileSize(blob.size));
+      
+      // Check if image is already under 2MB
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (blob.size > maxSize) {
+        // Try to compress the image before rejecting
+        const compressedImageUri = await this.compressImage(imageUri, blob.size);
+        if (compressedImageUri) {
+          console.log('Image compressed successfully');
+          this.processImageURI(compressedImageUri);
+        } else {
+          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 5000, '/profile');
+          this.resetImageDisplay();
+        }
+        return;
+      }
+      
+      // If size is acceptable, process the image
+      this.processImageURI(imageUri);
+      
+    } catch (error) {
+      console.error('Error checking image size:', error);
+      // If we can't check the size, proceed with processing and let the existing size check handle it
+      this.processImageURI(imageUri);
+    }
+  }
+
+  private async compressImage(imageUri: string, originalSize: number): Promise<string | null> {
+    try {
+      console.log('Attempting to compress image...');
+      
+      // Create a canvas to compress the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      return new Promise((resolve) => {
+        img.onload = () => {
+          // Calculate new dimensions to reduce file size
+          const maxDimension = 800; // Reduce dimensions to help with compression
+          let { width, height } = img;
+          
+          if (width > height) {
+            if (width > maxDimension) {
+              height = (height * maxDimension) / width;
+              width = maxDimension;
+            }
+          } else {
+            if (height > maxDimension) {
+              width = (width * maxDimension) / height;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw the resized image
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to blob with lower quality
+          canvas.toBlob((blob) => {
+            if (blob) {
+              console.log('Compressed image size:', this.formatFileSize(blob.size));
+              
+              // Check if compression was successful
+              if (blob.size <= 2 * 1024 * 1024) {
+                const compressedUri = URL.createObjectURL(blob);
+                resolve(compressedUri);
+              } else {
+                console.log('Compression failed - image still too large');
+                resolve(null);
+              }
+            } else {
+              resolve(null);
+            }
+          }, 'image/jpeg', 0.6); // Use JPEG with 60% quality
+        };
+        
+        img.onerror = () => {
+          console.error('Failed to load image for compression');
+          resolve(null);
+        };
+        
+        img.src = imageUri;
+      });
+      
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      return null;
+    }
+  }
+
   private openFileInput(): void {
     this.openFileInputWithSource('library');
   }
@@ -478,19 +592,23 @@ export class ProfilePage implements OnInit {
       if (file) {
         console.log('File selected:', file.name, 'Size:', file.size);
         
-        // Check file size before processing
-        const maxSize = 2 * 1024 * 1024; // 5MB
+        // Check file size before processing - enforce 2MB limit
+        const maxSize = 2 * 1024 * 1024; // 2MB
         if (file.size > maxSize) {
-          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 4000, '/profile');
+          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
           document.body.removeChild(fileInput);
           return;
         }
+        
+        // Show loading indicator
+        this.enableLoader = true;
         
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.processImageURI(e.target.result);
         };
         reader.onerror = () => {
+          this.enableLoader = false;
           this.showToast('error', 'Failed to read image file. Please try again.', '', 4000, '/profile');
         };
         reader.readAsDataURL(file);
@@ -558,7 +676,7 @@ export class ProfilePage implements OnInit {
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
             const maxSize = 2 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
-              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 4000, '/profile');
               this.resetImageDisplay();
               return;
             }
