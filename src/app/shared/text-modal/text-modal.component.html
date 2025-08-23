@@ -1,17 +1,25 @@
-<ion-header>
+<ion-header class="modal-header">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title class="modal-title">{{ title }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="dismiss()">
-        <ion-icon name="close"></ion-icon>
+      <ion-button fill="clear" class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content scroll-y="false" class="text-modal-content">
+<ion-content class="text-modal-content">
   <div class="text-container">
-    <p class="modal-text">{{ text }}</p>
-
+    <div class="text-wrapper">
+      <div class="text-content">
+        <p class="modal-text">{{ text }}</p>
+      </div>
+      <div class="action-area">
+        <ion-button expand="block" class="action-button" (click)="dismiss()">
+          Got it
+        </ion-button>
+      </div>
+    </div>
   </div>
 </ion-content>
