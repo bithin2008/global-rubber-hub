@@ -1937,3 +1937,34 @@ ion-select::part(icon) {
     justify-content: center;
   }
 }
+
+.filter{
+  form{
+    position: relative;
+    .bottom{
+      width: 100%;
+      position: absolute;
+      left: calc(-100% - 30px);
+      top: 11px;
+      transition: left 0.3s ease-in-out;
+      background-color: #eee;
+      z-index: 9999999;
+      border-radius: 5px;
+      ion-item.no-style{
+        margin-bottom: 0;
+      }
+      &.show {
+        left: 0;
+      }
+      .close{
+        position: absolute;
+        right: 15px;
+        top: 13px;
+        z-index: 99999999;
+        ion-icon{
+          font-size: 21px;
+        }
+      }
+    }
+  }
+}

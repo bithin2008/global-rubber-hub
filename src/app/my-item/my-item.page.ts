@@ -22,7 +22,7 @@ import { PageTitleService } from '../services/page-title.service';
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
 })
-export class MyItemPage implements OnInit {
+export class MyItemPage implements OnInit{
   public filterWarning: boolean = false;
   public itemList: any = [];
   public itemFilterList: any = [];
@@ -37,6 +37,7 @@ export class MyItemPage implements OnInit {
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   public fallbackImg: string = 'assets/img/item-placeholder.jpg';
+  private handleOutsideClick: any;
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -57,11 +58,48 @@ export class MyItemPage implements OnInit {
 
 
   }
-
+  async ngOnDestroy() {
+    // Cleanup listeners to avoid memory leaks
+    document.removeEventListener('click', this.handleOutsideClick, true);
+  }
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
+    this.handleSearchToggle();
   }
+ 
+ handleSearchToggle() {
+    const btnSearch = document.querySelector('.btnsearch');
+    const bottom = document.querySelector('.bottom');
+    const btnClose = document.querySelector('.bottom .close');
+
+    if (btnSearch && bottom && btnClose) {
+      btnSearch.addEventListener('click', (event) => {
+        event.stopPropagation(); // prevent triggering outside click
+        bottom.classList.add('show');
+      });
+
+      btnClose.addEventListener('click', (event) => {
+        event.stopPropagation();
+        bottom.classList.remove('show');
+      });
+
+      // Handle outside click
+      this.handleOutsideClick = (event: Event) => {
+        if (bottom.classList.contains('show')) {
+          const target = event.target as HTMLElement;
+          const isClickInside = bottom.contains(target) || btnSearch.contains(target);
+          if (!isClickInside) {
+            bottom.classList.remove('show');
+          }
+        }
+      };
+
+      document.addEventListener('click', this.handleOutsideClick, true);
+    }
+  }
+
+  
 
   goToAddItem(){
     this.router.navigate(['/item-add']);
@@ -225,3 +263,4 @@ export class MyItemPage implements OnInit {
   } 
 
 }
+
