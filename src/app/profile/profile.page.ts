@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -21,6 +21,8 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent]
 })
 export class ProfilePage implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
   profileForm!: FormGroup;
   public type: any;
   public enableLoader: boolean = false;
@@ -386,6 +388,43 @@ export class ProfilePage implements OnInit {
     await actionSheet.present();
   }
 
+  // Camera method for file upload area
+  async openCameraForUpload() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Select Upload Method (Max 2MB)',
+      subHeader: 'Choose how to add your ID proof document',
+      buttons: [
+        {
+          text: 'Take Photo',
+          icon: 'camera',
+          handler: () => {
+            this.takePictureForUpload('camera');
+          }
+        },
+        {
+          text: 'Photo Library',
+          icon: 'images',
+          handler: () => {
+            this.takePictureForUpload('library');
+          }
+        },
+        {
+          text: 'Browse Files',
+          icon: 'document',
+          handler: () => {
+            this.fileInput.nativeElement.click();
+          }
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
   private checkCameraAvailability(): boolean {
     // Check if we're on a mobile device or web with camera support
     if (!this.platform.is('mobile') && !this.platform.is('pwa')) {
@@ -423,6 +462,31 @@ export class ProfilePage implements OnInit {
       
     } catch (error: any) {
       console.error('Image selection error:', error);
+      this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
+    }
+  }
+
+  // Camera method for file upload area
+  async takePictureForUpload(source: string) {
+    try {
+      console.log('takePictureForUpload called with source:', source);
+      
+      // Check if native camera is available
+      if (this.checkCameraAvailability()) {
+        try {
+          await this.useNativeCameraForUpload(source);
+        } catch (cameraError) {
+          console.error('Native camera failed, falling back to file input:', cameraError);
+          this.openFileInputForUpload(source);
+        }
+      } else {
+        // Fallback to file input for web, desktop, or when camera is not available
+        console.log('Native camera not available, using file input');
+        this.openFileInputForUpload(source);
+      }
+      
+    } catch (error: any) {
+      console.error('Image selection error for upload:', error);
       this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
     }
   }
@@ -1232,6 +1296,218 @@ export class ProfilePage implements OnInit {
     this.profileImage = '';
     this.showPlaceholder = true;
     this.profileService.updateProfileImage('');
+  }
+
+  // Native camera method specifically for file uploads
+  private async useNativeCameraForUpload(source: string): Promise<void> {
+    try {
+      console.log('Attempting to use Capacitor camera for upload with source:', source);
+      
+      // Check if camera is available
+      if (!Camera) {
+        console.log('Capacitor Camera plugin not available, falling back to file input');
+        this.openFileInputForUpload(source);
+        return;
+      }
+
+      const cameraSource = source === 'camera' ? CameraSource.Camera : CameraSource.Photos;
+      
+      console.log('Using Capacitor camera for upload with source:', cameraSource);
+      
+      const image = await Camera.getPhoto({
+        quality: 70, // Reduced quality to help stay under 2MB
+        allowEditing: true,
+        resultType: CameraResultType.Uri,
+        source: cameraSource,
+        width: 1200, // Optimized for 2MB limit
+        height: 1200, // Optimized for 2MB limit
+        correctOrientation: true,
+        // Add viewfinder border options for camera
+        ...(source === 'camera' && {
+          // These options help create a viewfinder-like experience
+          presentationStyle: 'popover',
+          // Set aspect ratio to create viewfinder border effect
+          aspectRatio: '1:1'
+        })
+      });
+      
+      console.log('Camera returned image for upload:', image);
+      console.log('Image webPath:', image.webPath);
+      console.log('Image path:', image.path);
+      
+      if (image.webPath) {
+        // Show loading indicator
+        this.enableLoader = true;
+        
+        // Process the image for file upload
+        await this.processImageForUpload(image.webPath);
+      } else {
+        this.showToast('error', 'No image selected', '', 3000, '/profile');
+      }
+    } catch (error: any) {
+      console.error('Capacitor camera error for upload:', error);
+      
+      // Handle specific camera errors
+      if (error.message && error.message.includes('cancelled')) {
+        console.log('User cancelled image selection');
+        return;
+      }
+      
+      // Handle permission errors
+      if (error.message && (error.message.includes('permission') || error.message.includes('Permission'))) {
+        this.showToast('error', 'Camera permission is required. Please enable camera access in your device settings.', '', 5000, '/profile');
+        return;
+      }
+      
+      // Handle hardware errors
+      if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
+        this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.openFileInputForUpload('library');
+        return;
+      }
+      
+      // Fallback to file input if native camera fails
+      console.log('Falling back to file input due to camera error');
+      this.openFileInputForUpload(source);
+      this.enableLoader = false;
+    }
+  }
+
+  // File input method specifically for uploads
+  private openFileInputForUpload(source: string): void {
+    // Create a hidden file input with camera capture support
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.multiple = true; // Allow multiple selection
+    
+    // Set capture attribute for camera on mobile devices
+    if (source === 'camera') {
+      fileInput.setAttribute('capture', 'camera');
+    }
+    
+    fileInput.addEventListener('change', (event: any) => {
+      const files = event.target.files;
+      if (files) {
+        this.processFiles(files);
+      }
+      document.body.removeChild(fileInput);
+    });
+    
+    fileInput.addEventListener('cancel', () => {
+      console.log('File selection cancelled');
+      document.body.removeChild(fileInput);
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+  }
+
+  // Process camera image specifically for file uploads
+  private async processImageForUpload(imageURI: string): Promise<void> {
+    try {
+      console.log('Processing camera image for upload:', imageURI);
+      
+      // Convert file/content URI to a displayable path in WebView
+      const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
+        ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
+        : imageURI;
+      
+      console.log('Display source for upload:', displaySrc);
+      
+      // Convert to PNG format using canvas for better compatibility
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // Set crossOrigin to anonymous to handle CORS issues
+      img.crossOrigin = 'anonymous';
+
+      // Add timeout to prevent hanging
+      const timeout = setTimeout(() => {
+        console.error('Image load timeout for upload');
+        this.showToast('error', 'Image loading timed out. Please try again.', '', 4000, '/profile');
+        this.enableLoader = false;
+      }, 10000); // 10 second timeout
+
+      img.onload = () => {
+        clearTimeout(timeout);
+        console.log('Upload image loaded successfully, dimensions:', img.width, 'x', img.height);
+        
+        // Set canvas dimensions
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Clear canvas and draw image
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        ctx?.drawImage(img, 0, 0);
+
+        canvas.toBlob((pngBlob) => {
+          if (pngBlob) {
+            console.log('PNG blob created for upload, size:', this.formatFileSize(pngBlob.size));
+            
+            // Check file size (2MB = 2 * 1024 * 1024 bytes)
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (pngBlob.size > maxSize) {
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
+              this.enableLoader = false;
+              return;
+            }
+
+            const file = new File([pngBlob], `camera-upload-${Date.now()}.png`, { type: 'image/png' });
+
+            // Create file object and add to uploaded files
+            const fileObj = {
+              file: file,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              preview: null
+            };
+
+            // Generate preview
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              fileObj.preview = e.target.result;
+              this.uploadedFiles.push(fileObj);
+
+              // Update form control
+              if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+                this.profileForm.patchValue({
+                  id_proof_image: this.uploadedFiles.map(f => f.file)
+                });
+              }
+              
+              console.log('Camera image added to upload files:', this.uploadedFiles.length);
+              this.enableLoader = false;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            console.error('Failed to create PNG blob for upload');
+            this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
+            this.enableLoader = false;
+          }
+        }, 'image/png', 0.9); // Add quality parameter for better compression
+      };
+
+      img.onerror = (error) => {
+        clearTimeout(timeout);
+        console.error('Error loading upload image:', error);
+        console.error('Image source that failed:', displaySrc);
+        
+        // For upload images, try alternative processing
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.enableLoader = false;
+      };
+
+      img.src = displaySrc;
+      
+    } catch (error: any) {
+      console.error('Upload image processing error:', error);
+      this.showToast('error', 'Failed to process camera image. Please try again.', '', 4000, '/profile');
+      this.enableLoader = false;
+    }
   }
 
   onImageError(event: Event) {

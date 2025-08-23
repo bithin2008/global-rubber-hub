@@ -99,7 +99,7 @@ export class GstUdyamVerificationPage implements OnInit {
       case 'gst':
         return 'Enter 15 digit GST Number (e.g., 22AAAAA0000A1Z5)';
       case 'udyam':
-        return 'Enter 12 digit Udyam Number';
+        return 'Example: UDYAM-XX-00-0000000';
       case 'farmer':
         return 'Enter 12 digit Farmer ID';
       default:

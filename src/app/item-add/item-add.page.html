@@ -1,6 +1,47 @@
 <app-header></app-header>
 
 <ion-content class="add-page">
+  
+  <!-- Custom Camera Interface -->
+  <div class="custom-camera-interface" *ngIf="showCameraInterface">
+    <div class="camera-container">
+      <!-- Video element for live camera feed -->
+      <video 
+        id="cameraVideo"
+        class="camera-video" 
+        autoplay 
+        playsinline 
+        muted>
+      </video>
+      
+      <!-- Viewfinder border overlay -->
+      <div class="viewfinder-overlay">
+        <div class="viewfinder-border"></div>
+      </div>
+      
+      <!-- Camera controls -->
+      <div class="camera-controls">
+        <!-- Cancel button -->
+        <div class="cancel-btn" (click)="closeCameraInterface()">
+          <ion-icon name="close" class="cancel-icon"></ion-icon>
+        </div>
+        
+        <!-- Capture button -->
+        <div class="capture-btn" (click)="captureImageFromVideo()">
+          <div class="inner-circle"></div>
+        </div>
+        
+        <!-- Flash control (placeholder) -->
+        <div class="flash-control">
+          <ion-icon name="flash" class="flash-icon"></ion-icon>
+        </div>
+      </div>
+      
+      <!-- Size indicator -->
+      <div class="size-indicator">Max 2MB</div>
+    </div>
+  </div>
+  
   <div class="add-container">
     <!-- Loading state while form initializes -->
     <div *ngIf="!itemForm" class="loading-container">

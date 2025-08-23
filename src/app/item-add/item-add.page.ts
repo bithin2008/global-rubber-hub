@@ -77,6 +77,10 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   isEditMode = false;
   itemId: any;
   private isDeviceReady: boolean = false;
+  
+  // Enhanced camera properties
+  public showCameraInterface: boolean = false;
+  public cameraStream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -358,7 +362,14 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         source: cameraSource,
         width: 1200, // Optimized for 2MB limit
         height: 1200, // Optimized for 2MB limit
-        correctOrientation: true
+        correctOrientation: true,
+        // Add viewfinder border options for camera
+        ...(source === 'camera' && {
+          // These options help create a viewfinder-like experience
+          presentationStyle: 'popover',
+          // Set aspect ratio to create viewfinder border effect
+          aspectRatio: '1:1'
+        })
       });
       
       console.log('Camera returned image:', image);
@@ -444,8 +455,15 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       // Check if image is already under 2MB
       const maxSize = 2 * 1024 * 1024; // 2MB
       if (blob.size > maxSize) {
-        this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 5000, '');
-        this.enableLoader = false;
+        // Try to compress the image before rejecting
+        const compressedImageUri = await this.compressImage(imageUri, blob.size);
+        if (compressedImageUri) {
+          console.log('Image compressed successfully');
+          this.processImageURI(compressedImageUri);
+        } else {
+          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 5000, '');
+          this.enableLoader = false;
+        }
         return;
       }
       
@@ -471,22 +489,83 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       
       console.log('Display source:', displaySrc);
       
-      // Convert to file object and add to selectedImages
-      const response = await fetch(displaySrc);
-      const blob = await response.blob();
-      const file = new File([blob], `camera-image-${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
-      // Create image object similar to onImageChange
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedImages.push({
-          file: file,
-          preview: e.target.result
-        });
-        console.log('Camera image added to selectedImages:', this.selectedImages.length);
+      // Convert to PNG format using canvas for better compatibility
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // Set crossOrigin to anonymous to handle CORS issues
+      img.crossOrigin = 'anonymous';
+
+      // Add timeout to prevent hanging
+      const timeout = setTimeout(() => {
+        console.error('Image load timeout');
+        this.showToast('error', 'Image loading timed out. Please try again.', '', 4000, '');
         this.enableLoader = false;
+      }, 10000); // 10 second timeout
+
+      img.onload = () => {
+        clearTimeout(timeout);
+        console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height);
+        
+        // Set canvas dimensions
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Clear canvas and draw image
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        ctx?.drawImage(img, 0, 0);
+
+        canvas.toBlob((pngBlob) => {
+          if (pngBlob) {
+            console.log('PNG blob created, size:', pngBlob.size);
+            
+            // Check file size (2MB = 2 * 1024 * 1024 bytes)
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (pngBlob.size > maxSize) {
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '');
+              this.enableLoader = false;
+              return;
+            }
+
+            const file = new File([pngBlob], `camera-image-${Date.now()}.png`, { type: 'image/png' });
+
+            // Create image object and add to selectedImages
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              this.selectedImages.push({
+                file: file,
+                preview: e.target.result
+              });
+              console.log('Camera image added to selectedImages:', this.selectedImages.length);
+              this.enableLoader = false;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            console.error('Failed to create PNG blob');
+            this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '');
+            this.enableLoader = false;
+          }
+        }, 'image/png', 0.9); // Add quality parameter for better compression
       };
-      reader.readAsDataURL(file);
+
+      img.onerror = (error) => {
+        clearTimeout(timeout);
+        console.error('Error loading image:', error);
+        console.error('Image source that failed:', displaySrc);
+        
+        // Check if this is a camera image (file:// URI)
+        if (imageURI.startsWith('file://') || imageURI.startsWith('content://')) {
+          console.log('Detected camera image, trying alternative processing');
+          this.handleImageLoadError(imageURI);
+        } else {
+          // For other types of images, show generic error
+          this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
+          this.enableLoader = false;
+        }
+      };
+
+      img.src = displaySrc;
       
     } catch (error: any) {
       console.error('Image processing error:', error);
@@ -537,6 +616,318 @@ export class ItemAddPage implements OnInit, AfterViewInit {
     }
     const gb = bytes / (1024 * 1024 * 1024);
     return gb.toFixed(2) + ' GB';
+  }
+
+  // Advanced image compression method
+  private async compressImage(imageUri: string, originalSize: number): Promise<string | null> {
+    try {
+      console.log('Attempting to compress image...');
+      
+      // Create a canvas to compress the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      return new Promise((resolve) => {
+        img.onload = () => {
+          // Calculate new dimensions to reduce file size
+          const maxDimension = 800; // Reduce dimensions to help with compression
+          let { width, height } = img;
+          
+          if (width > height) {
+            if (width > maxDimension) {
+              height = (height * maxDimension) / width;
+              width = maxDimension;
+            }
+          } else {
+            if (height > maxDimension) {
+              width = (width * maxDimension) / height;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw the resized image
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to blob with lower quality
+          canvas.toBlob((blob) => {
+            if (blob) {
+              console.log('Compressed image size:', this.formatFileSize(blob.size));
+              
+              // Check if compression was successful
+              if (blob.size <= 2 * 1024 * 1024) {
+                const compressedUri = URL.createObjectURL(blob);
+                resolve(compressedUri);
+              } else {
+                console.log('Compression failed - image still too large');
+                resolve(null);
+              }
+            } else {
+              resolve(null);
+            }
+          }, 'image/jpeg', 0.6); // Use JPEG with 60% quality
+        };
+        
+        img.onerror = () => {
+          console.error('Failed to load image for compression');
+          resolve(null);
+        };
+        
+        img.src = imageUri;
+      });
+      
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      return null;
+    }
+  }
+
+  // Enhanced image processing with fallback handling
+  private handleImageLoadError(originalURI: string): void {
+    console.log('Attempting alternative image processing for:', originalURI);
+    
+    // For file:// URIs, try to convert to blob URL
+    if (originalURI.startsWith('file://')) {
+      this.convertFileUriToBlob(originalURI);
+    } else if (originalURI.startsWith('content://')) {
+      // For content:// URIs, try to read as base64
+      this.convertContentUriToBlob(originalURI);
+    } else {
+      // For other URIs, try fetch
+      this.convertUriToBlob(originalURI);
+    }
+  }
+
+  private convertFileUriToBlob(fileUri: string): void {
+    // For file:// URIs, we need to use a different approach
+    console.log('Converting file URI to blob:', fileUri);
+    
+    // Try to read the file using FileReader
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', fileUri, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      } else {
+        console.error('Failed to load file URI:', xhr.status);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '');
+        this.enableLoader = false;
+      }
+    };
+    
+    xhr.onerror = () => {
+      console.error('XHR error loading file URI');
+      this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '');
+      this.enableLoader = false;
+    };
+    
+    xhr.send();
+  }
+
+  private convertContentUriToBlob(contentUri: string): void {
+    console.log('Converting content URI to blob:', contentUri);
+    
+    // For content:// URIs, try to use fetch with special handling
+    fetch(contentUri)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      })
+      .catch(error => {
+        console.error('Failed to convert content URI to blob:', error);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '');
+        this.enableLoader = false;
+      });
+  }
+
+  private convertUriToBlob(uri: string): void {
+    console.log('Converting URI to blob:', uri);
+    
+    fetch(uri)
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        this.processImageFromBlobUrl(blobUrl);
+      })
+      .catch(error => {
+        console.error('Failed to create blob from URI:', error);
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '');
+        this.enableLoader = false;
+      });
+  }
+
+  private processImageFromBlobUrl(blobUrl: string): void {
+    console.log('Processing image from blob URL:', blobUrl);
+    
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      console.log('Image loaded via blob URL');
+      this.processImageWithCanvas(img);
+      URL.revokeObjectURL(blobUrl); // Clean up
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load image via blob URL');
+      URL.revokeObjectURL(blobUrl); // Clean up
+      this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '');
+      this.enableLoader = false;
+    };
+    
+    img.src = blobUrl;
+  }
+
+  private processImageWithCanvas(img: HTMLImageElement): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas dimensions
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Clear canvas and draw image
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    ctx?.drawImage(img, 0, 0);
+
+    canvas.toBlob((pngBlob) => {
+      if (pngBlob) {
+        console.log('PNG blob created via alternative method, size:', pngBlob.size);
+        
+        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (pngBlob.size > maxSize) {
+          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
+          this.enableLoader = false;
+          return;
+        }
+
+        const file = new File([pngBlob], `camera-image-${Date.now()}.png`, { type: 'image/png' });
+        
+        // Create image object and add to selectedImages
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.selectedImages.push({
+            file: file,
+            preview: e.target.result
+          });
+          console.log('Camera image added to selectedImages:', this.selectedImages.length);
+          this.enableLoader = false;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        console.error('Failed to create PNG blob via alternative method');
+        this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '');
+        this.enableLoader = false;
+      }
+    }, 'image/png', 0.9);
+  }
+
+  // Custom camera interface methods
+  public captureImageFromVideo(): void {
+    try {
+      console.log('Capturing image from video...');
+      
+      const videoElement = document.getElementById('cameraVideo') as HTMLVideoElement;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!videoElement || !ctx) {
+        this.showToast('error', 'Failed to capture image', '', 4000, '');
+        return;
+      }
+
+      // Set canvas size to match video dimensions
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+
+      // Calculate viewfinder area (center square)
+      const viewfinderSize = Math.min(videoElement.videoWidth, videoElement.videoHeight) * 0.8;
+      const x = (videoElement.videoWidth - viewfinderSize) / 2;
+      const y = (videoElement.videoHeight - viewfinderSize) / 2;
+
+      // Draw the video frame
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Create a new canvas for the cropped image
+      const croppedCanvas = document.createElement('canvas');
+      const croppedCtx = croppedCanvas.getContext('2d');
+
+      if (!croppedCtx) {
+        this.showToast('error', 'Failed to process image', '', 4000, '');
+        return;
+      }
+
+      // Set cropped canvas size to viewfinder size
+      croppedCanvas.width = viewfinderSize;
+      croppedCanvas.height = viewfinderSize;
+
+      // Draw only the viewfinder area
+      croppedCtx.drawImage(
+        canvas,
+        x, y, viewfinderSize, viewfinderSize, // Source rectangle
+        0, 0, viewfinderSize, viewfinderSize  // Destination rectangle
+      );
+
+      // Convert to blob and process
+      croppedCanvas.toBlob((blob) => {
+        if (blob) {
+          const imageUri = URL.createObjectURL(blob);
+          this.handleCapturedImage(imageUri);
+        } else {
+          this.showToast('error', 'Failed to capture image', '', 4000, '');
+        }
+      }, 'image/jpeg', 0.8);
+
+    } catch (error) {
+      console.error('Error capturing image:', error);
+      this.showToast('error', 'Failed to capture image', '', 4000, '');
+    }
+  }
+
+  public closeCameraInterface(): void {
+    console.log('Closing camera interface...');
+    
+    // Stop camera stream
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+    
+    // Hide camera interface
+    this.showCameraInterface = false;
+  }
+
+  private async handleCapturedImage(imageUri: string): Promise<void> {
+    try {
+      console.log('Handling captured image:', imageUri);
+      
+      // Close camera interface first
+      this.closeCameraInterface();
+      
+      // Show loading indicator
+      this.enableLoader = true;
+      
+      // Process the captured image
+      await this.checkImageSizeAndProcess(imageUri);
+    } catch (error) {
+      console.error('Error handling captured image:', error);
+      this.showToast('error', 'Failed to process captured image', '', 4000, '');
+      this.enableLoader = false;
+    }
   }
 
   onUomChange(event: any) {
