@@ -21,6 +21,7 @@ import { PageTitleService } from '../services/page-title.service';
   styleUrls: ['./my-item.page.scss'],
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MyItemPage implements OnInit {
   public filterWarning: boolean = false;
@@ -61,6 +62,15 @@ export class MyItemPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
+  }
+
+  async handleRefresh(e:any) {
+    this.searchField = '';
+    this.searchKeyword = '';
+    this.itemList = [];
+    this.page = 0;
+    this.getItemList();
+    e.target.complete();
   }
 
   goToAddItem(){

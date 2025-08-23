@@ -71,6 +71,15 @@ export class ItemListPage implements OnInit {
     });
   }
 
+  async handleRefresh(e:any) {
+    this.searchField = '';
+    this.searchKeyword = '';
+    this.itemList = [];
+    this.page = 0;
+    this.getItemList();
+    e.target.complete();
+  }
+
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
