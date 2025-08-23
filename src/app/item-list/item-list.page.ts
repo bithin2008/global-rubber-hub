@@ -274,6 +274,7 @@ export class ItemListPage implements OnInit {
 
   // Open bid modal
   async openBidModal(item: any) {
+    item.isEdit = false;
     const modal = await this.modalController.create({
       component: BidModalComponent,
       componentProps: {

@@ -247,6 +247,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
 
   // Open bid modal
   async openBidModal(item: any) {
+    item.isEdit = true;
     const modal = await this.modalController.create({
       component: BidModalComponent,
       componentProps: {

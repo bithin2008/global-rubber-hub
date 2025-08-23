@@ -217,6 +217,7 @@ export class BidHistoryPage implements OnInit {
   }
 
   async openBidModal(item: any) {
+    item.isEdit = true;
     const modal = await this.modalController.create({
       component: BidModalComponent,
       cssClass: 'bid-modal',

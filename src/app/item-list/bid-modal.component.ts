@@ -49,9 +49,12 @@ export class BidModalComponent implements OnInit {
     console.log(this.item);
 
     // Check if this is an edit mode (item has bid_quantity and bid_amount values)
-    if (this.item && this.item.bid_quantity && this.item.bid_amount) {
-      this.isEdit = true;
-    }
+   // if (this.item && this.item.bid_quantity && this.item.bid_amount) {
+      this.isEdit = this.item.isEdit ;
+   // }
+
+
+  
 
     // Initialize the reactive form
     const maxAllowedQuantity = Number(this.item?.in_stock ?? Number.MAX_SAFE_INTEGER);
@@ -67,7 +70,7 @@ export class BidModalComponent implements OnInit {
           Validators.pattern(/^\d+(\.\d{1,2})?$/)
         ]
       ],
-      remark: [this.item.description, [Validators.maxLength(150)]]
+      remark: [this.isEdit?this.item.description:'', [Validators.maxLength(150)]]
     });
 
     // Note: Fields are made readonly via HTML [readonly] attribute when isEdit is true

@@ -32,6 +32,8 @@ export class ProfilePage implements OnInit {
   public showCountryDropdown: boolean = false;
   public uploadedFiles: any[] = [];
   public isDragOver: boolean = false;
+  public showCameraInterface: boolean = false;
+  public cameraStream: MediaStream | null = null;
   private isDeviceReady: boolean = false;
   constructor(
     public router: Router,
@@ -226,6 +228,15 @@ export class ProfilePage implements OnInit {
     }
 
     Array.from(files).forEach((file: File) => {
+      console.log('=== FILE PROCESSING DEBUG ===');
+      console.log('File name:', file.name);
+      console.log('File size in bytes:', file.size);
+      console.log('File size type:', typeof file.size);
+      console.log('Max size in bytes:', maxSize);
+      console.log('Is file size > maxSize?', file.size > maxSize);
+      console.log('Original size formatted:', this.formatFileSize(file.size));
+      console.log('============================');
+      
       // Check file type
       if (!allowedTypes.includes(file.type)) {
         this.showToast('error', `${file.name} is not a supported file type`, '', 3000, '/profile');
@@ -234,7 +245,9 @@ export class ProfilePage implements OnInit {
 
       // Check file size
       if (file.size > maxSize) {
-        this.showToast('error', `${file.name} is too large. Maximum size is 2MB`, '', 3000, '/profile');
+        const formattedSize = this.formatFileSize(file.size);
+        console.log('File rejected - size:', formattedSize);
+        this.showToast('error', `${file.name} is too large (${formattedSize}). Maximum size is 2MB`, '', 3000, '/profile');
         return;
       }
 
@@ -251,6 +264,14 @@ export class ProfilePage implements OnInit {
 
           canvas.toBlob((pngBlob) => {
             if (pngBlob) {
+              console.log('Converted file size:', this.formatFileSize(pngBlob.size));
+              
+              // Check if converted file is still under 2MB
+              if (pngBlob.size > maxSize) {
+                this.showToast('error', `Image conversion resulted in file too large (${this.formatFileSize(pngBlob.size)}). Please try a smaller image.`, '', 4000, '/profile');
+                return;
+              }
+              
               const convertedFile = new File([pngBlob], `${file.name.split('.')[0]}.png`, { type: 'image/png' });
 
               // Create file object with converted file
@@ -271,14 +292,14 @@ export class ProfilePage implements OnInit {
 
               this.uploadedFiles.push(fileObj);
 
-                             // Update form control
-               if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
-                 this.profileForm.patchValue({
-                   id_proof_image: this.uploadedFiles.map(f => f.file)
-                 });
-               }
+              // Update form control
+              if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+                this.profileForm.patchValue({
+                  id_proof_image: this.uploadedFiles.map(f => f.file)
+                });
+              }
             }
-          }, 'image/png');
+          }, 'image/png', 0.8); // Add compression to reduce file size
         };
 
         // Load image from file
@@ -317,11 +338,23 @@ export class ProfilePage implements OnInit {
   }
 
   formatFileSize(bytes: number): string {
+    console.log('formatFileSize called with bytes:', bytes, 'Type:', typeof bytes);
+    
     if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    if (bytes < 1024) return bytes + ' Bytes';
+    if (bytes < 1024 * 1024) {
+      const kb = bytes / 1024;
+      console.log('Converting to KB:', kb);
+      return kb.toFixed(2) + ' KB';
+    }
+    if (bytes < 1024 * 1024 * 1024) {
+      const mb = bytes / (1024 * 1024);
+      console.log('Converting to MB:', mb);
+      return mb.toFixed(2) + ' MB';
+    }
+    const gb = bytes / (1024 * 1024 * 1024);
+    console.log('Converting to GB:', gb);
+    return gb.toFixed(2) + ' GB';
   }
 
   async openCamera() {
@@ -469,6 +502,7 @@ export class ProfilePage implements OnInit {
       // Fallback to file input if native camera fails
       console.log('Falling back to file input due to camera error');
       this.openFileInputWithSource(source);
+      this.enableLoader = false;
     }
   }
 
@@ -491,6 +525,7 @@ export class ProfilePage implements OnInit {
         } else {
           this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 5000, '/profile');
           this.resetImageDisplay();
+          this.enableLoader = false;
         }
         return;
       }
@@ -500,6 +535,7 @@ export class ProfilePage implements OnInit {
       
     } catch (error) {
       console.error('Error checking image size:', error);
+      this.enableLoader = false;
       // If we can't check the size, proceed with processing and let the existing size check handle it
       this.processImageURI(imageUri);
     }
@@ -567,7 +603,236 @@ export class ProfilePage implements OnInit {
       
     } catch (error) {
       console.error('Error compressing image:', error);
+      this.enableLoader = false;
       return null;
+    }
+  }
+
+  private compressImageForProfile(imageUri: string, originalSize: number): void {
+    console.log('Attempting to compress profile image...');
+    console.log('Original size:', this.formatFileSize(originalSize));
+    
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Calculate new dimensions to reduce file size
+      let { width, height } = img;
+      const maxDimension = 800; // Reduce dimensions to help with compression
+      
+      if (width > height) {
+        if (width > maxDimension) {
+          height = (height * maxDimension) / width;
+          width = maxDimension;
+        }
+      } else {
+        if (height > maxDimension) {
+          width = (width * maxDimension) / height;
+          height = maxDimension;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Draw the resized image
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      // Try different quality levels
+      const qualityLevels = [0.8, 0.6, 0.4, 0.2];
+      
+      const tryCompression = (index: number) => {
+        if (index >= qualityLevels.length) {
+          // All compression attempts failed
+          this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
+          this.resetImageDisplay();
+          this.enableLoader = false;
+          return;
+        }
+        
+        const quality = qualityLevels[index];
+        console.log(`Trying compression with quality: ${quality}`);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            console.log(`Compressed size with quality ${quality}:`, this.formatFileSize(blob.size));
+            
+            if (blob.size <= 2 * 1024 * 1024) {
+              // Success! Upload the compressed image
+              const file = new File([blob], 'profile-photo.jpg', { type: 'image/jpeg' });
+              this.uploadProfileImage(file);
+            } else {
+              // Try next quality level
+              tryCompression(index + 1);
+            }
+          } else {
+            // Try next quality level
+            tryCompression(index + 1);
+          }
+        }, 'image/jpeg', quality);
+      };
+      
+      tryCompression(0);
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load image for compression');
+      this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
+      this.resetImageDisplay();
+      this.enableLoader = false;
+    };
+    
+    img.src = imageUri;
+  }
+
+  private uploadProfileImage(file: File): void {
+    console.log('Uploading compressed profile image, size:', this.formatFileSize(file.size));
+    
+    let url = 'user/update-profile-image';
+    const formData = new FormData();
+    formData.append('profile_image', file);
+
+    this.commonService.filepost(url, formData).subscribe(
+      (res: any) => {
+        this.enableLoader = false;
+        console.log('Response type:', typeof res);
+        console.log('Response:', res);
+
+        // Handle different response types
+        let responseData;
+        if (res instanceof Blob) {
+          // If response is a blob, try to parse it as JSON
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              responseData = JSON.parse(reader.result as string);
+              if (responseData.code == 200) {
+                this.showToast('success', responseData.message, '', 2500, '');
+              } else {
+                this.showToast('error', responseData.message, '', 2500, '/profile');
+                this.getProfileData()
+              }
+            } catch (e) {
+              console.error('Error parsing blob response:', e);
+              this.showToast('error', 'Invalid response format', '', 2500, '/profile');
+              this.getProfileData()
+            }
+          };
+          reader.readAsText(res);
+        } else {
+          // Handle regular JSON response
+          responseData = res;
+          if (responseData.code == 200) {
+            this.showToast('success', responseData.message, '', 2500, '');
+          } else {
+            this.showToast('error', responseData.message, '', 2500, '/profile');
+          }
+          this.getProfileData()
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        this.showToast('error', 'Upload failed', '', 2500, '');
+        this.getProfileData()
+      }
+    );
+  }
+
+  public captureImageFromVideo(): void {
+    try {
+      console.log('Capturing image from video...');
+      
+      const videoElement = document.getElementById('cameraVideo') as HTMLVideoElement;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!videoElement || !ctx) {
+        this.showToast('error', 'Failed to capture image', '', 4000, '/profile');
+        return;
+      }
+
+      // Set canvas size to match video dimensions
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+
+      // Calculate viewfinder area (center square)
+      const viewfinderSize = Math.min(videoElement.videoWidth, videoElement.videoHeight) * 0.8;
+      const x = (videoElement.videoWidth - viewfinderSize) / 2;
+      const y = (videoElement.videoHeight - viewfinderSize) / 2;
+
+      // Draw the video frame
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Create a new canvas for the cropped image
+      const croppedCanvas = document.createElement('canvas');
+      const croppedCtx = croppedCanvas.getContext('2d');
+
+      if (!croppedCtx) {
+        this.showToast('error', 'Failed to process image', '', 4000, '/profile');
+        return;
+      }
+
+      // Set cropped canvas size to viewfinder size
+      croppedCanvas.width = viewfinderSize;
+      croppedCanvas.height = viewfinderSize;
+
+      // Draw only the viewfinder area
+      croppedCtx.drawImage(
+        canvas,
+        x, y, viewfinderSize, viewfinderSize, // Source rectangle
+        0, 0, viewfinderSize, viewfinderSize  // Destination rectangle
+      );
+
+      // Convert to blob and process
+      croppedCanvas.toBlob((blob) => {
+        if (blob) {
+          const imageUri = URL.createObjectURL(blob);
+          this.handleCapturedImage(imageUri);
+        } else {
+          this.showToast('error', 'Failed to capture image', '', 4000, '/profile');
+        }
+      }, 'image/jpeg', 0.8);
+
+    } catch (error) {
+      console.error('Error capturing image:', error);
+      this.showToast('error', 'Failed to capture image', '', 4000, '/profile');
+    }
+  }
+
+  public closeCameraInterface(): void {
+    console.log('Closing camera interface...');
+    
+    // Stop camera stream
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+    
+    // Hide camera interface
+    this.showCameraInterface = false;
+  }
+
+  private async handleCapturedImage(imageUri: string): Promise<void> {
+    try {
+      console.log('Handling captured image:', imageUri);
+      
+      // Close camera interface first
+      this.closeCameraInterface();
+      
+      // Show loading indicator
+      this.enableLoader = true;
+      
+      // Process the captured image
+      await this.checkImageSizeAndProcess(imageUri);
+    } catch (error) {
+      console.error('Error handling captured image:', error);
+      this.showToast('error', 'Failed to process captured image', '', 4000, '/profile');
+      this.resetImageDisplay();
+      this.enableLoader = false;
     }
   }
 
@@ -676,8 +941,8 @@ export class ProfilePage implements OnInit {
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
             const maxSize = 2 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
-              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 4000, '/profile');
-              this.resetImageDisplay();
+              // Try to compress the image further
+              this.compressImageForProfile(imageURI, pngBlob.size);
               return;
             }
 
@@ -737,6 +1002,7 @@ export class ProfilePage implements OnInit {
             console.error('Failed to create PNG blob');
             this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
             this.resetImageDisplay();
+            this.enableLoader = false;
           }
         }, 'image/png', 0.9); // Add quality parameter for better compression
       };
@@ -753,6 +1019,7 @@ export class ProfilePage implements OnInit {
           // For other types of images, show generic error
         this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
           this.resetImageDisplay();
+          this.enableLoader = false;
         }
       };
 
@@ -761,6 +1028,7 @@ export class ProfilePage implements OnInit {
       console.error('Image processing error:', error);
       this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
       this.resetImageDisplay();
+      this.enableLoader = false;
     }
   }
 
@@ -796,6 +1064,7 @@ export class ProfilePage implements OnInit {
       } else {
         console.error('Failed to load file URI:', xhr.status);
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.enableLoader = false;
         this.resetImageDisplay();
       }
     };
@@ -803,6 +1072,7 @@ export class ProfilePage implements OnInit {
     xhr.onerror = () => {
       console.error('XHR error loading file URI');
       this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+      this.enableLoader = false;
       this.resetImageDisplay();
     };
     
@@ -827,6 +1097,7 @@ export class ProfilePage implements OnInit {
       .catch(error => {
         console.error('Failed to convert content URI to blob:', error);
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.enableLoader = false;
         this.resetImageDisplay();
       });
   }
@@ -842,8 +1113,9 @@ export class ProfilePage implements OnInit {
       })
       .catch(error => {
         console.error('Failed to create blob from URI:', error);
-        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');``
         this.resetImageDisplay();
+        this.enableLoader = false;
       });
   }
 
@@ -863,6 +1135,7 @@ export class ProfilePage implements OnInit {
       console.error('Failed to load image via blob URL');
       URL.revokeObjectURL(blobUrl); // Clean up
       this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
+      this.enableLoader = false;
       this.resetImageDisplay();
     };
     
@@ -934,6 +1207,7 @@ export class ProfilePage implements OnInit {
                 this.showToast('success', responseData.message, '', 2500, '');
               } else {
                 this.showToast('error', responseData.message, '', 2500, '/profile');
+                this.enableLoader = false;
               }
               this.getProfileData()
             }
@@ -949,6 +1223,7 @@ export class ProfilePage implements OnInit {
         console.error('Failed to create PNG blob via alternative method');
         this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
         this.resetImageDisplay();
+        this.enableLoader = false;
       }
     }, 'image/png', 0.9);
   }
@@ -1038,8 +1313,10 @@ export class ProfilePage implements OnInit {
             this.getProfileData();
           } else if (responseData.code == 423) {
             this.showToast('error', responseData.message, '', 2500, '/profile');
+            this.enableLoader = false;
           } else {
             this.showToast('error', responseData.message, '', 2500, '/profile');
+            this.enableLoader = false;
           }
         }
       },

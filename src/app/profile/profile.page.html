@@ -1,6 +1,56 @@
 <app-header></app-header>
 
 <ion-content class="profile-page">
+  
+  <!-- Custom Camera Interface -->
+  <div class="custom-camera-interface" *ngIf="showCameraInterface">
+    <div class="camera-container">
+      <!-- Video element for live camera feed -->
+      <video 
+        id="cameraVideo"
+        class="camera-video" 
+        autoplay 
+        playsinline 
+        muted>
+      </video>
+      
+      <!-- Viewfinder border overlay -->
+      <div class="viewfinder-overlay">
+        <div class="viewfinder-border">
+          <!-- Corner indicators -->
+          <div class="corner top-left"></div>
+          <div class="corner top-right"></div>
+          <div class="corner bottom-left"></div>
+          <div class="corner bottom-right"></div>
+        </div>
+      </div>
+      
+      <!-- Camera controls -->
+      <div class="camera-controls">
+        <!-- Cancel button -->
+        <div class="cancel-btn" (click)="closeCameraInterface()">
+          <ion-icon name="close" class="cancel-icon"></ion-icon>
+        </div>
+        
+        <!-- Capture button -->
+        <div class="capture-btn" (click)="captureImageFromVideo()">
+          <div class="inner-circle"></div>
+        </div>
+        
+        <!-- Flash control (placeholder) -->
+        <div class="flash-control">
+          <ion-icon name="flash" class="flash-icon"></ion-icon>
+        </div>
+      </div>
+      
+      <!-- Size indicator -->
+      <div class="size-indicator">
+        <ion-icon name="information-circle"></ion-icon>
+        <span>Max 2MB</span>
+      </div>
+    </div>
+  </div>
+  
   <div class="profile-container">
     <!-- <ion-title class="profileTitle">Profile</ion-title> -->
     <div class="profile-photo">
