@@ -15,6 +15,8 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
 import { ImageLightboxComponent } from '../shared/image-lightbox/image-lightbox.component';
+import { ShareModalComponent } from '../shared/share-modal/share-modal.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-item-list',
@@ -316,6 +318,35 @@ export class ItemListPage implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  // Share functionality using custom modal
+  async shareItem(item: any) {
+    try {
+      // Prepare share data
+      const shareData = {
+        title: `${item.item_name} for ${item.item_listed_for == 1 ? 'Sale' : 'Buy'} in ${item.city}`,
+        text: `Check out this ${item.item_name} - ${item.description || 'Available now!'}`,
+        url: environment.API_ENDPOINT + 'items/market/' + item.encdata
+      };
+
+      // Open custom share modal
+      const modal = await this.modalController.create({
+        component: ShareModalComponent,
+        cssClass: 'share-modal',
+        presentingElement: document.querySelector('ion-router-outlet') || undefined,
+        showBackdrop: true,
+        backdropDismiss: true,
+        componentProps: {
+          shareData: shareData
+        }
+      });
+
+      await modal.present();
+    } catch (error: any) {
+      console.error('Error opening share modal:', error);
+      this.showToast('error', 'Failed to open share options. Please try again.', '', 3000, '');
+    }
   }
 
 }

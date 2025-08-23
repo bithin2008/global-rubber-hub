@@ -9,6 +9,48 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+/* Share Modal Styles */
+.share-modal {
+  --height: auto;
+  --max-height: 60vh;
+  --border-radius: 16px 16px 0 0;
+  --backdrop-opacity: 0.4;
+  
+  /* Position at bottom */
+  align-items: flex-end !important;
+  
+  .modal-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 80vh;
+    overflow: hidden;
+  }
+  
+  @media (min-width: 768px) {
+    --width: 400px;
+    --height: auto;
+    --max-height: 600px;
+    --border-radius: 16px;
+    
+    /* Center on desktop */
+    align-items: center !important;
+    
+    .modal-wrapper {
+      position: relative;
+      bottom: auto;
+      left: auto;
+      right: auto;
+      margin: auto !important;
+      border-radius: 16px !important;
+      max-width: 400px;
+    }
+  }
+}
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
