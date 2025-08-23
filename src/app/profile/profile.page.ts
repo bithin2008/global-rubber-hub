@@ -45,7 +45,7 @@ export class ProfilePage implements OnInit {
     private authGuardService: AuthGuardService
   ) { 
     activatedRoute.params.subscribe(val => {
-      this.pageTitleService.setPageTitle('Update Profile');
+      this.pageTitleService.setPageTitle('Profile');
       this.platform.ready().then(() => {
         this.isDeviceReady = true;
       });
@@ -175,7 +175,7 @@ export class ProfilePage implements OnInit {
           }
           this.profileForm.patchValue(response.user)
         } else {
-          this.showToast('error', response.message, '', 3500, '');
+          this.showToast('error', response.message, '', 3500, '/profile');
         }
       },
       (error) => {
@@ -220,20 +220,20 @@ export class ProfilePage implements OnInit {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
     if (this.uploadedFiles.length + files.length > maxFiles) {
-      this.showToast('error', `Maximum ${maxFiles} files allowed`, '', 3000, '');
+      this.showToast('error', `Maximum ${maxFiles} files allowed`, '', 3000, '/profile');
       return;
     }
 
     Array.from(files).forEach((file: File) => {
       // Check file type
       if (!allowedTypes.includes(file.type)) {
-        this.showToast('error', `${file.name} is not a supported file type`, '', 3000, '');
+        this.showToast('error', `${file.name} is not a supported file type`, '', 3000, '/profile');
         return;
       }
 
       // Check file size
       if (file.size > maxSize) {
-        this.showToast('error', `${file.name} is too large. Maximum size is 2MB`, '', 3000, '');
+        this.showToast('error', `${file.name} is too large. Maximum size is 2MB`, '', 3000, '/profile');
         return;
       }
 
@@ -360,7 +360,7 @@ export class ProfilePage implements OnInit {
       
     } catch (error: any) {
       console.error('Image selection error:', error);
-      this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '');
+      this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
     }
   }
 
@@ -386,9 +386,9 @@ export class ProfilePage implements OnInit {
         console.log('File selected:', file.name, 'Size:', file.size);
         
         // Check file size before processing
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 2 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
-          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 4000, '');
+          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 4000, '/profile');
           document.body.removeChild(fileInput);
           return;
         }
@@ -398,7 +398,7 @@ export class ProfilePage implements OnInit {
           this.processImageURI(e.target.result);
         };
         reader.onerror = () => {
-          this.showToast('error', 'Failed to read image file. Please try again.', '', 4000, '');
+          this.showToast('error', 'Failed to read image file. Please try again.', '', 4000, '/profile');
         };
         reader.readAsDataURL(file);
       }
@@ -441,7 +441,7 @@ export class ProfilePage implements OnInit {
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
             const maxSize = 2 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
-              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
               // Reset the image display
               this.profileImage = '';
               this.showPlaceholder = true;
@@ -473,12 +473,12 @@ export class ProfilePage implements OnInit {
                       if (responseData.code == 200) {
                         this.showToast('success', responseData.message, '', 2500, '');
                       } else {
-                        this.showToast('error', responseData.message, '', 2500, '');
+                        this.showToast('error', responseData.message, '', 2500, '/profile');
                         this.getProfileData()
                       }
                     } catch (e) {
                       console.error('Error parsing blob response:', e);
-                      this.showToast('error', 'Invalid response format', '', 2500, '');
+                      this.showToast('error', 'Invalid response format', '', 2500, '/profile');
                       this.getProfileData()
                     }
                   };
@@ -489,7 +489,7 @@ export class ProfilePage implements OnInit {
                   if (responseData.code == 200) {
                     this.showToast('success', responseData.message, '', 2500, '');
                   } else {
-                    this.showToast('error', responseData.message, '', 2500, '');
+                    this.showToast('error', responseData.message, '', 2500, '/profile');
                   }
                   this.getProfileData()
                 }
@@ -507,7 +507,7 @@ export class ProfilePage implements OnInit {
 
       img.onerror = () => {
         console.error('Error loading image');
-        this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
+        this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
         // Reset the image display
         this.profileImage = '';
         this.showPlaceholder = true;
@@ -517,7 +517,7 @@ export class ProfilePage implements OnInit {
       img.src = displaySrc;
     } catch (error: any) {
       console.error('Image processing error:', error);
-      this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '');
+      this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
     }
   }
 
@@ -579,13 +579,13 @@ export class ProfilePage implements OnInit {
                 // Refresh profile data to get updated information
                 this.getProfileData();
               } else if (responseData.code == 423) {
-                this.showToast('error', responseData.message, '', 2500, '');
+                this.showToast('error', responseData.message, '', 2500, '/profile');
               } else {
-                this.showToast('error', responseData.message, '', 2500, '');
+                this.showToast('error', responseData.message, '', 2500, '/profile');
               }
             } catch (e) {
               console.error('Error parsing blob response:', e);
-              this.showToast('error', 'Invalid response format', '', 2500, '');
+              this.showToast('error', 'Invalid response format', '', 2500, '/profile');
             }
           };
           reader.readAsText(response);
@@ -599,16 +599,16 @@ export class ProfilePage implements OnInit {
             // Refresh profile data to get updated information
             this.getProfileData();
           } else if (responseData.code == 423) {
-            this.showToast('error', responseData.message, '', 2500, '');
+            this.showToast('error', responseData.message, '', 2500, '/profile');
           } else {
-            this.showToast('error', responseData.message, '', 2500, '');
+            this.showToast('error', responseData.message, '', 2500, '/profile');
           }
         }
       },
       (error) => {
         this.enableLoader = false;
         console.log('error ts: ', error.error);
-        this.showToast('error', 'Profile update failed', '', 2500, '');
+        this.showToast('error', 'Profile update failed', '', 2500, '/profile');
       }
     );
   }
