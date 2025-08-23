@@ -51,6 +51,27 @@
   }
 }
 
+/* Text Modal Styles */
+.text-modal {
+  --height: auto;
+  --max-height: 20vh;
+  --border-radius: 16px;
+  --backdrop-opacity: 0.4;
+  padding: 0 20px;
+  
+  .modal-wrapper {
+    border-radius: 16px !important;
+    max-width: 500px;
+    margin: auto !important;
+  }
+  
+  @media (min-width: 768px) {
+    --width: 500px;
+    --height: auto;
+    --max-height: 400px;
+  }
+}
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 

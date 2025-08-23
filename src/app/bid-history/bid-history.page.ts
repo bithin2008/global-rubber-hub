@@ -14,6 +14,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
 import { BidModalComponent } from '../item-list/bid-modal.component';
+import { TextModalComponent } from '../shared/text-modal/text-modal.component';
 
 @Component({
   selector: 'app-bid-history',
@@ -235,6 +236,21 @@ export class BidHistoryPage implements OnInit {
       this.itemList = [];
       this.getItemList();
     }
+  }
+
+  // Helper method to open text modal
+  async openTextModal(text: string, title: string = 'Information', buttonText: string = 'Close') {
+    const modal = await this.modalController.create({
+      component: TextModalComponent,
+      cssClass: 'text-modal',
+      componentProps: {
+        text: text,
+        title: title,
+        buttonText: buttonText
+      }
+    });
+
+    await modal.present();
   }
 
 }

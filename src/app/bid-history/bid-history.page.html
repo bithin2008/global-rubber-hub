@@ -59,7 +59,7 @@
         <div class="status-badge" *ngIf="item.bid_status == 2">
           <span class="badge rejected">Rejected</span>
         </div>
-         <ion-button fill="clear" class="infoBtn no-style" *ngIf="item.bid_status == 2">
+         <ion-button fill="clear" class="infoBtn no-style" *ngIf="item.bid_status == 2" (click)="openTextModal(item.cancel_rejection_reason, 'Rejection Reason')">
           <ion-icon name="information-circle-outline"></ion-icon>
         </ion-button>
         
