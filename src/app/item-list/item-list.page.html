@@ -7,23 +7,21 @@
         <div class="top">
           <!-- <ion-title class="itemTitle">Items</ion-title> -->
           <div class="filterItem">
-            <ion-button class="btn no-style bid-now" (click)="reloadItems()"><img src="assets/img/icons/reload.svg" alt=""
-                title=""></ion-button>
-            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt=""
-                title=""></ion-button>
+            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
             <ion-item class="no-style">
               <div class="custom-inner selectId">
                 <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
-                  [(ngModel)]="searchFieldControl" [ngModelOptions]="{standalone: true}" placeholder="Select Type"
-                  (ngModelChange)="selectFilter($event)">
-                  <ion-select-option [value]="1">Price (Low to High) </ion-select-option>
-                  <ion-select-option [value]="2">Price (High to Low)</ion-select-option>
-                  <ion-select-option [value]="3"> quantiity (Low to High)</ion-select-option>
-                  <ion-select-option [value]="4">quantiity (High to Low)</ion-select-option>
-                  <ion-select-option [value]="5">Most Recent</ion-select-option>
-                </ion-select>
-              </div>
-            </ion-item>
+                [(ngModel)]="searchFieldControl" [ngModelOptions]="{standalone: true}" placeholder="Select Type"
+                (ngModelChange)="selectFilter($event)">
+                <ion-select-option [value]="1">Price (Low to High) </ion-select-option>
+                <ion-select-option [value]="2">Price (High to Low)</ion-select-option>
+                <ion-select-option [value]="3"> quantiity (Low to High)</ion-select-option>
+                <ion-select-option [value]="4">quantiity (High to Low)</ion-select-option>
+                <ion-select-option [value]="5">Most Recent</ion-select-option>
+              </ion-select>
+            </div>
+          </ion-item>
+          <ion-button class="btn no-style bid-now refresh" (click)="reloadItems()"><img src="assets/img/icons/reload.svg" alt="" title=""></ion-button>
           </div>
 
         </div>
