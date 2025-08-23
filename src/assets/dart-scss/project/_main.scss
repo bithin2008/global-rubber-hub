@@ -1124,11 +1124,10 @@ ion-card-content {
 }
 
 .addBtn {
-  background-color: blue;
+  background-color: #19b934;
   width: 45px;
   height: 45px;
   border-radius: 50% !important;
-  min-height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1136,7 +1135,45 @@ ion-card-content {
   right: 30px;
   bottom: 90px;
   z-index: 999;
+
+  /* Shadow / glow */
+  box-shadow: 0 4px 15px rgba(25, 185, 52, 0.6),
+              0 0 10px rgba(25, 185, 52, 0.4);
+
+  /* Smooth animation */
+  transition: all 0.3s ease;
 }
+
+/* Hover effect */
+.addBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(25, 185, 52, 0.8),
+              0 0 15px rgba(25, 185, 52, 0.6);
+  cursor: pointer;
+}
+
+/* Active (click) effect */
+.addBtn:active {
+  transform: scale(0.95);
+}
+
+/* Optional: pulsing animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(25, 185, 52, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(25, 185, 52, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(25, 185, 52, 0);
+  }
+}
+
+.addBtn.pulse {
+  animation: pulse 2s infinite;
+}
+
 
 .add-page {
   .add-container {
@@ -1974,3 +2011,16 @@ ion-select::part(icon) {
     width: 17px;
   }
 }
+
+.infoBtn {
+  
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  ion-icon{
+    font-size: 22px;
+    color: blue;
+  }
+}
+

@@ -59,6 +59,9 @@
         <div class="status-badge" *ngIf="item.bid_status == 2">
           <span class="badge rejected">Rejected</span>
         </div>
+         <ion-button fill="clear" class="infoBtn no-style" *ngIf="item.bid_status == 2">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
         
         <div class="btnCont" *ngIf="item.bid_status == 0">
           <ion-button fill="clear" slot="end" class="btn no-style edit worning_badg" (click)="openBidModal(item)">
