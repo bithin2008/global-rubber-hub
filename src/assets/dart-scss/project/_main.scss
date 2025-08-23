@@ -822,7 +822,13 @@ ion-content {
       align-items: center;
       justify-content: center;
     }
-
+    .custom-inner{
+      margin-top: 0;
+      ion-select{
+        --padding-top: 5px;
+        --padding-bottom: 5px;
+      }
+    }
     .arrow {
       color: #1cb71c;
       font-size: 20px;
@@ -1118,9 +1124,9 @@ ion-card-content {
 }
 
 .addBtn {
-  background-color: #fb7805;
-  width: 40px;
-  height: 40px;
+  background-color: blue;
+  width: 45px;
+  height: 45px;
   border-radius: 50% !important;
   min-height: auto;
   display: flex;
@@ -1128,7 +1134,8 @@ ion-card-content {
   justify-content: center;
   position: fixed;
   right: 30px;
-  bottom: 100px;
+  bottom: 90px;
+  z-index: 999;
 }
 
 .add-page {
@@ -1916,5 +1923,17 @@ ion-select::part(icon) {
     width: 75%;
     object-fit: none;
     height: auto;
+  }
+}
+
+.share-options{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  .share-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 }
