@@ -80,9 +80,9 @@
             </div>
 
             <div class="footer">
-              <div class="company">
+              <div class="company" (click)="showMyItems(item)">
                 <div class="distributor">
-                  <img [src]="item.user_image" alt="" title="">
+                  <img [src]="item.user_image" alt="" title="" (error)="onImageError($event)"> 
                 </div>
                 <div class="company-info">
                   <h4 *ngIf="item.company_name">{{item.company_name}}</h4>

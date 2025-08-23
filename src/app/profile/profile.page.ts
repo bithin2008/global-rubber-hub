@@ -1315,12 +1315,12 @@ export class ProfilePage implements OnInit {
       console.log('Using Capacitor camera for upload with source:', cameraSource);
       
       const image = await Camera.getPhoto({
-        quality: 70, // Reduced quality to help stay under 2MB
+        quality: 30, // Very low quality to ensure under 2MB
         allowEditing: true,
         resultType: CameraResultType.Uri,
         source: cameraSource,
-        width: 1200, // Optimized for 2MB limit
-        height: 1200, // Optimized for 2MB limit
+        width: 600, // Smaller dimensions to reduce file size
+        height: 600, // Smaller dimensions to reduce file size
         correctOrientation: true,
         // Add viewfinder border options for camera
         ...(source === 'camera' && {
@@ -1435,60 +1435,8 @@ export class ProfilePage implements OnInit {
         clearTimeout(timeout);
         console.log('Upload image loaded successfully, dimensions:', img.width, 'x', img.height);
         
-        // Set canvas dimensions
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Clear canvas and draw image
-        ctx?.clearRect(0, 0, canvas.width, canvas.height);
-        ctx?.drawImage(img, 0, 0);
-
-        canvas.toBlob((pngBlob) => {
-          if (pngBlob) {
-            console.log('PNG blob created for upload, size:', this.formatFileSize(pngBlob.size));
-            
-            // Check file size (2MB = 2 * 1024 * 1024 bytes)
-            const maxSize = 2 * 1024 * 1024; // 2MB
-            if (pngBlob.size > maxSize) {
-              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
-              this.enableLoader = false;
-              return;
-            }
-
-            const file = new File([pngBlob], `camera-upload-${Date.now()}.png`, { type: 'image/png' });
-
-            // Create file object and add to uploaded files
-            const fileObj = {
-              file: file,
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              preview: null
-            };
-
-            // Generate preview
-            const reader = new FileReader();
-            reader.onload = (e: any) => {
-              fileObj.preview = e.target.result;
-              this.uploadedFiles.push(fileObj);
-
-              // Update form control
-              if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
-                this.profileForm.patchValue({
-                  id_proof_image: this.uploadedFiles.map(f => f.file)
-                });
-              }
-              
-              console.log('Camera image added to upload files:', this.uploadedFiles.length);
-              this.enableLoader = false;
-            };
-            reader.readAsDataURL(file);
-          } else {
-            console.error('Failed to create PNG blob for upload');
-            this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
-            this.enableLoader = false;
-          }
-        }, 'image/png', 0.9); // Add quality parameter for better compression
+        // Process image with compression
+        this.processImageWithCanvasForUpload(img);
       };
 
       img.onerror = (error) => {
@@ -1513,6 +1461,161 @@ export class ProfilePage implements OnInit {
   onImageError(event: Event) {
     this.profileImage = ''; // Clear the image source
     this.showPlaceholder = true; // Show placeholder
+  }
+
+  // Process image with canvas for upload with compression
+  private processImageWithCanvasForUpload(img: HTMLImageElement): void {
+    console.log('Original image dimensions:', img.width, 'x', img.height);
+    
+    // Calculate new dimensions to force smaller file size
+    const maxDimension = 400; // Very small dimensions to ensure small file size
+    let { width, height } = img;
+    
+    // Resize image to smaller dimensions
+    if (width > height) {
+      if (width > maxDimension) {
+        height = (height * maxDimension) / width;
+        width = maxDimension;
+      }
+    } else {
+      if (height > maxDimension) {
+        width = (width * maxDimension) / height;
+        height = maxDimension;
+      }
+    }
+    
+    console.log('Resized dimensions:', width, 'x', height);
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas to resized dimensions
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Clear canvas and draw resized image
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    ctx?.drawImage(img, 0, 0, width, height);
+
+    // Try different quality levels for compression (more aggressive)
+    const qualityLevels = [0.5, 0.4, 0.3, 0.2, 0.1, 0.05];
+    
+    const tryCompression = (index: number) => {
+      if (index >= qualityLevels.length) {
+        // If all PNG compression fails, try JPEG with very low quality
+        console.log('PNG compression failed, trying JPEG...');
+        canvas.toBlob((jpegBlob) => {
+          if (jpegBlob) {
+            console.log('JPEG blob size:', this.formatFileSize(jpegBlob.size));
+            
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (jpegBlob.size <= maxSize) {
+              // Success with JPEG! Create file and add to uploads
+              const file = new File([jpegBlob], `camera-upload-${Date.now()}.jpg`, { type: 'image/jpeg' });
+              this.addFileToUploads(file);
+            } else {
+              // Final fallback - resize even smaller
+              this.forceResizeAndCompress(img, 300);
+            }
+          } else {
+            this.forceResizeAndCompress(img, 300);
+          }
+        }, 'image/jpeg', 0.3); // Very low JPEG quality
+        return;
+      }
+      
+      const quality = qualityLevels[index];
+      console.log(`Trying PNG compression with quality: ${quality}`);
+      
+      canvas.toBlob((pngBlob) => {
+        if (pngBlob) {
+          console.log(`PNG compressed size with quality ${quality}:`, this.formatFileSize(pngBlob.size));
+          
+          // Check file size (2MB = 2 * 1024 * 1024 bytes)
+          const maxSize = 2 * 1024 * 1024; // 2MB
+          if (pngBlob.size <= maxSize) {
+            // Success! Create file and add to uploads
+            const file = new File([pngBlob], `camera-upload-${Date.now()}.png`, { type: 'image/png' });
+            this.addFileToUploads(file);
+          } else {
+            // Try next quality level
+            tryCompression(index + 1);
+          }
+        } else {
+          // Try next quality level
+          tryCompression(index + 1);
+        }
+      }, 'image/png', quality);
+    };
+    
+    tryCompression(0);
+  }
+
+  // Force resize and compress with very small dimensions
+  private forceResizeAndCompress(img: HTMLImageElement, maxDimension: number): void {
+    console.log(`Force resizing to ${maxDimension}x${maxDimension}`);
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Force square dimensions
+    canvas.width = maxDimension;
+    canvas.height = maxDimension;
+    
+    // Clear canvas and draw resized image
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    ctx?.drawImage(img, 0, 0, maxDimension, maxDimension);
+
+    // Try JPEG with very low quality
+    canvas.toBlob((jpegBlob) => {
+      if (jpegBlob) {
+        console.log('Force compressed JPEG size:', this.formatFileSize(jpegBlob.size));
+        
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (jpegBlob.size <= maxSize) {
+          // Success! Create file and add to uploads
+          const file = new File([jpegBlob], `camera-upload-${Date.now()}.jpg`, { type: 'image/jpeg' });
+          this.addFileToUploads(file);
+        } else {
+          // Ultimate fallback - show error
+          this.showToast('error', 'Unable to compress image to required size. Please try with a different image.', '', 4000, '/profile');
+          this.enableLoader = false;
+        }
+      } else {
+        this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
+        this.enableLoader = false;
+      }
+    }, 'image/jpeg', 0.2); // Very low quality
+  }
+
+  // Helper method to add file to uploads
+  private addFileToUploads(file: File): void {
+    // Create file object and add to uploaded files
+    const fileObj = {
+      file: file,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      preview: null
+    };
+
+    // Generate preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      fileObj.preview = e.target.result;
+      this.uploadedFiles.push(fileObj);
+
+      // Update form control
+      if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
+        this.profileForm.patchValue({
+          id_proof_image: this.uploadedFiles.map(f => f.file)
+        });
+      }
+      
+      console.log('Camera image added to upload files:', this.uploadedFiles.length);
+      this.enableLoader = false;
+    };
+    reader.readAsDataURL(file);
   }
 
 
