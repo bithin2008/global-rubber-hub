@@ -76,6 +76,12 @@ export class ItemListPage implements OnInit {
     await this.authGuardService.checkTokenAndAuthenticate();
   }
 
+  reloadItems(){
+    this.itemList=[];
+    this.page
+    this.getItemList()
+  }
+
   showMyItems(item: any) {
     this.itemList=[]
     this.getItemList(item.added_by) 
