@@ -41,6 +41,7 @@ export class ItemListPage implements OnInit {
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   public type: string = '';
+  public fallbackImg: string = 'assets/img/default-photo.png';
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -75,8 +76,19 @@ export class ItemListPage implements OnInit {
     await this.authGuardService.checkTokenAndAuthenticate();
   }
 
-  getItemList() {
-    let data = {
+  reloadItems(){
+    this.itemList=[];
+    this.page
+    this.getItemList()
+  }
+
+  showMyItems(item: any) {
+    this.itemList=[]
+    this.getItemList(item.added_by) 
+  }
+
+  getItemList(user_id?: number) {
+    let data:any = {
       module: 2,
       start: this.page,
       limit: 10,
@@ -85,6 +97,9 @@ export class ItemListPage implements OnInit {
       keyword:  this.type?this.type=='seller'?1:2:this.searchKeyword ? this.searchKeyword : '',
       options: this.type? 'item_master.item_listed_for':this.searchField == 5 ? 'item_master.added_on' : this.searchField
 
+    }
+    if(user_id){
+      data.added_by_id = user_id;
     }
     if (this.page == 0) {
       this.enableLoader = true;
@@ -318,6 +333,13 @@ export class ItemListPage implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement | null;
+    if (target && target.src !== this.fallbackImg) {
+      target.src = this.fallbackImg;
+    }
   }
 
   // Share functionality using custom modal

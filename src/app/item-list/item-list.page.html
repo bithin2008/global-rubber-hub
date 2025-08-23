@@ -7,6 +7,8 @@
         <div class="top">
           <!-- <ion-title class="itemTitle">Items</ion-title> -->
           <div class="filterItem">
+            <ion-button class="btn no-style bid-now" (click)="reloadItems()"><img src="assets/img/icons/reload.svg" alt=""
+                title=""></ion-button>
             <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt=""
                 title=""></ion-button>
             <ion-item class="no-style">
@@ -80,9 +82,9 @@
             </div>
 
             <div class="footer">
-              <div class="company">
+              <div class="company" (click)="showMyItems(item)">
                 <div class="distributor">
-                  <img [src]="item.user_image" alt="" title="">
+                  <img [src]="item.user_image" alt="" title="" (error)="onImageError($event)"> 
                 </div>
                 <div class="company-info">
                   <h4 *ngIf="item.company_name">{{item.company_name}}</h4>
