@@ -60,19 +60,15 @@
         <ion-label>
           <h3>Choose Language</h3>
         </ion-label>
-        <ion-radio-group name="language" value="english">
-          <div class="language-select-container">
-            <label class="language-option">
-              <ion-radio value="english" class="custom-radio" ></ion-radio>
-              <span>English</span>
-            </label>
-
-            <label class="language-option">
-              <ion-radio value="hindi" class="custom-radio"></ion-radio>
-              <span>Hindi</span>
-            </label>
-          </div>
-        </ion-radio-group>
+        <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-select interface="popover" placeholder="English" class="form-field" slot="start">
+            <ion-select-option value="english">English</ion-select-option>
+            <ion-select-option value="hindi">Hindi</ion-select-option>
+          </ion-select>
+         
+        </div>
+      </ion-item>
 
       </ion-item>
 
