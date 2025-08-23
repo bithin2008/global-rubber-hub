@@ -1,6 +1,8 @@
 <app-header></app-header>
 
 <ion-content class="itemlist-page">
+  <ion-refresher slot="fixed" pulling-icon="" (ionRefresh)="handleRefresh($event)">
+  </ion-refresher>
   <div class="itemlist-container">
     <div class="filter">
       <form class="form">

@@ -1,6 +1,8 @@
 <app-header></app-header>
 
 <ion-content class="itemlist-page">
+  <ion-refresher slot="fixed" pulling-icon="" (ionRefresh)="handleRefresh($event)">
+  </ion-refresher>
   <div class="itemlist-container">
     <div class="filter">
       <form class="form">
@@ -54,12 +56,12 @@
             </swiper-container>
             <div class="title-section">
               <h2>{{item.item_name}} for <span *ngIf="item.item_listed_for == 1">Sale</span> <span
-                  *ngIf="item.item_listed_for == 2">Buy</span> in {{item.city}}</h2>
+                  *ngIf="item.item_listed_for == 2">Buy</span> <span *ngIf="item.city">in {{item.city}}</span></h2>
               <div class="date-location">
                 <div class="location">
-                  <img src="assets/img/icons/location_on_color.svg" alt="" title="">
+                  <img src="assets/img/icons/location_on_color.svg" alt="" title="" *ngIf="item.city && item.state">
                   <span *ngIf="item.city && item.state">{{item.city}}, {{item.state}}</span>
-                  <span *ngIf="!item.city || !item.state">{{item.user_city}}, {{item.user_state}}</span>
+                  <!-- <span *ngIf="!item.city && !item.state">{{item.user_city}}, {{item.user_state}}</span> -->
                 </div>
                 <div class="date_wrap">
                   <span class="date">Date {{item.added_on | date:'dd.MM.yyyy'}}<span *ngIf="item.updated_on">
