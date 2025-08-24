@@ -191,10 +191,10 @@
         <div class="uploaded-files" *ngIf="uploadedFiles.length > 0">
           <h4>Uploaded Files ({{ uploadedFiles.length }})</h4>
           <div class="file-item" *ngFor="let file of uploadedFiles; let i = index">
-            <div class="file-preview" *ngIf="file.type.startsWith('image/')">
+            <div class="file-preview" *ngIf="file.type?.startsWith('image/')">
               <img [src]="file.preview" class="file-thumbnail" alt="Preview">
             </div>
-            <div class="file-preview" *ngIf="!file.type.startsWith('image/')">
+            <div class="file-preview" *ngIf="!file.type?.startsWith('image/')">
               <ion-icon name="document-outline" class="file-icon"></ion-icon>
             </div>
             <div class="file-info">

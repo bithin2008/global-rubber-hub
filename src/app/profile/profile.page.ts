@@ -513,12 +513,12 @@ export class ProfilePage implements OnInit {
       // }
       
       const image = await Camera.getPhoto({
-        quality: 70, // Reduced quality to help stay under 2MB
+        quality: 60, // Reduced quality to help stay under 2MB
         allowEditing: true,
         resultType: CameraResultType.Uri,
         source: cameraSource,
-        width: 1200, // Optimized for 2MB limit
-        height: 1200, // Optimized for 2MB limit
+        width: 800, // Optimized for 2MB limit
+        height: 800, // Optimized for 2MB limit
         correctOrientation: true,
         // Add viewfinder border options for camera
         ...(source === 'camera' && {
@@ -615,7 +615,7 @@ export class ProfilePage implements OnInit {
       return new Promise((resolve) => {
         img.onload = () => {
           // Calculate new dimensions to reduce file size
-          const maxDimension = 800; // Reduce dimensions to help with compression
+          const maxDimension = 600; // Reduce dimensions to help with compression
           let { width, height } = img;
           
           if (width > height) {
@@ -683,7 +683,7 @@ export class ProfilePage implements OnInit {
       
       // Calculate new dimensions to reduce file size
       let { width, height } = img;
-      const maxDimension = 800; // Reduce dimensions to help with compression
+      const maxDimension = 600; // Reduce dimensions to help with compression
       
       if (width > height) {
         if (width > maxDimension) {
@@ -752,10 +752,48 @@ export class ProfilePage implements OnInit {
 
   private uploadProfileImage(file: File): void {
     console.log('Uploading compressed profile image, size:', this.formatFileSize(file.size));
+    console.log('File type:', file.type);
+    console.log('File name:', file.name);
+    console.log('File lastModified:', file.lastModified);
+    
+    // Validate file before upload
+    if (!file || file.size === 0) {
+      this.showToast('error', 'Invalid file: File is empty or corrupted', '', 3000, '/profile');
+      this.enableLoader = false;
+      return;
+    }
+    
+    // Check if file type is valid
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      this.showToast('error', `Invalid file type: ${file.type}. Please select a valid image file.`, '', 3000, '/profile');
+      this.enableLoader = false;
+      return;
+    }
+    
+    // Check file size (max 2MB)
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      this.showToast('error', `File too large: ${this.formatFileSize(file.size)}. Maximum size is 2MB.`, '', 3000, '/profile');
+      this.enableLoader = false;
+      return;
+    }
     
     let url = 'user/update-profile-image';
     const formData = new FormData();
+    
+    // Try with the standard field name first
     formData.append('profile_image', file);
+    
+    // Log the file details for debugging
+    console.log('File being uploaded:');
+    console.log('- Name:', file.name);
+    console.log('- Type:', file.type);
+    console.log('- Size:', file.size);
+    console.log('- Last Modified:', file.lastModified);
+    
+    // Log FormData for debugging
+    console.log('FormData created with file:', file.name);
 
     this.commonService.filepost(url, formData).subscribe(
       (res: any) => {
@@ -766,15 +804,28 @@ export class ProfilePage implements OnInit {
         // Handle different response types
         if (res.code == 200) {
           this.showToast('success', res.message, '', 2500, '');
+          
         } else {
           this.showToast('error', res.message, '', 2500, '/profile');
-          this.getProfileData()
+          
         }
+        this.getProfileData();
       },
       (error) => {
         this.enableLoader = false;
-        console.log('error ts: ', error.error);
-        this.showToast('error', 'Upload failed', '', 2500, '');
+        console.log('Upload error:', error);
+        console.log('Error status:', error.status);
+        console.log('Error message:', error.message);
+        console.log('Error response:', error.error);
+        
+        // Handle specific error cases
+        if (error.status === 422) {
+          this.showToast('error', 'Invalid image format. Please try with a different image.', '', 3000, '/profile');
+        } else if (error.status === 413) {
+          this.showToast('error', 'Image file is too large. Please select a smaller image.', '', 3000, '/profile');
+        } else {
+          this.showToast('error', 'Upload failed. Please try again.', '', 2500, '/profile');
+        }
         this.getProfileData()
       }
     );

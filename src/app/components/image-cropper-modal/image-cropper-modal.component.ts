@@ -30,7 +30,7 @@ export class ImageCropperModalComponent implements OnInit {
   @Input() maintainAspectRatio: boolean = true;
   @Input() cropperTitle: string = 'Crop Image';
 
-  croppedImage: string = '';
+  croppedImage: string | Blob = '';
   isCropping: boolean = false;
   imageChangedEvent: any = null;
 
@@ -114,7 +114,10 @@ export class ImageCropperModalComponent implements OnInit {
     console.log('Image cropped event:', event);
     if (event && event.blob) {
       this.croppedImage = event.blob;
-      console.log('Cropped image saved');
+      console.log('Cropped image saved as blob');
+    } else if (event && event.base64) {
+      this.croppedImage = event.base64;
+      console.log('Cropped image saved as base64 string');
     }
   }
 
@@ -137,7 +140,8 @@ export class ImageCropperModalComponent implements OnInit {
 
   async cropImage() {
     console.log('cropImage called');
-    console.log('croppedImage exists:', this.croppedImage);
+    console.log('croppedImage exists:', !!this.croppedImage);
+    console.log('croppedImage type:', typeof this.croppedImage);
     console.log('isCropping:', this.isCropping);
     
     // Always try to get the current crop
@@ -150,12 +154,40 @@ export class ImageCropperModalComponent implements OnInit {
     if (this.croppedImage) {
       try {
         console.log('Processing cropped image...');
-        // Convert base64 to blob
-        const response = await fetch(this.croppedImage);
-        const blob = await response.blob();
         
-        // Create a file from the blob
-        const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        let file: File;
+        
+        // Check if croppedImage is already a Blob or File
+        if (this.croppedImage instanceof Blob) {
+          console.log('croppedImage is already a Blob');
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          file = new File([this.croppedImage], `profile_image_${timestamp}.jpg`, { 
+            type: 'image/jpeg',
+            lastModified: Date.now()
+          });
+        } else if (typeof this.croppedImage === 'string') {
+          console.log('croppedImage is a string, converting to blob');
+          // Convert base64 to blob with proper MIME type
+          const base64Data = this.croppedImage.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/jpeg' });
+          
+          // Create a file from the blob with proper extension, MIME type, and timestamp
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          file = new File([blob], `profile_image_${timestamp}.jpg`, { 
+            type: 'image/jpeg',
+            lastModified: Date.now()
+          });
+        } else {
+          console.error('Unknown croppedImage type:', typeof this.croppedImage);
+          this.showToast('error', 'Invalid cropped image format', '', 3000, '');
+          return;
+        }
         
         console.log('Created cropped file:', file);
         

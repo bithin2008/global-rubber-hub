@@ -34,6 +34,7 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
+import { ImageCropperModalComponent } from '../components/image-cropper-modal/image-cropper-modal.component';
 
 @Component({
   selector: 'app-item-add',
@@ -377,11 +378,8 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       console.log('Image path:', image.path);
       
       if (image.webPath) {
-        // Show loading indicator
-        this.enableLoader = true;
-        
-        // Check file size before processing
-        await this.checkImageSizeAndProcess(image.webPath);
+        // Show image cropper modal
+        await this.openImageCropper(image.webPath);
       } else {
         this.showToast('error', 'No image selected', '', 3000, '');
       }
@@ -427,10 +425,18 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       fileInput.setAttribute('capture', 'camera');
     }
     
-    fileInput.addEventListener('change', (event: any) => {
+    fileInput.addEventListener('change', async (event: any) => {
       const files = event.target.files;
       if (files && files.length > 0) {
-        this.processFiles(files);
+        // For single image selection, show cropper
+        if (files.length === 1) {
+          const file = files[0];
+          const imageUrl = URL.createObjectURL(file);
+          await this.openImageCropper(imageUrl);
+        } else {
+          // For multiple files, process normally
+          this.processFiles(files);
+        }
       }
       document.body.removeChild(fileInput);
     });
@@ -475,6 +481,69 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       this.enableLoader = false;
       // If we can't check the size, proceed with processing and let the existing size check handle it
       this.processImageURI(imageUri);
+    }
+  }
+
+  private async openImageCropper(imageUri: string): Promise<void> {
+    try {
+      const modal = await this.modalController.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageUrl: imageUri,
+          aspectRatio: 1, // 1:1 aspect ratio
+          maintainAspectRatio: true,
+          cropperTitle: 'Crop Item Image'
+        },
+        cssClass: 'image-cropper-modal'
+      });
+
+      await modal.present();
+
+      const { data } = await modal.onWillDismiss();
+      
+      if (data && data.cropped) {
+        // Show loading indicator
+        this.enableLoader = true;
+        
+        // Process the cropped image
+        await this.processCroppedImage(data.file);
+      } else {
+        // User cancelled cropping, no action needed
+        console.log('User cancelled image cropping');
+      }
+    } catch (error) {
+      console.error('Error opening image cropper:', error);
+      this.showToast('error', 'Failed to open image cropper', '', 4000, '');
+    }
+  }
+
+  private async processCroppedImage(file: File): Promise<void> {
+    try {
+      console.log('Processing cropped image, size:', this.formatFileSize(file.size));
+      
+      // Check file size
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '');
+        this.enableLoader = false;
+        return;
+      }
+      
+      // Create image object and add to selectedImages
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImages.push({
+          file: file,
+          preview: e.target.result
+        });
+        console.log('Cropped image added to selectedImages:', this.selectedImages.length);
+        this.enableLoader = false;
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error processing cropped image:', error);
+      this.showToast('error', 'Failed to process cropped image', '', 4000, '');
+      this.enableLoader = false;
     }
   }
 
