@@ -18,7 +18,7 @@
       <h4>International Rubber Rates</h4>
 
     </div>
-    <swiper-container class="market-swiper" slides-per-view="2" space-between="12" loop="true" autoplay-delay="3000"
+    <swiper-container class="market-swiper" slides-per-view="2" space-between="12" loop="true" autoplay="true" autoplay-delay="3000"
       autoplay-disable-on-interaction="false">
       <swiper-slide *ngFor="let card of dashboardData.rubberRates.results" class="market-slide">
         <div class="market-card" [ngClass]="card.rate_deviation_percentage > 0 ? 'up' : 'down'">

@@ -68,7 +68,7 @@ export class ItemListPage implements OnInit {
 
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Live Bid');
-      register();
+      
       this.handleSearchToggle();
       this.getItemList();
     });
@@ -158,6 +158,10 @@ export class ItemListPage implements OnInit {
           else {
             this.showNoRecord = true;
           }
+
+          setTimeout(() => {
+            register();
+          }, 1000);
 
         }
       },

@@ -44,7 +44,7 @@
         
           <ion-card-content class="rubber-card-item">
             <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
-              centered-slides="true" space-between="12" style="overflow: visible;" class="itemSlider"
+              centered-slides="true" space-between="12" loop="true" autoplay="true" autoplay-delay="3000" style="overflow: visible;" class="itemSlider"
               id="itemsliderimage">
               <swiper-slide class=" slide1" *ngFor="let media of item.item_image; let idx = index">
                 <div class="content myitemImg">
