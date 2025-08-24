@@ -77,11 +77,13 @@ export class BidHistoryPage implements OnInit {
       btnClose.addEventListener('click', (event) => {
         event.stopPropagation();
         bottom.classList.remove('show');
-        this.searchField = '';
-        this.searchKeyword = '';
-        this.page = 0;
-        this.itemList = [];
-        this.getItemList();
+        if(this.searchKeyword.length>0){ 
+          this.searchField = '';
+          this.searchKeyword = '';
+          this.page = 0;
+          this.itemList = [];
+          this.getItemList();
+         } 
       });
 
       // Handle outside click
