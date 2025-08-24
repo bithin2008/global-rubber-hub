@@ -1,13 +1,13 @@
 <app-header></app-header>
 
 <ion-content class="itemlist-page">
-  <div class="itemlist-container">
+  <div class="itemlist-container" (click)="onOutsideClick($event)">
     <div class="filter">
       <form class="form">
         <div class="top">
           <!-- <ion-title class="itemTitle">Bid Request</ion-title> -->
-          <div class="filterItem">
-            <ion-button class="btn no-style bid-now btnsearch"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
+          <div class="filterItem" (click)="$event.stopPropagation()">
+            <ion-button class="btn no-style bid-now btnsearch" (click)="toggleSearch(); $event.stopPropagation()"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
             <ion-item class="no-style">
               <div class="custom-inner selectId">
                 <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
@@ -24,14 +24,14 @@
           </div>
 
         </div>
-        <div class="bottom">
+        <div class="bottom" [class.show]="isSearchVisible" (click)="$event.stopPropagation()">
           <ion-item class="no-style">
             <div class="custom-inner search">
               <ion-input class="form-field" type="text" [(ngModel)]="searchKeyword"
                 [ngModelOptions]="{standalone: true}" placeholder="Search" (keyup)="searchItem($event)"></ion-input>
             </div>
           </ion-item>
-          <div class="close"><ion-icon name="close-outline"></ion-icon></div>
+          <div class="close" (click)="closeSearch()"><ion-icon name="close-outline"></ion-icon></div>
         </div>
       </form>
     </div>

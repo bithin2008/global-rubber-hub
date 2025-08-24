@@ -38,6 +38,7 @@ export class BidHistoryPage implements OnInit {
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   public fallbackImg: string = 'assets/img/item-placeholder.jpg';
+  public isSearchVisible: boolean = false;
   private handleOutsideClick: any;
   constructor(
     public router: Router,
@@ -53,6 +54,7 @@ export class BidHistoryPage implements OnInit {
   ) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Bid History');
+      this.handleSearchToggle();
       this.getItemList();
     });
   }
@@ -60,44 +62,32 @@ export class BidHistoryPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
-    this.handleSearchToggle();
+    
   }
 
   handleSearchToggle() {
-    const btnSearch = document.querySelector('.btnsearch');
-    const bottom = document.querySelector('.bottom');
-    const btnClose = document.querySelector('.bottom .close');
+    // Initialize search state
+    this.isSearchVisible = false;
+  }
 
-    if (btnSearch && bottom && btnClose) {
-      btnSearch.addEventListener('click', (event) => {
-        event.stopPropagation(); // prevent triggering outside click
-        bottom.classList.add('show');
-      });
+  toggleSearch() {
+    this.isSearchVisible = !this.isSearchVisible;
+  }
 
-      btnClose.addEventListener('click', (event) => {
-        event.stopPropagation();
-        bottom.classList.remove('show');
-        if(this.searchKeyword.length>0){ 
-          this.searchField = '';
-          this.searchKeyword = '';
-          this.page = 0;
-          this.itemList = [];
-          this.getItemList();
-         } 
-      });
+  closeSearch() {
+    this.isSearchVisible = false;
+    if (this.searchKeyword.length > 0) {
+      this.searchField = '';
+      this.searchKeyword = '';
+      this.page = 0;
+      this.itemList = [];
+      this.getItemList();
+    }
+  }
 
-      // Handle outside click
-      this.handleOutsideClick = (event: Event) => {
-        if (bottom.classList.contains('show')) {
-          const target = event.target as HTMLElement;
-          const isClickInside = bottom.contains(target) || btnSearch.contains(target);
-          if (!isClickInside) {
-            bottom.classList.remove('show');
-          }
-        }
-      };
-
-      document.addEventListener('click', this.handleOutsideClick, true);
+  onOutsideClick(event: Event) {
+    if (this.isSearchVisible) {
+      this.isSearchVisible = false;
     }
   }
 
@@ -108,9 +98,9 @@ export class BidHistoryPage implements OnInit {
       limit: 10,
       orderfield: this.searchField == 5 ? 'item_master.added_on' : this.searchField,
       orderby: this.orderBy,
-      keyword: this.searchKeyword ? this.searchKeyword : '',
+      //keyword: this.searchKeyword ? this.searchKeyword : '',
+      serach_keyward: this.searchKeyword ? this.searchKeyword : '',
       options: this.searchField == 5 ? 'item_master.added_on' : this.searchField
-
     }
     if (this.page == 0) {
       this.enableLoader = true;

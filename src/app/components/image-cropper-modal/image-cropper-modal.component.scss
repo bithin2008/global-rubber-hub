@@ -1,0 +1,50 @@
+.cropper-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  margin-bottom: 20px;
+  
+  image-cropper {
+    max-width: 100%;
+    max-height: 600px;
+    width: 100%;
+  }
+}
+
+.action-buttons {
+  margin-top: 20px;
+  padding: 0 16px;
+}
+
+ion-content {
+  --background: var(--ion-color-light);
+}
+
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: white;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .cropper-container {
+    min-height: 400px;
+    
+    image-cropper {
+      max-height: 500px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .cropper-container {
+    min-height: 350px;
+    
+    image-cropper {
+      max-height: 450px;
+    }
+  }
+}

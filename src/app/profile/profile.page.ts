@@ -13,6 +13,7 @@ import { FooterComponent } from '../shared/footer/footer.component';
 import { ProfileService } from '../services/profile.service';
 import { PageTitleService } from '../services/page-title.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { ImageCropperModalComponent } from '../components/image-cropper-modal/image-cropper-modal.component';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -533,11 +534,8 @@ export class ProfilePage implements OnInit {
       console.log('Image path:', image.path);
       
       if (image.webPath) {
-        // Show loading indicator
-        this.enableLoader = true;
-        
-        // Check file size before processing
-        await this.checkImageSizeAndProcess(image.webPath);
+        // Show image cropper modal
+        await this.openImageCropper(image.webPath);
       } else {
         this.showToast('error', 'No image selected', '', 3000, '/profile');
       }
@@ -766,34 +764,10 @@ export class ProfilePage implements OnInit {
         console.log('Response:', res);
 
         // Handle different response types
-        let responseData;
-        if (res instanceof Blob) {
-          // If response is a blob, try to parse it as JSON
-          const reader = new FileReader();
-          reader.onload = () => {
-            try {
-              responseData = JSON.parse(reader.result as string);
-              if (responseData.code == 200) {
-                this.showToast('success', responseData.message, '', 2500, '');
-              } else {
-                this.showToast('error', responseData.message, '', 2500, '/profile');
-                this.getProfileData()
-              }
-            } catch (e) {
-              console.error('Error parsing blob response:', e);
-              this.showToast('error', 'Invalid response format', '', 2500, '/profile');
-              this.getProfileData()
-            }
-          };
-          reader.readAsText(res);
+        if (res.code == 200) {
+          this.showToast('success', res.message, '', 2500, '');
         } else {
-          // Handle regular JSON response
-          responseData = res;
-          if (responseData.code == 200) {
-            this.showToast('success', responseData.message, '', 2500, '');
-          } else {
-            this.showToast('error', responseData.message, '', 2500, '/profile');
-          }
+          this.showToast('error', res.message, '', 2500, '/profile');
           this.getProfileData()
         }
       },
@@ -887,14 +861,137 @@ export class ProfilePage implements OnInit {
       // Close camera interface first
       this.closeCameraInterface();
       
-      // Show loading indicator
-      this.enableLoader = true;
-      
-      // Process the captured image
-      await this.checkImageSizeAndProcess(imageUri);
+      // Show image cropper modal
+      await this.openImageCropper(imageUri);
     } catch (error) {
       console.error('Error handling captured image:', error);
       this.showToast('error', 'Failed to process captured image', '', 4000, '/profile');
+      this.resetImageDisplay();
+      this.enableLoader = false;
+    }
+  }
+
+  private async openImageCropper(imageUri: string): Promise<void> {
+    try {
+      const modal = await this.modalController.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageUrl: imageUri,
+          aspectRatio: 1, // 1:1 aspect ratio
+          maintainAspectRatio: true,
+          cropperTitle: 'Crop Profile Image'
+        },
+        cssClass: 'image-cropper-modal'
+      });
+
+      await modal.present();
+
+      const { data } = await modal.onWillDismiss();
+      
+      if (data && data.cropped) {
+        // Show loading indicator
+        this.enableLoader = true;
+        
+        // Process the cropped image
+        await this.processCroppedImage(data.file);
+      } else {
+        // User cancelled cropping, reset image display
+        this.resetImageDisplay();
+      }
+    } catch (error) {
+      console.error('Error opening image cropper:', error);
+      this.showToast('error', 'Failed to open image cropper', '', 4000, '/profile');
+      this.resetImageDisplay();
+    }
+  }
+
+  private async processCroppedImage(file: File): Promise<void> {
+    try {
+      console.log('Processing cropped image, size:', this.formatFileSize(file.size));
+      
+      // Check file size
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '/profile');
+        this.resetImageDisplay();
+        this.enableLoader = false;
+        return;
+      }
+      
+      // Upload the cropped image
+      this.uploadProfileImage(file);
+    } catch (error) {
+      console.error('Error processing cropped image:', error);
+      this.showToast('error', 'Failed to process cropped image', '', 4000, '/profile');
+      this.resetImageDisplay();
+      this.enableLoader = false;
+    }
+  }
+
+  private async openImageCropperForUpload(imageUri: string): Promise<void> {
+    try {
+      const modal = await this.modalController.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageUrl: imageUri,
+          aspectRatio: 1, // 1:1 aspect ratio
+          maintainAspectRatio: true,
+          cropperTitle: 'Crop Document Image'
+        },
+        cssClass: 'image-cropper-modal'
+      });
+
+      await modal.present();
+
+      const { data } = await modal.onWillDismiss();
+      
+      if (data && data.cropped) {
+        // Show loading indicator
+        this.enableLoader = true;
+        
+        // Process the cropped image for upload
+        await this.processCroppedImageForUpload(data.file);
+      } else {
+        // User cancelled cropping, reset image display
+        this.resetImageDisplay();
+      }
+    } catch (error) {
+      console.error('Error opening image cropper for upload:', error);
+      this.showToast('error', 'Failed to open image cropper', '', 4000, '/profile');
+      this.resetImageDisplay();
+    }
+  }
+
+  private async processCroppedImageForUpload(file: File): Promise<void> {
+    try {
+      console.log('Processing cropped image for upload, size:', this.formatFileSize(file.size));
+      
+      // Check file size
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '/profile');
+        this.resetImageDisplay();
+        this.enableLoader = false;
+        return;
+      }
+      
+      // Add the file to uploaded files array
+      this.uploadedFiles.push({
+        file: file,
+        name: file.name,
+        size: file.size,
+        preview: URL.createObjectURL(file)
+      });
+      
+      // Update form control
+      const currentFiles = this.profileForm.get('id_proof_image')?.value || [];
+      this.profileForm.get('id_proof_image')?.setValue([...currentFiles, file]);
+      
+      this.enableLoader = false;
+      this.showToast('success', 'Document image added successfully', '', 2500, '/profile');
+    } catch (error) {
+      console.error('Error processing cropped image for upload:', error);
+      this.showToast('error', 'Failed to process cropped image', '', 4000, '/profile');
       this.resetImageDisplay();
       this.enableLoader = false;
     }
@@ -1336,11 +1433,8 @@ export class ProfilePage implements OnInit {
       console.log('Image path:', image.path);
       
       if (image.webPath) {
-        // Show loading indicator
-        this.enableLoader = true;
-        
-        // Process the image for file upload
-        await this.processImageForUpload(image.webPath);
+        // Show image cropper modal for upload
+        await this.openImageCropperForUpload(image.webPath);
       } else {
         this.showToast('error', 'No image selected', '', 3000, '/profile');
       }

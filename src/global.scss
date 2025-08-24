@@ -98,6 +98,41 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
+
+/* Image Cropper Modal Styles */
+.image-cropper-modal {
+  --height: 90vh;
+  --max-height: 90vh;
+  --border-radius: 16px;
+  --backdrop-opacity: 0.6;
+  
+  .modal-wrapper {
+    border-radius: 16px !important;
+    max-width: 95vw;
+    margin: auto !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  
+  @media (min-width: 768px) {
+    --width: 600px;
+    --height: 80vh;
+    --max-height: 80vh;
+    
+    .modal-wrapper {
+      max-width: 600px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    --height: 95vh;
+    --max-height: 95vh;
+    
+    .modal-wrapper {
+      max-width: 98vw;
+    }
+  }
+}
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 /* @import '@ionic/angular/css/palettes/dark.system.css'; */
 

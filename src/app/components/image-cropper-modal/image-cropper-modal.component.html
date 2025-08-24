@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ cropperTitle }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="cropper-container">
+    <!-- Hidden file input for ngx-image-cropper -->
+    <input 
+      #fileInput 
+      type="file" 
+      accept="image/*" 
+      style="display: none;"
+      (change)="onFileSelected($event)">
+    
+    <image-cropper
+      [imageChangedEvent]="imageChangedEvent"
+      [maintainAspectRatio]="maintainAspectRatio"
+      [aspectRatio]="aspectRatio"
+      [resizeToWidth]="1200"
+      [resizeToHeight]="1200"
+      [onlyScaleDown]="true"
+      [roundCropper]="false"
+      [cropperMinWidth]="200"
+      [cropperMinHeight]="200"
+      [cropperMaxWidth]="1200"
+      [cropperMaxHeight]="1200"
+      [containWithinAspectRatio]="true"
+      [hideResizeSquares]="false"
+      (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()"
+      (cropperReady)="cropperReady()"
+      (loadImageFailed)="loadImageFailed()">
+    </image-cropper>
+  </div>
+
+  <div class="action-buttons">
+    <ion-button 
+      expand="block" 
+      color="primary" 
+      (click)="cropImage()"
+      [disabled]="!isCropping">
+      <ion-icon name="checkmark" slot="start"></ion-icon>
+      Use Cropped Image
+    </ion-button>
+  </div>
+</ion-content>
