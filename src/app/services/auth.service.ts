@@ -8,6 +8,7 @@ import {
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
+import { DeepLinkService } from './deep-link.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -17,8 +18,9 @@ export class AuthService {
   options: any;
   constructor(
     private http: HttpClient,
-    private router:Router
-    ) { }
+    private router: Router,
+    private deepLinkService: DeepLinkService
+  ) { }
 
   getHeader() {
     this.token = localStorage.getItem('token');
@@ -56,5 +58,13 @@ export class AuthService {
   logOut(){
     localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Handle successful login and check for deep link redirects
+   */
+  handleSuccessfulLogin() {
+    // Check if there's a deep link redirect pending
+    this.deepLinkService.handlePostLoginRedirect();
   }
 }

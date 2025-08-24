@@ -4,6 +4,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 declare var StatusBar: any;
 declare var navigator: any;
 import { Platform } from '@ionic/angular';
+import { DeepLinkService } from './services/deep-link.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,10 @@ import { Platform } from '@ionic/angular';
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
-  constructor(private platform: Platform) {
+  constructor(
+    private platform: Platform,
+    private deepLinkService: DeepLinkService
+  ) {
     this.initializeApp();
   }
 
@@ -26,6 +30,9 @@ export class AppComponent {
       
       // Configure status bar for proper header display
       this.configureStatusBar();
+      
+      // Initialize deep linking
+      this.deepLinkService.initializeDeepLinking();
       
       // Hide splash screen immediately when platform is ready
       this.hideSplashScreen();

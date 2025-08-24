@@ -79,7 +79,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.8.0"
+    "typescript": "~5.8.0",
+    "cordova-universal-links-plugin": "^1.0.2"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -96,6 +97,12 @@
       "cordova-plugin-whitelist": {},
       "cordova-plugin-camera": {
         "ANDROIDX_CORE_VERSION": "1.6.+"
+      },
+      "cordova-universal-links-plugin": {
+        "URL_SCHEME": "globalrubberhub",
+        "DEEPLINK_SCHEME": "https",
+        "DEEPLINK_HOST": "globalrubberhub.com",
+        "ANDROID_PATH_PREFIX": "/"
       }
     },
     "platforms": [

@@ -38,6 +38,7 @@ export class BidRequestPage implements OnInit {
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   public fallbackImg: string = 'assets/img/item-placeholder.jpg';
+  private handleOutsideClick: any;
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -59,6 +60,43 @@ export class BidRequestPage implements OnInit {
     await this.authGuardService.checkTokenAndAuthenticate();
     
     this.pageTitleService.setPageTitle('Bid Request');
+    this.handleSearchToggle()
+  }
+
+  handleSearchToggle() {
+    const btnSearch = document.querySelector('.btnsearch');
+    const bottom = document.querySelector('.bottom');
+    const btnClose = document.querySelector('.bottom .close');
+
+    if (btnSearch && bottom && btnClose) {
+      btnSearch.addEventListener('click', (event) => {
+        event.stopPropagation(); // prevent triggering outside click
+        bottom.classList.add('show');
+      });
+
+      btnClose.addEventListener('click', (event) => {
+        event.stopPropagation();
+        bottom.classList.remove('show');
+        this.searchField = '';
+        this.searchKeyword = '';
+        this.page = 0;
+        this.itemList = [];
+        this.getItemList();
+      });
+
+      // Handle outside click
+      this.handleOutsideClick = (event: Event) => {
+        if (bottom.classList.contains('show')) {
+          const target = event.target as HTMLElement;
+          const isClickInside = bottom.contains(target) || btnSearch.contains(target);
+          if (!isClickInside) {
+            bottom.classList.remove('show');
+          }
+        }
+      };
+
+      document.addEventListener('click', this.handleOutsideClick, true);
+    }
   }
 
   onImageError(event: Event) {

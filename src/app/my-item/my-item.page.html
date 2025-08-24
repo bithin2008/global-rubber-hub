@@ -41,7 +41,8 @@
   <div class="section">
     
     <div class="other-list">
-      <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
+      <ng-container *ngIf="itemList.length>0">
+        <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
         <ion-avatar slot="start">
           <img [src]="item.item_image[0]" (error)="onImageError($event)" />
         </ion-avatar>
@@ -59,6 +60,10 @@
 
         </div>
       </ion-item>
+      </ng-container>
+      <div class="app-customers" *ngIf="itemList.length==0 && showNoRecord">
+        <p class="ion-text-center mt-5">-- No data found --</p>
+      </div>
 
     </div>
   </div>

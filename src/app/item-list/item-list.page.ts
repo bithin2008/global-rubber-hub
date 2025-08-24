@@ -42,6 +42,7 @@ export class ItemListPage implements OnInit {
   public orderBy: string = 'desc';
   public type: string = '';
   public fallbackImg: string = 'assets/img/default-photo.png';
+  private handleOutsideClick: any;
   constructor(
     public router: Router,
     public modalController: ModalController,
@@ -83,6 +84,43 @@ export class ItemListPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
+    this.handleSearchToggle();
+  }
+
+  handleSearchToggle() {
+    const btnSearch = document.querySelector('.btnsearch');
+    const bottom = document.querySelector('.bottom');
+    const btnClose = document.querySelector('.bottom .close');
+
+    if (btnSearch && bottom && btnClose) {
+      btnSearch.addEventListener('click', (event) => {
+        event.stopPropagation(); // prevent triggering outside click
+        bottom.classList.add('show');
+      });
+
+      btnClose.addEventListener('click', (event) => {
+        event.stopPropagation();
+        bottom.classList.remove('show');
+        this.searchField = '';
+        this.searchKeyword = '';
+        this.page = 0;
+        this.itemList = [];
+        this.getItemList();
+      });
+
+      // Handle outside click
+      this.handleOutsideClick = (event: Event) => {
+        if (bottom.classList.contains('show')) {
+          const target = event.target as HTMLElement;
+          const isClickInside = bottom.contains(target) || btnSearch.contains(target);
+          if (!isClickInside) {
+            bottom.classList.remove('show');
+          }
+        }
+      };
+
+      document.addEventListener('click', this.handleOutsideClick, true);
+    }
   }
 
   reloadItems(){

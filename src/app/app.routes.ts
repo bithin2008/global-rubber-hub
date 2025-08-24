@@ -82,4 +82,8 @@ export const routes: Routes = [
     path: 'gst-udyam-verification',
     loadComponent: () => import('./gst-udyam-verification/gst-udyam-verification.page').then( m => m.GstUdyamVerificationPage)
   },
+  {
+    path: 'deep-link-demo',
+    loadComponent: () => import('./components/deep-link-demo/deep-link-demo.component').then( m => m.DeepLinkDemoComponent)
+  },
 ];

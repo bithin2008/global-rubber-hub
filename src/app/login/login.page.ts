@@ -6,6 +6,7 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { isPlatform, Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
@@ -107,7 +108,8 @@ export class LoginPage implements OnInit {
     private commonService: CommonService,
     private authenticationService: AuthService,
     private alertController: AlertController,
-    private platform: Platform
+    private platform: Platform,
+    private deepLinkService: DeepLinkService
   ) {
     this.activatedRoute.params.subscribe(async val => {
       let hasLoggin: any = await this.alreadyLoggedIn();
@@ -693,10 +695,11 @@ export class LoginPage implements OnInit {
       this.commonService.login(url, googleData).subscribe(
         (response: any) => {
           this.enableLoader = false;          
-          if (response.code === 200) {            
-            localStorage.setItem('token', response.access_token);
-            this.showToast('success', response.message, '', 4000, '/dashboard');            
-          } else if (response.code === 401) {
+                  if (response.code === 200) {            
+          localStorage.setItem('token', response.access_token);
+          this.authenticationService.handleSuccessfulLogin();
+          this.showToast('success', response.message, '', 4000, '/dashboard');            
+        } else if (response.code === 401) {
             this.showToast('error', response.message || 'Authentication failed', '', 3000, '');
           } else if (response.code === 423) {
             this.showToast('error', response.message || 'Account is locked', '', 3000, '');
@@ -816,6 +819,7 @@ export class LoginPage implements OnInit {
         this.enableLoader = false;
         if (response.code == 200) {
           localStorage.setItem('token', response.access_token);
+          this.authenticationService.handleSuccessfulLogin();
           this.showToast('success', response.message, '', 2000, '/dashboard');
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');
@@ -852,6 +856,7 @@ export class LoginPage implements OnInit {
         this.enableLoader = false;
         if (response.code == 201) {
           localStorage.setItem('token', response.access_token);
+          this.authenticationService.handleSuccessfulLogin();
           this.showToast('success', response.message, '', 2000, '/dashboard');
         } else if (response.code == 423) {
           this.showToast('error', response.message, '', 2500, '');

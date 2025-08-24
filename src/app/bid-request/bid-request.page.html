@@ -7,7 +7,7 @@
         <div class="top">
           <!-- <ion-title class="itemTitle">Bid Request</ion-title> -->
           <div class="filterItem">
-            <ion-button class="btn no-style bid-now"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
+            <ion-button class="btn no-style bid-now btnsearch"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
             <ion-item class="no-style">
               <div class="custom-inner selectId">
                 <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
@@ -31,6 +31,7 @@
                 [ngModelOptions]="{standalone: true}" placeholder="Search" (keyup)="searchItem($event)"></ion-input>
             </div>
           </ion-item>
+          <div class="close"><ion-icon name="close-outline"></ion-icon></div>
         </div>
       </form>
     </div>
