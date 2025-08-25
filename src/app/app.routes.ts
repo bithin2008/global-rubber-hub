@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: localStorage.getItem('has_intro') == 'yes' ? 'login' : 'intro',
+    redirectTo: localStorage.getItem('has_intro') == 'yes' ? localStorage.getItem('token') ? 'dashboard' : 'login' : 'intro',
     pathMatch: 'full',
   },
   {
