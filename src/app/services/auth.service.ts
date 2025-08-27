@@ -1,5 +1,6 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
+import { Platform, isPlatform } from '@ionic/angular';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -9,6 +10,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { DeepLinkService } from './deep-link.service';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 @Injectable({
   providedIn: 'root'
 })
@@ -16,11 +18,25 @@ export class AuthService {
   token: any;
   headersObj: any;
   options: any;
+  user: any;
   constructor(
     private http: HttpClient,
     private router: Router,
+    private platform: Platform,
     private deepLinkService: DeepLinkService
-  ) { }
+  ) { 
+    if(!isPlatform('capacitor')){
+      GoogleAuth.initialize();
+    }
+    this.platform.ready().then(() => {
+      GoogleAuth.initialize();
+    })
+  }
+
+  async googleSignIn() {
+    this.user = await GoogleAuth.signIn();  
+    return await this.user;
+  }
 
   getHeader() {
     this.token = localStorage.getItem('token');

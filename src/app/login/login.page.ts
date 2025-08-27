@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
-// Cordova Google+ plugin
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 declare var window: any;
 import { environment } from '../../environments/environment';
 
@@ -67,6 +67,7 @@ interface GoogleNotification {
 })
 export class LoginPage implements OnInit {
   @ViewChild('loginInput') loginInput: any;
+  user: any;
   
   // Common properties
   public enableLoader: boolean = false;
@@ -102,6 +103,7 @@ export class LoginPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public router: Router,
+    public authService: AuthService,
     public modalController: ModalController,
     public activatedRoute: ActivatedRoute,
     private menu: MenuController,
@@ -128,9 +130,9 @@ export class LoginPage implements OnInit {
       this.getProfileData();
     }
     this.initializeForms();
-    await this.initializeGoogleAuth();
-    // Add diagnostic information
-    await this.diagnosGoogleAuthSetup();
+    this.platform.ready().then(() => {
+      GoogleAuth.initialize();
+    })
   }
 
   initializeForms() {
@@ -192,17 +194,24 @@ export class LoginPage implements OnInit {
 
   }
 
+  async loginWithGoogle(){
+    let googleUser = await GoogleAuth.signIn();
+
+    /*
+      If you use Firebase you can forward and use the logged in Google user like this:
+    */
+   // const credential = auth.GoogleAuthProvider.credential(googleUser.authentication.idToken);
+    return googleUser;
+  }
+
+  
+
   // Tab change handler
   onTabChange(event: any) {
     this.selectedTab = event.detail.value;
     this.resetFormStates();
     
-    // Re-render Google button for the new active tab
-    if (window.google && window.google.accounts) {
-      setTimeout(() => {
-        this.renderGoogleButtonOnLoad();
-      }, 100);
-    }
+ 
   }
 
   // Navigation methods
@@ -284,370 +293,7 @@ export class LoginPage implements OnInit {
         return this.loginForm.controls;
     }
   }
-
-  async initializeGoogleAuth() {
-    try {
-      if (this.platform.is('cordova')) {
-        // Initialize Google Auth for native platforms (Android/iOS)
-        const clientId = environment.GOOGLE_ANDROID_CLIENT_ID; // Use Android client ID for native platforms
-        console.log('Initializing Google Auth for Cordova platform');
-        console.log('Using client ID:', clientId);
-        console.log('Environment check:', {
-          production: environment.production,
-          androidClientId: environment.GOOGLE_ANDROID_CLIENT_ID,
-          webClientId: environment.GOOGLE_WEB_CLIENT_ID,
-          serverClientId: environment.GOOGLE_SERVER_CLIENT_ID
-        });
-        
-        // Cordova GooglePlus doesn't require explicit initialization
-        console.log('Cordova GooglePlus plugin ready');
-        console.log('Google Auth initialized successfully for native platform');
-      } else {
-        console.log('Initializing Google Auth for web platform');
-        // For web platform, load Google Identity Services
-        this.loadGoogleIdentityServices();
-      }
-    } catch (error) {
-      console.error('Error initializing Google Auth:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-    }
-  }
-
-  async diagnosGoogleAuthSetup() {
-    console.log('🔍 === GOOGLE AUTH DIAGNOSTIC START ===');
-            console.log('Is Cordova Platform:', this.platform.is('cordova'));
-        console.log('Is Android:', this.platform.is('android'));
-        console.log('Is iOS:', this.platform.is('ios'));
-        console.log('Is Web:', this.platform.is('desktop'));
-    
-    console.log('📋 Environment Configuration:');
-    console.log('- Production:', environment.production);
-    console.log('- Android Client ID:', environment.GOOGLE_ANDROID_CLIENT_ID);
-    console.log('- Web Client ID:', environment.GOOGLE_WEB_CLIENT_ID);
-    console.log('- Server Client ID:', environment.GOOGLE_SERVER_CLIENT_ID);
-    
-    console.log('🔌 Plugin Check:');
-    console.log('- Cordova GooglePlus available:', !!(window.plugins && window.plugins.googleplus));
-    console.log('- Window plugins object:', window.plugins);
-    
-    if (this.platform.is('cordova')) {
-      console.log('📱 Native Platform Diagnostics:');
-      try {
-        // Check if we can access GoogleAuth methods
-        console.log('- Cordova GooglePlus plugin available:', typeof window.plugins !== 'undefined' && typeof window.plugins.googleplus !== 'undefined');
-        
-        // Test initialization with current settings
-        console.log('🔧 Testing initialization...');
-        // Cordova GooglePlus doesn't need explicit initialization
-        // Check if plugin is available
-        if (window.plugins && window.plugins.googleplus) {
-          console.log('✅ Cordova GooglePlus plugin is available');
-          console.log('- Available methods:', Object.getOwnPropertyNames(window.plugins.googleplus));
-        } else {
-          console.log('❌ Cordova GooglePlus plugin not found');
-        }
-        
-      } catch (diagError: any) {
-        console.error('❌ Diagnostic error:', diagError);
-        console.error('- Error type:', typeof diagError);
-        console.error('- Error message:', diagError?.message);
-        console.error('- Error code:', diagError?.code);
-        console.error('- Full error:', JSON.stringify(diagError, null, 2));
-      }
-    }
-    
-    console.log('📄 Package Configuration Check:');
-    console.log('- Expected package name: com.globalrubber.hub');
-    console.log('- Expected SHA-1: 04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8');
-    
-    console.log('🔍 === GOOGLE AUTH DIAGNOSTIC END ===');
-  }
-
-  private loadGoogleIdentityServices() {
-    // Check if Google Identity Services is already loaded
-    if (window.google && window.google.accounts) {
-      this.initializeGoogleSignInWeb();
-      return;
-    }
-
-    // Load Google Identity Services script
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      console.log('Google Identity Services loaded');
-      this.initializeGoogleSignInWeb();
-      // Render the Google button immediately after initialization
-      setTimeout(() => {
-        this.renderGoogleButtonOnLoad();
-      }, 100);
-    };
-    script.onerror = () => {
-      console.error('Failed to load Google Identity Services');
-      this.showToast('error', 'Failed to load Google services', 'Please check your internet connection', 3000, '');
-    };
-    document.head.appendChild(script);
-  }
-
-  async loginWithGoogle() {
-    try {
-      this.isGoogleLoading = true;
-              console.log('Google login clicked - Is Cordova:', this.platform.is('cordova'));
-        console.log('Is Android:', this.platform.is('android'));
-        console.log('Is iOS:', this.platform.is('ios'));
-      
-      if (this.platform.is('cordova')) {
-        console.log('Attempting native Google sign-in...');
-        
-        // Check if Cordova GooglePlus plugin is available
-        if (!window.plugins || !window.plugins.googleplus) {
-          throw new Error('Cordova GooglePlus plugin not available');
-        }
-        
-        // Re-initialize if needed (Android sometimes needs this)
-        try {
-          console.log('Checking Cordova GooglePlus plugin availability...');
-          if (!window.plugins || !window.plugins.googleplus) {
-            throw new Error('Cordova GooglePlus plugin not available');
-          }
-          console.log('Cordova GooglePlus plugin is available');
-        } catch (initError) {
-          console.warn('Cordova GooglePlus plugin check failed:', initError);
-        }
-        
-        // Native platform (Android/iOS) - Use Cordova GooglePlus
-        console.log('Calling Cordova GooglePlus login...');
-        const user = await new Promise((resolve, reject) => {
-          window.plugins.googleplus.login(
-            {
-              'scopes': 'profile email',
-              'webClientId': environment.GOOGLE_ANDROID_CLIENT_ID,
-              'offline': true
-            },
-            (obj: any) => resolve(obj),
-            (msg: any) => reject(msg)
-          );
-        });
-        console.log('Native Google sign-in successful:', user);
-        console.log('User details:', JSON.stringify(user, null, 2));
-        await this.handleGoogleLoginSuccess(user);
-      } else {
-        console.log('Attempting web Google sign-in...');
-        // Web platform - trigger Google sign-in
-        this.triggerGoogleWebSignIn();
-      }
-    } catch (error: any) {
-      this.isGoogleLoading = false;
-      console.error('Google sign-in error:', error);
-      console.error('Error type:', typeof error);
-      console.error('Error message:', error?.message);
-      console.error('Error code:', error?.code);
-      console.error('Full error object:', JSON.stringify(error, null, 2));
-      
-      // Better error messages for Android
-      let errorMessage = 'Google sign-in failed';
-      let errorDetail = 'Please try again';
-      
-      if (this.platform.is('cordova')) {
-        const errorStr = error?.message || error?.toString() || '';
-        const errorCode = error?.code || '';
-        
-        console.log('Analyzing error:', { errorStr, errorCode });
-        
-        if (errorStr.includes('12501') || errorCode === '12501') {
-          errorMessage = 'Google sign-in cancelled';
-          errorDetail = 'Sign-in was cancelled by user';
-        } else if (errorStr.includes('12502') || errorCode === '12502') {
-          errorMessage = 'Google Play Services error';
-          errorDetail = 'Please update Google Play Services';
-        } else if (errorStr.includes('10') || errorCode === '10') {
-          errorMessage = 'Configuration error';
-          errorDetail = 'Please check your Google Auth setup';
-        } else if (errorStr.includes('INTERNAL_ERROR')) {
-          errorMessage = 'Internal error';
-          errorDetail = 'Google Play Services internal error. Please try again.';
-        } else if (errorStr.includes('NETWORK_ERROR')) {
-          errorMessage = 'Network error';
-          errorDetail = 'Please check your internet connection';
-        } else if (errorStr.includes('GoogleAuth plugin not available')) {
-          errorMessage = 'Plugin error';
-          errorDetail = 'GoogleAuth plugin is not properly installed';
-        } else {
-          errorDetail = `Error: ${errorStr}`;
-        }
-      }
-      
-      this.showToast('error', errorMessage, errorDetail, 3000, '');
-    }
-  }
-
-  private initializeGoogleSignInWeb() {
-    if (!window.google || !window.google.accounts) {
-      console.error('Google Identity Services not available');
-      return;
-    }
-
-    try {
-      // Initialize Google Identity Services
-      window.google.accounts.id.initialize({
-        client_id: environment.GOOGLE_WEB_CLIENT_ID,
-        callback: (response: any) => {
-          this.handleGoogleWebSignIn(response);
-        },
-        auto_select: false,
-        cancel_on_tap_outside: true
-      });
-
-      console.log('Google Identity Services initialized successfully');
-      
-      // Render the Google buttons immediately after initialization
-      setTimeout(() => {
-        this.renderGoogleButtonOnLoad();
-      }, 100);
-    } catch (error) {
-      console.error('Error initializing Google Identity Services:', error);
-    }
-  }
-
-  private renderGoogleButtonOnLoad() {
-    try {
-      // Clean up any existing Google buttons first
-      this.cleanupExistingGoogleButtons();
-      
-      // Only render Google button for the currently active tab
-      let targetSelector = '';
-      
-      if (this.selectedTab === 'login' && !this.showForgotPassword && !this.showOtpVerification && !this.showResetPassword) {
-        // Login tab is active
-        targetSelector = '.google-signin';
-      } else if (this.selectedTab === 'register' && !this.showForgotPassword && !this.showOtpVerification && !this.showResetPassword) {
-        // Register tab is active
-        targetSelector = '.google-signin';
-      } else {
-        // Other tabs (forgot password, OTP, etc.) - don't render Google button
-        return;
-      }
-      
-      // Find the Google sign-in button for the active tab
-      const googleButton = document.querySelector(targetSelector) as HTMLElement;
-      
-      if (googleButton) {
-        // Hide the current button
-        googleButton.style.display = 'none';
-        
-        // Create a container for the Google button
-        const googleContainer = document.createElement('div');
-        googleContainer.id = 'google-signin-container';
-        googleContainer.style.width = '100%';
-        googleContainer.style.marginTop = '20px';
-        
-        // Insert the container after the current button
-        googleButton.parentNode?.insertBefore(googleContainer, googleButton.nextSibling);
-        
-        // Render the Google button
-        window.google.accounts.id.renderButton(googleContainer, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          logo_alignment: 'left',
-          width: '100%'
-        });
-        
-        console.log('Google button rendered for active tab:', this.selectedTab);
-      }
-    } catch (error) {
-      console.error('Error rendering Google button on load:', error);
-    }
-  }
-
-  private cleanupExistingGoogleButtons() {
-    try {
-      // Remove existing Google button containers
-      const existingContainers = document.querySelectorAll('#google-signin-container');
-      existingContainers.forEach(container => {
-        container.remove();
-      });
-      
-      // Show all custom Google buttons again
-      const customButtons = document.querySelectorAll('.google-signin');
-      customButtons.forEach(button => {
-        (button as HTMLElement).style.display = 'flex';
-      });
-    } catch (error) {
-      console.error('Error cleaning up existing Google buttons:', error);
-    }
-  }
-
-  private triggerGoogleWebSignIn() {
-    if (!window.google || !window.google.accounts) {
-      this.showToast('error', 'Google services not available', 'Please refresh the page and try again', 3000, '');
-      this.isGoogleLoading = false;
-      return;
-    }
-
-    try {
-      // The Google button is already rendered, so we can trigger the sign-in
-      // Find the Google button and simulate a click
-      const googleButton = document.querySelector('[data-testid="google-signin-button"]') as HTMLElement;
-      if (googleButton) {
-        googleButton.click();
-      } else {
-        // Fallback: try to find any Google button
-        const googleButtons = document.querySelectorAll('[role="button"]');
-        const googleSignInButton = Array.from(googleButtons).find(button => 
-          button.textContent?.includes('Sign in with Google') || 
-          button.getAttribute('aria-label')?.includes('Sign in with Google')
-        ) as HTMLElement;
-        
-        if (googleSignInButton) {
-          googleSignInButton.click();
-        } else {
-          console.log('Google button not found, user needs to click manually');
-          this.isGoogleLoading = false;
-        }
-      }
-    } catch (error) {
-      console.error('Error triggering Google sign-in:', error);
-      this.isGoogleLoading = false;
-      this.showToast('error', 'Failed to start Google sign-in', 'Please try again', 3000, '');
-    }
-  }
-
-  private async handleGoogleWebSignIn(response: any) {
-    try {
-      console.log('Google web sign-in response received');
-      
-      if (!response.credential) {
-        throw new Error('No credential received from Google');
-      }
-
-      // Decode the JWT token to get user info
-      const payload = this.decodeJwtToken(response.credential);
-      
-      const user = {
-        id: payload.sub,
-        email: payload.email,
-        displayName: payload.name,
-        givenName: payload.given_name,
-        familyName: payload.family_name,
-        imageUrl: payload.picture,
-        authentication: {
-          accessToken: response.credential,
-          idToken: response.credential
-        }
-      };
-      
-      console.log('Google user data:', user);
-      await this.handleGoogleLoginSuccess(user);
-    } catch (error) {
-      this.isGoogleLoading = false;
-      console.error('Error handling web Google sign-in:', error);
-      this.showToast('error', 'Google sign-in failed', 'Please try again', 3000, '');
-    }
-  }
+ 
 
   private decodeJwtToken(token: string): any {
     try {
@@ -672,88 +318,7 @@ export class LoginPage implements OnInit {
       console.error('Error decoding JWT token:', error);
       throw new Error('Invalid token format');
     }
-  }
-
-  async handleGoogleLoginSuccess(user: any) {
-    try {
-      this.enableLoader = true;
-      
-      const googleData = {
-        google_id: user.id,
-        email: user.email,
-        name: user.displayName,
-        first_name: user.givenName || '',
-        last_name: user.familyName || '',
-        profile_picture: user.imageUrl || '',
-        access_token: user.authentication?.accessToken || '',
-        id_token: user.authentication?.idToken || ''
-      };
-
-      console.log('Sending Google data to backend:', googleData);
-
-      let url = 'auth/google-login';
-      this.commonService.login(url, googleData).subscribe(
-        (response: any) => {
-          this.enableLoader = false;          
-                  if (response.code === 200) {            
-          localStorage.setItem('token', response.access_token);
-          this.authenticationService.handleSuccessfulLogin();
-          this.showToast('success', response.message, '', 4000, '/dashboard');            
-        } else if (response.code === 401) {
-            this.showToast('error', response.message || 'Authentication failed', '', 3000, '');
-          } else if (response.code === 423) {
-            this.showToast('error', response.message || 'Account is locked', '', 3000, '');
-          } else {
-            this.showToast('error', response.message || 'Login failed', '', 3000, '');
-          }
-        },
-        (error: any) => {
-          this.enableLoader = false;
-          console.error('Backend error:', error);
-          
-          let errorMessage = 'Server error. Please try again.';
-          if (error.error?.message) {
-            errorMessage = error.error.message;
-          }
-          
-          this.showToast('error', errorMessage, '', 3000, '');
-        }
-      );
-    } catch (error) {
-      this.enableLoader = false;
-      console.error('Error handling Google login success:', error);
-      this.showToast('error', 'Error processing login. Please try again.', '', 3000, '');
-    }
-  }
-
-  async signOutGoogle() {
-    try {
-      if (this.platform.is('cordova')) {
-        await new Promise((resolve, reject) => {
-          window.plugins.googleplus.logout(
-            () => {
-              console.log('Google user signed out from Cordova platform');
-              resolve(true);
-            },
-            (msg: any) => reject(msg)
-          );
-        });
-      } else {
-        // For web platform, clear any stored tokens
-        if (window.google && window.google.accounts) {
-          window.google.accounts.id.disableAutoSelect();
-        }
-        console.log('Google user signed out from web platform');
-      }
-      
-      // Clear any stored user data
-      localStorage.removeItem('google_user');
-      this.showToast('success', 'Signed out successfully', '', 2000, '');
-    } catch (error) {
-      console.error('Error signing out from Google:', error);
-      this.showToast('error', 'Sign out failed', 'Please try again', 3000, '');
-    }
-  }
+  } 
 
   alreadyLoggedIn() {
     return new Promise((resolve) => {
