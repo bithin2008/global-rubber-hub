@@ -1032,6 +1032,7 @@ ion-item.no-style {
       --background: #6ca657;
       font-size: 14px;
       min-height: auto;
+      text-transform: capitalize;
     }
   }
 }
@@ -2021,6 +2022,19 @@ ion-select::part(icon) {
   ion-icon{
     font-size: 22px;
     color: blue;
+  }
+}
+
+.auto-flip {
+  animation: flipStop 3s ease-in-out forwards;
+}
+
+@keyframes flipStop {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(720deg); // 2 horizontal flips
   }
 }
 

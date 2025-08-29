@@ -1,13 +1,111 @@
-<ion-header [translucent]="true">
+<ion-header class="trusted-header">
   <ion-toolbar>
-    <ion-title>notification</ion-title>
+    <ion-title>Notifications</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">notification</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="notificationPG">
+  <div class="notification-list">
+    <!-- Example notification -->
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>New Message</h2>
+          <p>You received a new message from Alex</p>
+          <span class="time">2 mins ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>Order Shipped</h2>
+          <p>Your order #12345 has been shipped</p>
+          <span class="time">1 hour ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>New Message</h2>
+          <p>You received a new message from Alex</p>
+          <span class="time">2 mins ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>Order Shipped</h2>
+          <p>Your order #12345 has been shipped</p>
+          <span class="time">1 hour ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="notification-card unread">
+      <ion-item lines="none">
+        <ion-icon name="notifications-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>Reminder</h2>
+          <p>Your subscription is expiring tomorrow</p>
+          <span class="time">Yesterday</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>New Message</h2>
+          <p>You received a new message from Alex</p>
+          <span class="time">2 mins ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>Order Shipped</h2>
+          <p>Your order #12345 has been shipped</p>
+          <span class="time">1 hour ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>New Message</h2>
+          <p>You received a new message from Alex</p>
+          <span class="time">2 mins ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="notification-card">
+      <ion-item lines="none">
+        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
+        <ion-label>
+          <h2>Order Shipped</h2>
+          <p>Your order #12345 has been shipped</p>
+          <span class="time">1 hour ago</span>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+  </div>
 </ion-content>
