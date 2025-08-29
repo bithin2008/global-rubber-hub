@@ -5,7 +5,12 @@
   </div>
   <div class="btn-container">
     <ion-button class="btn no-style addicon" (click)="goToProfile()"><img src="assets/img/icons/coin.svg" alt="" title=""> {{ walletBalance | number:'1.0-0' }}</ion-button>
-    <ion-button class="btn no-style blink-after"><img src="assets/img/icons/notifications.svg" alt="" title=""></ion-button>
+    <ion-button class="btn no-style notification-btn {{unreadNotifications > 0?'blink-after':''}} " (click)="navigateTo('/notification')">
+      <div class="notification-container">
+        <img src="assets/img/icons/notifications.svg" alt="Notifications" title="Notifications">
+        <ion-badge *ngIf="unreadNotifications > 0" class="notification-badge"></ion-badge>
+      </div>
+    </ion-button>
     <ion-button class="btn no-style account {{profileImage ? 'has-image' : ''}}" (click)="goToProfile()">
       <div class="profile-container">
         <img *ngIf="profileImage && !showPlaceholder" 

@@ -16,6 +16,7 @@ import { AuthService } from '../services/auth.service';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { BidModalComponent } from '../item-list/bid-modal.component';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { NotificationService } from '../services/notification.service';
 
 
 // Interfaces for type safety
@@ -52,6 +53,7 @@ interface DashboardData {
   otherItems: {
     results: DashboardItem[];
   };
+  notifications: number;
 }
 
 @Component({
@@ -71,7 +73,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     topSellerItems: { results: [] },
     topBuyerItems: { results: [] },
     recentListedItems: { results: [] },
-    otherItems: { results: [] }
+    otherItems: { results: [] },
+    notifications: 0
   };
   // Market cards data for swiper
 
@@ -111,7 +114,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private platform: Platform,
     private commonService: CommonService,
     private authenticationService: AuthService,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private notificationService: NotificationService
   ) {
     activatedRoute.params.subscribe(async val => {
       register();
@@ -253,7 +257,13 @@ export class DashboardPage implements OnInit, AfterViewInit {
             topSellerItems: response.topSellerItems || { results: [] },
             topBuyerItems: response.topBuyerItems || { results: [] },
             recentListedItems: response.recentListedItems || { results: [] },
-            otherItems: response.otherItems || { results: [] }
+            otherItems: response.otherItems || { results: [] },
+            notifications: response.notifications || 0
+          };
+
+          // Update notification service with the latest notifications
+          if (response.notifications) {
+            this.notificationService.updateNotifications(response.notifications);
           };
         }
       },
@@ -266,7 +276,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
           topSellerItems: { results: [] },
           topBuyerItems: { results: [] },
           recentListedItems: { results: [] },
-          otherItems: { results: [] }
+          otherItems: { results: [] },
+          notifications: 0
         };
       }
     );

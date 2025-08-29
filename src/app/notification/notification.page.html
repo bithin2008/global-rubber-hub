@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear">
+      <ion-button fill="clear" (click)="goBack()">
         <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -12,100 +12,32 @@
 <ion-content class="notificationPG">
   <div class="notification-list">
     <!-- Example notification -->
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>New Message</h2>
-          <p>You received a new message from Alex</p>
-          <span class="time">2 mins ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
+    <ng-container *ngIf="notificationList.length>0">
+      <ion-card class="notification-card" *ngFor="let notification of notificationList; let i= index" (click)="openNotificationDetail(notification)">
+        <ion-item lines="none">
+          <ion-icon name="mail-outline" slot="start" class="icon" *ngIf="notification.is_read==0"></ion-icon>
+          <ion-icon name="mail-outline" slot="start" class="icon" *ngIf="notification.is_read==1"></ion-icon>
+          <ion-label>
+            <h2>{{notification.title}}</h2>
+            <p>{{notification.message}}</p>
+            <span class="time">{{notification.added_on | timeAgo}}</span>
+          </ion-label>
+        </ion-item>
+      </ion-card>
+    </ng-container>
+    <div class="app-customers" *ngIf="notificationList.length==0 && showNoRecord">
+      <p class="ion-text-center mt-5">-- No data found --</p>
+    </div>
+    
 
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>Order Shipped</h2>
-          <p>Your order #12345 has been shipped</p>
-          <span class="time">1 hour ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>New Message</h2>
-          <p>You received a new message from Alex</p>
-          <span class="time">2 mins ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>Order Shipped</h2>
-          <p>Your order #12345 has been shipped</p>
-          <span class="time">1 hour ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-
-    <ion-card class="notification-card unread">
-      <ion-item lines="none">
-        <ion-icon name="notifications-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>Reminder</h2>
-          <p>Your subscription is expiring tomorrow</p>
-          <span class="time">Yesterday</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>New Message</h2>
-          <p>You received a new message from Alex</p>
-          <span class="time">2 mins ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>Order Shipped</h2>
-          <p>Your order #12345 has been shipped</p>
-          <span class="time">1 hour ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="mail-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>New Message</h2>
-          <p>You received a new message from Alex</p>
-          <span class="time">2 mins ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-
-    <ion-card class="notification-card">
-      <ion-item lines="none">
-        <ion-icon name="cart-outline" slot="start" class="icon"></ion-icon>
-        <ion-label>
-          <h2>Order Shipped</h2>
-          <p>Your order #12345 has been shipped</p>
-          <span class="time">1 hour ago</span>
-        </ion-label>
-      </ion-item>
-    </ion-card>
+   
   </div>
 </ion-content>
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/ajax-loader.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->

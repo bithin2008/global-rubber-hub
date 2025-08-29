@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ProfileService } from '../../services/profile.service';
 import { PageTitleService } from '../../services/page-title.service';
 import { WalletService } from '../../services/wallet.service';
+import { NotificationService } from '../../services/notification.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,13 +20,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showPlaceholder: boolean = true;
   pageTitle: string = 'Global Rubber Hub';
   walletBalance: number = 0;
+  unreadNotifications: number = 0;
   private subscription: Subscription = new Subscription();
 
   constructor(
     private router: Router,
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -48,6 +51,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.walletService.walletBalance$.subscribe((balance) => {
         this.walletBalance = balance;
+      })
+    );
+
+    // Subscribe to notification updates
+    this.subscription.add(
+      this.notificationService.notifications$.subscribe((notificationState) => {
+        this.unreadNotifications = notificationState.unreadCount;
       })
     );
   }

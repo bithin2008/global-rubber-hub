@@ -1,0 +1,117 @@
+.notification-detail {
+  padding: 16px;
+  background: var(--ion-color-light-tint);
+  border-radius: 16px;
+  margin-top: 8px;
+
+  .notification-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      margin-bottom: 12px;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--ion-color-dark-shade);
+      margin-bottom: 16px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      white-space: pre-wrap;
+    }
+
+    .time {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--ion-color-medium);
+      margin-top: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      opacity: 0.8;
+    }
+  }
+
+  .notification-meta {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    ion-list {
+      background: transparent;
+      padding: 0;
+
+      ion-item {
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        --background: transparent;
+        --border-color: var(--ion-color-light-shade);
+
+        &:last-child {
+          --border-width: 0;
+        }
+
+        strong {
+          font-size: 0.875rem;
+          color: var(--ion-color-medium);
+          font-weight: 600;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+
+        p {
+          font-size: 1rem;
+          color: var(--ion-color-dark);
+          margin-top: 4px;
+          line-height: 1.5;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}
+
+// Modal header styles
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-light-tint);
+    --border-width: 0;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+
+    ion-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ion-color-dark);
+    }
+
+    ion-button {
+      --color: var(--ion-color-medium);
+      font-size: 1.25rem;
+    }
+  }
+}
+
+ion-content {
+  overflow: visible;
+  --offset-top: 0px !important;
+  height: calc(100vh - 70px) !important;
+  max-height: calc(100vh - 70px) !important;
+  --padding-start: 4px;
+    --padding-end: 4px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+}
