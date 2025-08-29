@@ -50,7 +50,7 @@
                 <div class="content myitemImg">
                   <img [src]="media" alt="" title="" (click)="openLightbox(item.item_image, idx)">
                   <ion-button class="btn no-style share" (click)="shareItem(item)"><img src="assets/img/icons/share.svg" alt="" title=""></ion-button>
-                  <div class="verifiedBdg" *ngIf="isTrustedValid(item)"><img src="assets/img/icons/verified_user.svg" alt=""></div>
+                  <div class="verifiedBdg" *ngIf="isTrustedValid(item)"><img class="auto-flip" src="assets/img/icons/verified_user.svg" alt=""></div>
                 </div>
               </swiper-slide>
 
