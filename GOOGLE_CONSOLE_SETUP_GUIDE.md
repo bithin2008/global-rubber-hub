@@ -18,7 +18,7 @@
 5. Fill in the details:
    - **Name**: `Global Rubber Hub Android`
    - **Package name**: `com.globalrubber.hub`
-   - **SHA-1 certificate fingerprint**: `04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8`
+   - **SHA-1 certificate fingerprint**: `15:3C:7D:5C:99:9D:F5:F7:83:04:29:4A:AF:D2:26:D6:17:98:75:77`
 
 ### Step 3: Download google-services.json
 1. After creating the OAuth client, go to **APIs & Services > Credentials**
@@ -33,7 +33,7 @@
 **Or manually update these values in the existing file:**
 - Replace `YOUR_ANDROID_APP_ID` with your actual Android app ID (from downloaded JSON)
 - Replace `YOUR_ANDROID_CLIENT_ID` with your new Android OAuth client ID
-- Replace `YOUR_SHA1_FINGERPRINT` with: `04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8`
+- Replace `YOUR_SHA1_FINGERPRINT` with: `15:3C:7D:5C:99:9D:F5:F7:83:04:29:4A:AF:D2:26:D6:17:98:75:77`
 - Replace `YOUR_API_KEY` with your API key (from downloaded JSON)
 
 ### Step 5: Update Environment Files

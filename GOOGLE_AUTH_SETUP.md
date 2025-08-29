@@ -1,98 +1,58 @@
-# Google Authentication Setup for Android
+# Google OAuth Setup Guide
 
-## Overview
-This guide explains how to complete the Google Authentication setup for your Android app.
+To fix the "redirect_uri_mismatch" error, you need to add the following redirect URIs to your Google Cloud Console project:
 
-## Required Steps
+## Web Application URIs
+Add these URIs to the "Authorized redirect URIs" section in your Google Cloud Console:
 
-### 1. Google Console Configuration
+1. Development URLs:
+   - `http://localhost:8100/`
+   - `http://localhost:8100/login`
+   - `http://localhost:4200/`
+   - `http://localhost:4200/login`
+   - `http://localhost/`
+   - `capacitor://localhost`
+   - `http://localhost/*`
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your project: **global-rubber-hub**
-3. Navigate to **APIs & Services > Credentials**
+2. Production URLs (replace with your actual domain):
+   - `https://globalrubberhub.com/`
+   - `https://globalrubberhub.com/login`
+   - `https://www.globalrubberhub.com/`
+   - `https://www.globalrubberhub.com/login`
 
-### 2. Create Android OAuth Client ID
+## Android Application
+For Android, add your app's signing-certificate fingerprint:
+- Package name: `com.globalrubber.hub`
+- SHA-1 certificate fingerprint from your keystore
 
-1. Click **+ CREATE CREDENTIALS > OAuth 2.0 Client IDs**
-2. Select **Android** as application type
-3. Enter the following details:
-   - **Name**: Global Rubber Hub Android
-   - **Package name**: `com.globalrubber.hub`
-   - **SHA-1 certificate fingerprint**: [See instructions below]
+## Steps to Add Redirect URIs:
 
-### 3. Your SHA-1 Fingerprint
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your project
+3. Go to "APIs & Services" > "Credentials"
+4. Find your OAuth 2.0 Client ID and click "Edit"
+5. Add all the above URIs to the "Authorized redirect URIs" section
+6. Click "Save"
 
-**Debug SHA-1 Fingerprint (for development):**
-```
-04:75:95:5F:F9:F8:6A:69:A3:87:8E:B8:42:B4:1F:6E:98:9E:1B:C8
-```
+## Additional Configuration:
 
-Use this SHA-1 fingerprint when creating your Android OAuth client in Google Console.
+1. Make sure "Authorized JavaScript origins" includes:
+   - `http://localhost:8100`
+   - `http://localhost:4200`
+   - `http://localhost`
+   - `https://globalrubberhub.com`
+   - `https://www.globalrubberhub.com`
 
-### 4. Update Configuration Files
+2. For Android:
+   - Add your app's package name
+   - Add your SHA-1 certificate fingerprint
 
-After creating the Android OAuth client, update the following files:
+## Testing:
 
-#### Update `android/app/google-services.json`:
-- Replace `YOUR_ANDROID_APP_ID` with your actual Android app ID
-- Replace `YOUR_ANDROID_CLIENT_ID` with your new Android OAuth client ID  
-- Replace `YOUR_SHA1_FINGERPRINT` with your actual SHA-1 fingerprint
-- Replace `YOUR_API_KEY` with your API key from Google Console
+After adding these URIs:
+1. Clear your browser cache
+2. Sign out of any Google accounts
+3. Try the login again
+4. If using Android, rebuild and reinstall the app
 
-#### Update `src/environments/environment.ts` and `environment.prod.ts`:
-- Replace `YOUR_ANDROID_CLIENT_ID` with your actual Android OAuth client ID
-
-### 5. Enable APIs
-
-Make sure these APIs are enabled in Google Console:
-- Google+ API
-- Google Sign-In API
-
-### 6. Build and Test
-
-1. Clean and rebuild your project:
-   ```bash
-   npm run build
-   npx cap sync android
-   ```
-
-2. Test on a physical Android device (Google Sign-In doesn't work properly on emulators)
-
-## Troubleshooting
-
-### Common Issues:
-
-1. **"Developer Error" message**: 
-   - Check that SHA-1 fingerprint matches exactly
-   - Ensure package name matches (`com.globalrubber.hub`)
-
-2. **Sign-in popup doesn't appear**:
-   - Verify `google-services.json` is properly configured
-   - Check that Google Play Services is installed on the device
-
-3. **"Invalid client" error**:
-   - Verify the Android client ID is correct
-   - Make sure the client ID corresponds to the correct project
-
-### Debug Commands:
-
-Check current SHA-1 fingerprint:
-```bash
-./gradlew signingReport
-```
-
-Verify Google services configuration:
-```bash
-npx cap sync android
-npx cap open android
-```
-
-## Current Configuration Status
-
-✅ Cleaned up conflicting dependencies  
-✅ Added Google services configuration template  
-✅ Updated environment files with separate client IDs  
-✅ Fixed Capacitor GoogleAuth plugin configuration  
-✅ Updated authentication service implementation  
-
-⚠️ **REQUIRED**: You must complete the Google Console setup and update the placeholder values in `google-services.json` and environment files.
+If you still encounter issues, check the browser console for the exact redirect URI that's being used and add it to the authorized list.

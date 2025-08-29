@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController, IonSegment, IonSegmentButton, IonLabel, IonItem, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController, IonSegment, IonSegmentButton, IonLabel, IonItem, IonIcon, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
 import { AlertController, MenuController } from '@ionic/angular';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
@@ -15,24 +15,9 @@ import { FormsModule as NgFormsModule } from '@angular/forms';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 declare var window: any;
 import { environment } from '../../environments/environment';
+import { authConfig } from '../config/auth.config';
 
-// Google API type declarations
-declare global {
-  interface Window {
-    google: {
-      accounts: {
-        id: {
-          initialize: (config: any) => void;
-          renderButton: (element: HTMLElement | null, options: any) => void;
-          disableAutoSelect: () => void;
-          prompt: (callback?: (notification: any) => void) => void;
-          cancel: () => void;
-          revoke: (hint: string, callback?: () => void) => void;
-        };
-      };
-    };
-  }
-}
+
 
 // Google notification interface
 interface GoogleNotification {
@@ -53,14 +38,15 @@ interface GoogleNotification {
     FormsModule, 
     ReactiveFormsModule, 
     NgFormsModule,
-    IonInput, 
-    IonButton, 
-    IonContent, 
-    IonSegment, 
-    IonSegmentButton, 
-    IonLabel, 
-    IonItem, 
-    IonIcon, 
+    IonInput,
+    IonButton,
+    IonContent,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonItem,
+    IonIcon,
+    IonSpinner,
     NgOtpInputComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -130,8 +116,14 @@ export class LoginPage implements OnInit {
       this.getProfileData();
     }
     this.initializeForms();
-    this.platform.ready().then(() => {
-      GoogleAuth.initialize();
+    this.platform.ready().then(async () => {
+      if (isPlatform('android') || isPlatform('capacitor')) {
+        await GoogleAuth.initialize({
+          clientId: authConfig.googleAuth.androidClientId,
+          scopes: authConfig.scopes,
+          grantOfflineAccess: true
+        });
+      }
     })
   }
 
@@ -194,14 +186,89 @@ export class LoginPage implements OnInit {
 
   }
 
-  async loginWithGoogle(){
-    let googleUser = await GoogleAuth.signIn();
+  async loginWithGoogle() {
+    if (this.isGoogleLoading) return; // Prevent multiple clicks
 
-    /*
-      If you use Firebase you can forward and use the logged in Google user like this:
-    */
-   // const credential = auth.GoogleAuthProvider.credential(googleUser.authentication.idToken);
-    return googleUser;
+    try {
+      this.isGoogleLoading = true;
+      console.log('=== LOGIN COMPONENT: Starting Google Sign In ===');
+
+      const googleUser = await this.authService.googleSignIn();
+
+      if (googleUser && googleUser.email) {
+        console.log('=== LOGIN COMPONENT: Google user received ===', googleUser);
+
+        // Prepare data based on platform and available fields
+        const data = {
+          google_id: googleUser.id,
+          email: googleUser.email,
+          first_name: googleUser.givenName || googleUser.displayName?.split(' ')[0] || googleUser.name?.split(' ')[0] || 'Google',
+          last_name: googleUser.familyName || googleUser.displayName?.split(' ').slice(1).join(' ') || googleUser.name?.split(' ').slice(1).join(' ') || 'User',
+          photo: googleUser.imageUrl || googleUser.photoUrl || '',
+          id_token: googleUser.authentication?.idToken || googleUser.idToken || null,
+          platform: !!(window as any).Capacitor ? 'mobile' : 'web'
+        };
+
+        console.log('=== LOGIN COMPONENT: Sending data to backend ===', data);
+
+        this.enableLoader = true;
+        const url = 'auth/google-login';
+        this.commonService.login(url, data).subscribe(
+          (response: any) => {
+            this.enableLoader = false;
+            this.isGoogleLoading = false;
+
+            if (response.code == 200) {
+              console.log('=== LOGIN COMPONENT: Backend login successful ===');
+              localStorage.setItem('token', response.access_token);
+              this.authenticationService.handleSuccessfulLogin();
+              this.showToast('success', response.message || 'Login successful!', '', 2000, '/dashboard');
+            } else {
+              console.error('=== LOGIN COMPONENT: Backend login failed ===', response);
+              this.showToast('error', response.message || 'Login failed. Please try again.', '', 3000, '');
+            }
+          },
+          (error: any) => {
+            this.enableLoader = false;
+            this.isGoogleLoading = false;
+            console.error('=== LOGIN COMPONENT: Backend login error ===', error);
+
+            let errorMessage = 'Failed to login with Google. Please try again.';
+            if (error.error?.message) {
+              errorMessage = error.error.message;
+            } else if (error.status === 0) {
+              errorMessage = 'Network error. Please check your internet connection.';
+            }
+
+            this.showToast('error', errorMessage, '', 3000, '');
+          }
+        );
+      } else {
+        throw new Error('Google Sign In did not return valid user data');
+      }
+    } catch (error: any) {
+      this.isGoogleLoading = false;
+      console.error('=== LOGIN COMPONENT: Google sign-in error ===', error);
+
+      // Handle specific error cases
+      let errorMessage = 'Failed to login with Google. Please try again.';
+
+      if (error.message?.includes('popup_closed_by_user') || error.message?.includes('cancelled')) {
+        errorMessage = 'Google Sign In was cancelled.';
+      } else if (error.message?.includes('access_denied')) {
+        errorMessage = 'Google Sign In access denied. Please try again.';
+      } else if (error.message?.includes('network')) {
+        errorMessage = 'Network error during Google Sign In. Please check your connection.';
+      } else if (error.message?.includes('not loaded')) {
+        errorMessage = 'Google Sign In is not ready. Please refresh the page and try again.';
+      } else if (error.message?.includes('popup_blocked')) {
+        errorMessage = 'Google Sign In popup was blocked. Please allow popups for this site.';
+      } else if (error.message) {
+        errorMessage = `Google Sign In error: ${error.message}`;
+      }
+
+      this.showToast('error', errorMessage, '', 4000, '');
+    }
   }
 
   
