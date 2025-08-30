@@ -222,7 +222,7 @@ export class ProfilePage implements OnInit {
 
   processFiles(files: FileList) {
     const maxFiles = 1;
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 5 * 1024 * 1024; // 2MB
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
     if (this.uploadedFiles.length + files.length > maxFiles) {
@@ -250,7 +250,7 @@ export class ProfilePage implements OnInit {
       if (file.size > maxSize) {
         const formattedSize = this.formatFileSize(file.size);
         console.log('File rejected - size:', formattedSize);
-        this.showToast('error', `${file.name} is too large (${formattedSize}). Maximum size is 2MB`, '', 3000, '/profile');
+        this.showToast('error', `${file.name} is too large (${formattedSize}). Maximum size is 5MB`, '', 3000, '/profile');
         return;
       }
 
@@ -362,8 +362,8 @@ export class ProfilePage implements OnInit {
 
   async openCamera() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Select Image Source (Max 2MB)',
-      subHeader: 'Images larger than 2MB will be automatically rejected',
+      header: 'Select Image Source (Max 5MB)',
+      subHeader: 'Images larger than 5MB will be automatically rejected',
       buttons: [
         {
           text: 'Camera',
@@ -392,7 +392,7 @@ export class ProfilePage implements OnInit {
   // Camera method for file upload area
   async openCameraForUpload() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Select Upload Method (Max 2MB)',
+      header: 'Select Upload Method (Max 5MB)',
       subHeader: 'Choose how to add your ID proof document',
       buttons: [
         {
@@ -577,7 +577,7 @@ export class ProfilePage implements OnInit {
       console.log('Image size before processing:', this.formatFileSize(blob.size));
       
       // Check if image is already under 2MB
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 5 * 1024 * 1024; // 2MB
       if (blob.size > maxSize) {
         // Try to compress the image before rejecting
         const compressedImageUri = await this.compressImage(imageUri, blob.size);
@@ -585,7 +585,7 @@ export class ProfilePage implements OnInit {
           console.log('Image compressed successfully');
           this.processImageURI(compressedImageUri);
         } else {
-          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 5000, '/profile');
+          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 5MB. Please try again with a smaller image or lower quality.`, '', 5000, '/profile');
           this.resetImageDisplay();
           this.enableLoader = false;
         }
@@ -642,7 +642,7 @@ export class ProfilePage implements OnInit {
               console.log('Compressed image size:', this.formatFileSize(blob.size));
               
               // Check if compression was successful
-              if (blob.size <= 2 * 1024 * 1024) {
+              if (blob.size <= 5 * 1024 * 1024) {
                 const compressedUri = URL.createObjectURL(blob);
                 resolve(compressedUri);
               } else {
@@ -709,7 +709,7 @@ export class ProfilePage implements OnInit {
       const tryCompression = (index: number) => {
         if (index >= qualityLevels.length) {
           // All compression attempts failed
-          this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
+          this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '/profile');
           this.resetImageDisplay();
           this.enableLoader = false;
           return;
@@ -722,7 +722,7 @@ export class ProfilePage implements OnInit {
           if (blob) {
             console.log(`Compressed size with quality ${quality}:`, this.formatFileSize(blob.size));
             
-            if (blob.size <= 2 * 1024 * 1024) {
+            if (blob.size <= 5 * 1024 * 1024) {
               // Success! Upload the compressed image
               const file = new File([blob], 'profile-photo.jpg', { type: 'image/jpeg' });
               this.uploadProfileImage(file);
@@ -742,7 +742,7 @@ export class ProfilePage implements OnInit {
     
     img.onerror = () => {
       console.error('Failed to load image for compression');
-      this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '/profile');
+      this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '/profile');
       this.resetImageDisplay();
       this.enableLoader = false;
     };
@@ -772,9 +772,9 @@ export class ProfilePage implements OnInit {
     }
     
     // Check file size (max 2MB)
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 5 * 1024 * 1024; // 2MB
     if (file.size > maxSize) {
-      this.showToast('error', `File too large: ${this.formatFileSize(file.size)}. Maximum size is 2MB.`, '', 3000, '/profile');
+      this.showToast('error', `File too large: ${this.formatFileSize(file.size)}. Maximum size is 5MB.`, '', 3000, '/profile');
       this.enableLoader = false;
       return;
     }
@@ -961,9 +961,9 @@ export class ProfilePage implements OnInit {
       console.log('Processing cropped image, size:', this.formatFileSize(file.size));
       
       // Check file size
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 5 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '/profile');
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 5000, '/profile');
         this.resetImageDisplay();
         this.enableLoader = false;
         return;
@@ -1018,9 +1018,9 @@ export class ProfilePage implements OnInit {
       console.log('Processing cropped image for upload, size:', this.formatFileSize(file.size));
       
       // Check file size
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 5 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '/profile');
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 5000, '/profile');
         this.resetImageDisplay();
         this.enableLoader = false;
         return;
@@ -1070,9 +1070,9 @@ export class ProfilePage implements OnInit {
         console.log('File selected:', file.name, 'Size:', file.size);
         
         // Check file size before processing - enforce 2MB limit
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 5 * 1024 * 1024; // 2MB
         if (file.size > maxSize) {
-          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
+          this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB. Please select a smaller image.`, '', 4000, '/profile');
           document.body.removeChild(fileInput);
           return;
         }
@@ -1151,7 +1151,7 @@ export class ProfilePage implements OnInit {
             console.log('PNG blob created, size:', pngBlob.size);
             
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
-            const maxSize = 2 * 1024 * 1024; // 2MB
+            const maxSize = 5 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
               // Try to compress the image further
               this.compressImageForProfile(imageURI, pngBlob.size);
@@ -1371,9 +1371,9 @@ export class ProfilePage implements OnInit {
         console.log('PNG blob created via alternative method, size:', pngBlob.size);
         
         // Check file size (2MB = 2 * 1024 * 1024 bytes)
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 5 * 1024 * 1024; // 2MB
         if (pngBlob.size > maxSize) {
-          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '/profile');
+          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 5MB. Please select a smaller image.`, '', 4000, '/profile');
           this.resetImageDisplay();
           return;
         }
@@ -1463,7 +1463,7 @@ export class ProfilePage implements OnInit {
       console.log('Using Capacitor camera for upload with source:', cameraSource);
       
       const image = await Camera.getPhoto({
-        quality: 30, // Very low quality to ensure under 2MB
+        quality: 50, // Very low quality to ensure under 2MB
         allowEditing: true,
         resultType: CameraResultType.Uri,
         source: cameraSource,
@@ -1653,7 +1653,7 @@ export class ProfilePage implements OnInit {
           if (jpegBlob) {
             console.log('JPEG blob size:', this.formatFileSize(jpegBlob.size));
             
-            const maxSize = 2 * 1024 * 1024; // 2MB
+            const maxSize = 5 * 1024 * 1024; // 2MB
             if (jpegBlob.size <= maxSize) {
               // Success with JPEG! Create file and add to uploads
               const file = new File([jpegBlob], `camera-upload-${Date.now()}.jpg`, { type: 'image/jpeg' });
@@ -1677,7 +1677,7 @@ export class ProfilePage implements OnInit {
           console.log(`PNG compressed size with quality ${quality}:`, this.formatFileSize(pngBlob.size));
           
           // Check file size (2MB = 2 * 1024 * 1024 bytes)
-          const maxSize = 2 * 1024 * 1024; // 2MB
+          const maxSize = 5 * 1024 * 1024; // 2MB
           if (pngBlob.size <= maxSize) {
             // Success! Create file and add to uploads
             const file = new File([pngBlob], `camera-upload-${Date.now()}.png`, { type: 'image/png' });
@@ -1716,7 +1716,7 @@ export class ProfilePage implements OnInit {
       if (jpegBlob) {
         console.log('Force compressed JPEG size:', this.formatFileSize(jpegBlob.size));
         
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 5 * 1024 * 1024; // 2MB
         if (jpegBlob.size <= maxSize) {
           // Success! Create file and add to uploads
           const file = new File([jpegBlob], `camera-upload-${Date.now()}.jpg`, { type: 'image/jpeg' });

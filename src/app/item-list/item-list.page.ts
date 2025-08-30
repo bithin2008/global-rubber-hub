@@ -17,6 +17,7 @@ import { PageTitleService } from '../services/page-title.service';
 import { ImageLightboxComponent } from '../shared/image-lightbox/image-lightbox.component';
 import { ShareModalComponent } from '../shared/share-modal/share-modal.component';
 import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-item-list',
@@ -41,12 +42,14 @@ export class ItemListPage implements OnInit {
   public searchFieldControl: any = 5;
   public orderBy: string = 'desc';
   public type: string = '';
+  public token: string = '';
   public fallbackImg: string = 'assets/img/default-photo.png';
   public isSearchVisible: boolean = false;
   private handleOutsideClick: any;
   constructor(
     public router: Router,
     public modalController: ModalController,
+    private http: HttpClient,
     public activatedRoute: ActivatedRoute,
     private menu: MenuController,
     private commonService: CommonService,
@@ -56,7 +59,7 @@ export class ItemListPage implements OnInit {
     private authGuardService: AuthGuardService
     // private sharedService: SharedService,
   ) {
- 
+
 
     // Subscribe to query parameters from URL
     activatedRoute.queryParams.subscribe(params => {      // Handle different types of parameters
@@ -64,17 +67,27 @@ export class ItemListPage implements OnInit {
         console.log('Type parameter:', params['type']);
         this.type = params['type'];
       }
+      if (params['token']) {
+        console.log('Token parameter:', params['token']);
+        this.token = params['token'];
+      }
     });
 
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Live Bid');
-      
       this.handleSearchToggle();
-      this.getItemList();
+      if (this.token) {
+        this.http.get(`https://globalrubberhub.com/api/v1/items/market/${this.token}`)
+          .subscribe((res: any) => {
+            this.itemList = res.data;
+          });
+      } else {
+        this.getItemList();
+      }
     });
   }
 
-  async handleRefresh(e:any) {
+  async handleRefresh(e: any) {
     this.searchField = '';
     this.searchKeyword = '';
     this.itemList = [];
@@ -86,7 +99,7 @@ export class ItemListPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
-   
+
   }
 
   handleSearchToggle() {
@@ -115,30 +128,30 @@ export class ItemListPage implements OnInit {
     }
   }
 
-  reloadItems(){
-    this.itemList=[];
+  reloadItems() {
+    this.itemList = [];
     this.page
     this.getItemList()
   }
 
   showMyItems(item: any) {
-    this.itemList=[]
-    this.getItemList(item.added_by) 
+    this.itemList = []
+    this.getItemList(item.added_by)
   }
 
   getItemList(user_id?: number) {
-    let data:any = {
+    let data: any = {
       module: 2,
       start: this.page,
       limit: 10,
       orderfield: this.searchField == 5 ? 'item_master.added_on' : this.searchField,
       orderby: this.orderBy,
-     // keyword:  this.type?this.type=='seller'?1:2:this.searchKeyword ? this.searchKeyword : '',
-      serach_keyward: this.type?this.type=='seller'?1:2:this.searchKeyword ? this.searchKeyword : '',
-      options: this.type? 'item_master.item_listed_for':this.searchField == 5 ? 'item_master.added_on' : this.searchField
+      // keyword:  this.type?this.type=='seller'?1:2:this.searchKeyword ? this.searchKeyword : '',
+      serach_keyward: this.type ? this.type == 'seller' ? 1 : 2 : this.searchKeyword ? this.searchKeyword : '',
+      options: this.type ? 'item_master.item_listed_for' : this.searchField == 5 ? 'item_master.added_on' : this.searchField
 
     }
-    if(user_id){
+    if (user_id) {
       data.added_by_id = user_id;
     }
     if (this.page == 0) {
@@ -289,14 +302,14 @@ export class ItemListPage implements OnInit {
     if (item.is_trusted !== 1) {
       return false;
     }
-    
+
     if (!item.trusted_package_expiry) {
       return false;
     }
-    
+
     const expiryDate = new Date(item.trusted_package_expiry);
     const currentDate = new Date();
-    
+
     return expiryDate > currentDate;
   }
 
@@ -390,10 +403,13 @@ export class ItemListPage implements OnInit {
   async shareItem(item: any) {
     try {
       // Prepare share data
+      const blob = await fetch(item.item_image[0]).then(res => res.blob());
+      const file = new File([blob], "item.jpg", { type: blob.type });
       const shareData = {
-        title: `${item.item_name} for ${item.item_listed_for == 1 ? 'Sale' : 'Buy'} in ${item.city}`,
+        title: `${item.item_name} for ${item.item_listed_for == 1 ? 'Sale' : 'Buy'}  ${item.city ? 'in ' + item.city : ''}`,
         text: `Check out this ${item.item_name} - ${item.description || 'Available now!'}`,
-        url: environment.API_ENDPOINT + 'items/market/' + item.encdata
+        files: [file],
+        url: item.item_share_url
       };
 
       // Open custom share modal

@@ -77,15 +77,11 @@
           <span>Or</span>
         </div>
 
-        <button type="button" class="google-signin" (click)="loginWithGoogle()" [disabled]="isGoogleLoading">
+        <button type="button" class="google-signin" (click)="signInWithGoogle()">
           <img src="assets/img/google.svg" alt="Google" />
-          <span *ngIf="!isGoogleLoading">Sign in with Google</span>
-          <span *ngIf="isGoogleLoading">
-            <ion-spinner name="crescent" slot="start"></ion-spinner>
-            Signing in...
-          </span>
+          <span>Sign in with Google</span>
+          <ion-spinner *ngIf="enableLoader" name="crescent"></ion-spinner>
         </button>
-
  
       </form>
     </div>

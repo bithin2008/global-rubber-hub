@@ -91,6 +91,20 @@ export class BidHistoryPage implements OnInit {
     }
   }
 
+  // Convert UOM ID to display text
+  getUOMText(uomId: number): string {
+    switch (uomId) {
+      case 2:
+        return 'KGS';
+      case 23:
+        return 'QTL';
+      case 27:
+        return 'TON';
+      default:
+        return '';
+    }
+  }
+
   getItemList() {
     let data = {
       module: 1,

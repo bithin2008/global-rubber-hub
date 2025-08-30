@@ -4,7 +4,10 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 declare var StatusBar: any;
 declare var navigator: any;
 import { Platform } from '@ionic/angular';
+import { App } from '@capacitor/app';
 import { DeepLinkService } from './services/deep-link.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
@@ -14,9 +17,11 @@ import { DeepLinkService } from './services/deep-link.service';
 export class AppComponent {
   constructor(
     private platform: Platform,
+    private router: Router,
     private deepLinkService: DeepLinkService
   ) {
     this.initializeApp();
+    this.listenForDeepLinks();
   }
 
   initializeApp() {
@@ -28,11 +33,20 @@ export class AppComponent {
     this.platform.ready().then(() => {
       console.log('Platform ready');
       
+      // Initialize deep linking first
+      this.deepLinkService.initializeDeepLinking();
+      
+      // Define handleOpenURL globally for Cordova Universal Links
+      (window as any).handleOpenURL = (url: string) => {
+        console.log('handleOpenURL called with:', url);
+        // Use setTimeout to ensure app is fully initialized
+        setTimeout(() => {
+          this.deepLinkService.handleDeepLink({ url });
+        }, 0);
+      };
+      
       // Configure status bar for proper header display
       this.configureStatusBar();
-      
-      // Initialize deep linking
-      this.deepLinkService.initializeDeepLinking();
       
       // Hide splash screen immediately when platform is ready
       this.hideSplashScreen();
@@ -52,6 +66,23 @@ export class AppComponent {
       console.error('Error during app initialization:', error);
       // Hide splash screen even if there's an error
       this.hideSplashScreen();
+    });
+  }
+
+  listenForDeepLinks() {
+    App.addListener('appUrlOpen', (event: any) => {
+      if (event.url) {
+        // Example: globalrubberhub://market/ENCRYPTEDTOKEN
+        const slug = event.url.split('//')[1]; // "market/ENCRYPTEDTOKEN"
+        const parts = slug.split('/');
+        if (parts[0] === 'market') {
+          const token = parts[1];
+          // Navigate to your item page
+          this.router.navigate(['/item-list'], { 
+            queryParams: { token: token } 
+          });
+        }
+      }
     });
   }
 

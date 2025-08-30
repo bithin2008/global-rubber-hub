@@ -70,6 +70,20 @@ export class BidRequestPage implements OnInit {
     
   }
 
+    // Convert UOM ID to display text
+    getUOMText(uomId: number): string {
+      switch (uomId) {
+        case 2:
+          return 'KGS';
+        case 23:
+          return 'QTL';
+        case 27:
+          return 'TON';
+        default:
+          return '';
+      }
+    }
+
   handleSearchToggle() {
     // Use ViewChild or template reference variables instead of querySelector
     this.isSearchVisible = false;

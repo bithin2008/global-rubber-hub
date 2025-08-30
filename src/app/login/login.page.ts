@@ -7,25 +7,18 @@ import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
 import { DeepLinkService } from '../services/deep-link.service';
-import { isPlatform, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-declare var window: any;
 import { environment } from '../../environments/environment';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { isPlatform } from '@ionic/angular';
 import { authConfig } from '../config/auth.config';
 
 
 
-// Google notification interface
-interface GoogleNotification {
-  isNotDisplayed(): boolean;
-  isSkippedMoment(): boolean;
-  getNotDisplayedReason(): string;
-  getSkippedReason(): string;
-}
 
 @Component({
   selector: 'app-login',
@@ -63,7 +56,6 @@ export class LoginPage implements OnInit {
   public showCredentialsElem: any = '';
   public savedLoginCounter: number = 0;
   public isOpenCredentialModal: boolean = false;
-  public isGoogleLoading: boolean = false;
 
   // Tab and form state management
   public selectedTab: string = 'login';
@@ -99,15 +91,51 @@ export class LoginPage implements OnInit {
     private platform: Platform,
     private deepLinkService: DeepLinkService
   ) {
+    // Initialize Google Auth based on platform
+    this.initializeGoogleAuth();
+    
     this.activatedRoute.params.subscribe(async val => {
       let hasLoggin: any = await this.alreadyLoggedIn();
       if (hasLoggin.code === 200) {
         this.router.navigate(['/dashboard'])
-      }else{
+      } else {
         localStorage.clear();
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  private async initializeGoogleAuth() {
+    try {
+      // Get client ID from auth config
+      const clientId = authConfig.googleAuth.androidClientId;
+      
+      // Base configuration
+      const config = {
+        clientId,
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      };
+
+      // Platform specific configuration
+      if (isPlatform('android')) {
+        // Android specific config
+        Object.assign(config, { androidClientId: clientId });
+      } else if (isPlatform('ios')) {
+        // iOS specific config - add iOS client ID when available
+        // Object.assign(config, { iosClientId: authConfig.googleAuth.iosClientId });
+      } else {
+        // Web specific config
+        Object.assign(config, { 
+          webClientId: clientId,
+          plugin: false // Disable native plugin for web
+        });
+      }
+
+      await GoogleAuth.initialize(config);
+    } catch (error) {
+      console.error('Error initializing Google Auth:', error);
+    }
   }
 
   async ngOnInit() {
@@ -116,15 +144,77 @@ export class LoginPage implements OnInit {
       this.getProfileData();
     }
     this.initializeForms();
-    this.platform.ready().then(async () => {
-      if (isPlatform('android') || isPlatform('capacitor')) {
+  }
+
+  async signInWithGoogle() {
+    try {
+      this.enableLoader = true;
+      
+      // Check network connectivity
+      if (!navigator.onLine) {
+        throw new Error('No internet connection. Please check your network and try again.');
+      }
+
+      // Initialize Google Auth if needed
+      try {
         await GoogleAuth.initialize({
           clientId: authConfig.googleAuth.androidClientId,
-          scopes: authConfig.scopes,
+          scopes: ['profile', 'email'],
           grantOfflineAccess: true
         });
+      } catch (initError) {
+        console.error('Failed to initialize Google Auth:', initError);
+        throw new Error('Failed to initialize Google Sign-In. Please try again.');
       }
-    })
+
+      // Get user info from Google
+      const user = await GoogleAuth.signIn();
+      console.log('Google login successful:', user);
+      
+      if (!user || !user.email) {
+        throw new Error('Failed to get user information from Google');
+      }
+
+      // Send to backend for authentication/registration
+      const data = {
+        email: user.email,
+        google_id: user.id,
+        first_name: user.givenName || '',
+        last_name: user.familyName || '',
+        full_name: user.name || `${user.givenName} ${user.familyName}`.trim(),
+        photo_url: user.imageUrl || ''
+      };
+
+      let url = 'auth/google-login';
+      const response = await this.commonService.login(url, data).toPromise() as any;
+      
+      if (response?.code === 200) {
+        localStorage.setItem('token', response.access_token);
+        this.authenticationService.handleSuccessfulLogin();
+        await this.showToast('success', response.message || 'Login successful', '', 2000, '/dashboard');
+      } else {
+        const errorMsg = response?.message || 'Authentication failed';
+        throw new Error(errorMsg);
+      }
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      
+      let errorMessage = 'Google sign in failed';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.name === 'NetworkError' || !navigator.onLine) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.code === 'CANCELED') {
+        errorMessage = 'Sign in was cancelled';
+      } else if (error.code === 'INVALID_CLIENT_ID') {
+        errorMessage = 'Invalid client configuration. Please contact support.';
+      }
+      
+      await this.showToast('error', errorMessage, '', 3000, '');
+    } finally {
+      this.enableLoader = false;
+    }
   }
 
   initializeForms() {
@@ -186,92 +276,8 @@ export class LoginPage implements OnInit {
 
   }
 
-  async loginWithGoogle() {
-    if (this.isGoogleLoading) return; // Prevent multiple clicks
+ 
 
-    try {
-      this.isGoogleLoading = true;
-      console.log('=== LOGIN COMPONENT: Starting Google Sign In ===');
-
-      const googleUser = await this.authService.googleSignIn();
-
-      if (googleUser && googleUser.email) {
-        console.log('=== LOGIN COMPONENT: Google user received ===', googleUser);
-
-        // Prepare data based on platform and available fields
-        const data = {
-          google_id: googleUser.id,
-          email: googleUser.email,
-          first_name: googleUser.givenName || googleUser.displayName?.split(' ')[0] || googleUser.name?.split(' ')[0] || 'Google',
-          last_name: googleUser.familyName || googleUser.displayName?.split(' ').slice(1).join(' ') || googleUser.name?.split(' ').slice(1).join(' ') || 'User',
-          photo: googleUser.imageUrl || googleUser.photoUrl || '',
-          id_token: googleUser.authentication?.idToken || googleUser.idToken || null,
-          platform: !!(window as any).Capacitor ? 'mobile' : 'web'
-        };
-
-        console.log('=== LOGIN COMPONENT: Sending data to backend ===', data);
-
-        this.enableLoader = true;
-        const url = 'auth/google-login';
-        this.commonService.login(url, data).subscribe(
-          (response: any) => {
-            this.enableLoader = false;
-            this.isGoogleLoading = false;
-
-            if (response.code == 200) {
-              console.log('=== LOGIN COMPONENT: Backend login successful ===');
-              localStorage.setItem('token', response.access_token);
-              this.authenticationService.handleSuccessfulLogin();
-              this.showToast('success', response.message || 'Login successful!', '', 2000, '/dashboard');
-            } else {
-              console.error('=== LOGIN COMPONENT: Backend login failed ===', response);
-              this.showToast('error', response.message || 'Login failed. Please try again.', '', 3000, '');
-            }
-          },
-          (error: any) => {
-            this.enableLoader = false;
-            this.isGoogleLoading = false;
-            console.error('=== LOGIN COMPONENT: Backend login error ===', error);
-
-            let errorMessage = 'Failed to login with Google. Please try again.';
-            if (error.error?.message) {
-              errorMessage = error.error.message;
-            } else if (error.status === 0) {
-              errorMessage = 'Network error. Please check your internet connection.';
-            }
-
-            this.showToast('error', errorMessage, '', 3000, '');
-          }
-        );
-      } else {
-        throw new Error('Google Sign In did not return valid user data');
-      }
-    } catch (error: any) {
-      this.isGoogleLoading = false;
-      console.error('=== LOGIN COMPONENT: Google sign-in error ===', error);
-
-      // Handle specific error cases
-      let errorMessage = 'Failed to login with Google. Please try again.';
-
-      if (error.message?.includes('popup_closed_by_user') || error.message?.includes('cancelled')) {
-        errorMessage = 'Google Sign In was cancelled.';
-      } else if (error.message?.includes('access_denied')) {
-        errorMessage = 'Google Sign In access denied. Please try again.';
-      } else if (error.message?.includes('network')) {
-        errorMessage = 'Network error during Google Sign In. Please check your connection.';
-      } else if (error.message?.includes('not loaded')) {
-        errorMessage = 'Google Sign In is not ready. Please refresh the page and try again.';
-      } else if (error.message?.includes('popup_blocked')) {
-        errorMessage = 'Google Sign In popup was blocked. Please allow popups for this site.';
-      } else if (error.message) {
-        errorMessage = `Google Sign In error: ${error.message}`;
-      }
-
-      this.showToast('error', errorMessage, '', 4000, '');
-    }
-  }
-
-  
 
   // Tab change handler
   onTabChange(event: any) {
@@ -682,4 +688,9 @@ export class LoginPage implements OnInit {
     });
     return await modal.present();
   }
+
+  /**
+   * Handle Google Sign-in
+   */
+ 
 }

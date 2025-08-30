@@ -86,14 +86,49 @@ export class DeepLinkService {
   /**
    * Handle incoming deep links
    */
-  private handleDeepLink(eventData: any) {
+  handleDeepLink(eventData: any) {
     console.log('Deep link received:', eventData);
     
-    const url = eventData.url;
-    const path = this.extractPathFromUrl(url);
-    
-    if (path) {
-      this.navigateToPath(path);
+    if (!eventData || !eventData.url) {
+      console.warn('Invalid deep link data received:', eventData);
+      return;
+    }
+
+    try {
+      const url = eventData.url;
+      console.log('Processing deep link URL:', url);
+
+      // Handle different URL formats
+      let path: string | null = null;
+      let params: { [key: string]: string } = {};
+
+      if (url.includes('globalrubberhub://')) {
+        // Custom scheme URL
+        const parts = url.split('globalrubberhub://')[1].split('?');
+        path = parts[0];
+        if (parts[1]) {
+          params = this.parseQueryParams('?' + parts[1]);
+        }
+      } else if (url.includes('globalrubberhub.com/')) {
+        // Universal link URL
+        const urlObj = new URL(url);
+        path = urlObj.pathname.substring(1); // Remove leading slash
+        params = this.parseQueryParams(urlObj.search);
+      } else {
+        // Try to extract path as fallback
+        path = this.extractPathFromUrl(url);
+      }
+
+      console.log('Extracted path:', path);
+      console.log('Extracted params:', params);
+      
+      if (path) {
+        this.navigateToPath(path, params);
+      } else {
+        console.warn('Could not extract path from deep link URL:', url);
+      }
+    } catch (error) {
+      console.error('Error processing deep link:', error);
     }
   }
 

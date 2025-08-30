@@ -108,6 +108,20 @@ export class MyItemPage implements OnInit{
     e.target.complete();
   }
 
+   // Convert UOM ID to display text
+   getUOMText(uomId: number): string {
+    switch (uomId) {
+      case 2:
+        return 'KGS';
+      case 23:
+        return 'QTL';
+      case 27:
+        return 'TON';
+      default:
+        return '';
+    }
+  }
+
   goToAddItem(){
     this.router.navigate(['/item-add']);
   }
