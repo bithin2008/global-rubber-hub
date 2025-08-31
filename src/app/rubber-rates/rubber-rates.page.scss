@@ -1,0 +1,21 @@
+.rotate-down {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+  filter: invert(7%) sepia(95%) saturate(7478%) hue-rotate(356deg) brightness(77%) contrast(112%); /* Dark red - #8B0000 */
+}
+
+ion-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.section .other-list ion-item ion-label h3.negative-deviation {
+  color: #ff0000;
+}

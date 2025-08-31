@@ -1,13 +1,85 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>rubber-rates</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">rubber-rates</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="itemlist-page">
+  <ion-refresher slot="fixed" pulling-icon="" (ionRefresh)="handleRefresh($event)">
+  </ion-refresher>
+  <div class="itemlist-container" (click)="onOutsideClick($event)">
+    <div class="filter">
+      <form class="form">
+        <div class="top">
+          <!-- <ion-title class="itemTitle">Items</ion-title> -->
+          <div class="filterItem" (click)="$event.stopPropagation()">
+            <ion-button class="btn no-style bid-now btnsearch" (click)="toggleSearch(); $event.stopPropagation()"><img src="assets/img/icons/magnifyingglass.svg" alt="" title=""></ion-button>
+            <ion-item class="no-style">
+              <div class="custom-inner selectId">
+                <ion-select interface="popover" placeholder="Filter By" class="form-field" slot="start"
+                  [(ngModel)]="searchFieldControl" [ngModelOptions]="{standalone: true}" placeholder="Select Type"
+                  (ngModelChange)="selectFilter($event)">
+                  <ion-select-option [value]="1">Price (Low to High) </ion-select-option>
+                  <ion-select-option [value]="2">Price (High to Low)</ion-select-option>
+                  <ion-select-option [value]="5">Most Recent</ion-select-option>
+                </ion-select>
+              </div>
+            </ion-item>
+          </div>
+
+        </div>
+        <div class="bottom" [class.show]="isSearchVisible" (click)="$event.stopPropagation()">
+          <ion-item class="no-style">
+            <div class="custom-inner search">
+              <ion-input class="form-field" type="text" [(ngModel)]="searchKeyword"
+                [ngModelOptions]="{standalone: true}" placeholder="Search" (keyup)="searchItem($event)"></ion-input>
+            </div>
+          </ion-item>
+          <div class="close" (click)="closeSearch()"><ion-icon name="close-outline"></ion-icon></div>
+        </div>
+      </form>
+    </div>
+     <!-- Other Items -->
+  <div class="section">
+    
+    <div class="other-list">
+      <ng-container *ngIf="itemList.length>0">
+        <ion-item class="no-style" *ngFor="let item of itemList; let i= index">
+          <ion-avatar slot="start" *ngIf="item.rate_deviation_percentage > 0">
+            <img src="assets/img/icons/up.svg" alt="">
+          </ion-avatar>
+          <ion-avatar slot="start" *ngIf="item.rate_deviation_percentage < 0">
+            <img src="assets/img/icons/up.svg" alt="" class="rotate-down">
+          </ion-avatar>
+         
+   
+        <ion-label>
+          <h4 *ngIf="item.description">{{item.description}}</h4>
+          <p *ngIf="item.rate">Rate: ₹{{item.rate}}</p>
+          <p *ngIf="item.rate_deviation">Deviation: ₹{{item.rate_deviation}}</p>
+          <h3 *ngIf="item.rate_deviation_percentage" class="{{item.rate_deviation_percentage < 0?'negative-deviation':''}}">Deviation Percentage: {{item.rate_deviation_percentage}}% </h3>
+        </ion-label>
+        
+        <div class="btnCont multi" >
+          
+
+        </div>
+      </ion-item>
+      </ng-container>
+      <div class="app-customers" *ngIf="itemList.length==0 && showNoRecord">
+        <p class="ion-text-center mt-5">-- No data found --</p>
+      </div>
+
+    </div>
+  </div>
+    
+  </div>
+  
 </ion-content>
+
+<!--LOADER-->
+<div class="loader-overlay" *ngIf="enableLoader">
+  <div class="loader-container">
+    <img src="assets/img/ajax-loader.gif">
+    <span class="ion-text-center"> Please wait</span>
+  </div>
+</div>
+<!--LOADER-->
+
+<app-footer></app-footer>
