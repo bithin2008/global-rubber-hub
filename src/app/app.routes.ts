@@ -86,4 +86,8 @@ export const routes: Routes = [
     path: 'deep-link-demo',
     loadComponent: () => import('./components/deep-link-demo/deep-link-demo.component').then( m => m.DeepLinkDemoComponent)
   },
+  {
+    path: 'rubber-rates',
+    loadComponent: () => import('./rubber-rates/rubber-rates.page').then( m => m.RubberRatesPage)
+  },
 ];

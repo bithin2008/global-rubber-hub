@@ -187,6 +187,10 @@ export class DashboardPage implements OnInit, AfterViewInit {
 
   }
 
+  goToRubberRates() {
+    this.router.navigate(['/rubber-rates']);
+  }
+
   goToLiveBids(type?: string) {
     this.router.navigate(['/item-list'], { 
       queryParams: { type: type || 'all' } 
