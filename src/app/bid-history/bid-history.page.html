@@ -52,6 +52,7 @@
           <p *ngIf="item.full_name">{{item.full_name}}</p>
           <h3> Amount: ₹{{item.bid_amount}}/ {{item.short_name}}</h3>
           <p>Quantity: {{item.bid_quantity}} ({{getUOMText(item.uom_id)}})<p>
+            <p><small>{{item.added_on | date:'dd-MM-yyyy HH:mm a'}}</small></p>
         </ion-label>
         
         <!-- Status Badges -->

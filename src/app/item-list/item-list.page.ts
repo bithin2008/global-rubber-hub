@@ -171,11 +171,9 @@ export class ItemListPage implements OnInit {
           else {
             this.showNoRecord = true;
           }
-
           setTimeout(() => {
             register();
           }, 1000);
-
         }
       },
       (error) => {

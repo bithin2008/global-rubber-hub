@@ -985,7 +985,7 @@ export class ProfilePage implements OnInit {
         component: ImageCropperModalComponent,
         componentProps: {
           imageUrl: imageUri,
-          aspectRatio: 1, // 1:1 aspect ratio
+          aspectRatio: 210 / 297, // 1:1 aspect ratio
           maintainAspectRatio: true,
           cropperTitle: 'Crop Document Image'
         },

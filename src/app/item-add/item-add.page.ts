@@ -273,8 +273,8 @@ export class ItemAddPage implements OnInit, AfterViewInit {
   // Camera functionality methods
   async openCamera() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Select Image Source (Max 2MB)',
-      subHeader: 'Images larger than 2MB will be automatically rejected',
+      header: 'Select Image Source (Max 5MB)',
+      subHeader: 'Images larger than 5MB will be automatically rejected',
       buttons: [
         {
           text: 'Camera',
@@ -459,7 +459,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       console.log('Image size before processing:', this.formatFileSize(blob.size));
       
       // Check if image is already under 2MB
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 5 * 1024 * 1024; // 2MB
       if (blob.size > maxSize) {
         // Try to compress the image before rejecting
         const compressedImageUri = await this.compressImage(imageUri, blob.size);
@@ -467,7 +467,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
           console.log('Image compressed successfully');
           this.processImageURI(compressedImageUri);
         } else {
-          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image or lower quality.`, '', 5000, '');
+          this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 5MB. Please try again with a smaller image or lower quality.`, '', 5000, '');
           this.enableLoader = false;
         }
         return;
@@ -490,7 +490,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         component: ImageCropperModalComponent,
         componentProps: {
           imageUrl: imageUri,
-          aspectRatio: 1, // 1:1 aspect ratio
+          aspectRatio: 3/2, // 1:1 aspect ratio
           maintainAspectRatio: true,
           cropperTitle: 'Crop Item Image'
         },
@@ -522,9 +522,9 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       console.log('Processing cropped image, size:', this.formatFileSize(file.size));
       
       // Check file size
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 5 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 5000, '');
+        this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 5000, '');
         this.enableLoader = false;
         return;
       }
@@ -590,9 +590,9 @@ export class ItemAddPage implements OnInit, AfterViewInit {
             console.log('PNG blob created, size:', pngBlob.size);
             
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
-            const maxSize = 2 * 1024 * 1024; // 2MB
+            const maxSize = 5 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
-              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please try again with a smaller image.`, '', 4000, '');
+              this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '');
               this.enableLoader = false;
               return;
             }
@@ -655,8 +655,8 @@ export class ItemAddPage implements OnInit, AfterViewInit {
       }
 
       // Validate file size (2MB limit)
-      if (file.size > 2 * 1024 * 1024) {
-        this.showToast('error', `Image ${file.name} is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 2MB.`, '', 4000, '');
+      if (file.size > 5 * 1024 * 1024) {
+        this.showToast('error', `Image ${file.name} is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 4000, '');
         continue;
       }
 
@@ -727,7 +727,7 @@ export class ItemAddPage implements OnInit, AfterViewInit {
               console.log('Compressed image size:', this.formatFileSize(blob.size));
               
               // Check if compression was successful
-              if (blob.size <= 2 * 1024 * 1024) {
+              if (blob.size <= 5 * 1024 * 1024) {
                 const compressedUri = URL.createObjectURL(blob);
                 resolve(compressedUri);
               } else {
@@ -877,9 +877,9 @@ export class ItemAddPage implements OnInit, AfterViewInit {
         console.log('PNG blob created via alternative method, size:', pngBlob.size);
         
         // Check file size (2MB = 2 * 1024 * 1024 bytes)
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 5 * 1024 * 1024; // 2MB
         if (pngBlob.size > maxSize) {
-          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 2MB. Please select a smaller image.`, '', 4000, '');
+          this.showToast('error', `Image is too large (${this.formatFileSize(pngBlob.size)}). Maximum size allowed is 5MB. Please select a smaller image.`, '', 4000, '');
           this.enableLoader = false;
           return;
         }
