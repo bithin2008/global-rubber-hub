@@ -77,9 +77,9 @@ export class ItemListPage implements OnInit {
       this.pageTitleService.setPageTitle('Live Bid');
       this.handleSearchToggle();
       if (this.token) {
-        this.http.get(`https://globalrubberhub.com/api/v1/items/market/${this.token}`)
+        this.commonService.get(`items/market/${this.token}`)
           .subscribe((res: any) => {
-            this.itemList = res.data;
+            this.itemList = res.results;
           });
       } else {
         this.getItemList();

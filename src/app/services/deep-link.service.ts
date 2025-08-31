@@ -98,16 +98,35 @@ export class DeepLinkService {
       const url = eventData.url;
       console.log('Processing deep link URL:', url);
 
-      // Handle different URL formats
+      // Extract the slug part after the scheme or domain
+       const slug = eventData.url.split('//')[1]; 
+       console.log('slug:', slug);
+      // Split the slug into parts
+      const parts = slug.split('/');
+      console.log('URL parts:', parts);
+
+      // Handle market links specifically
+      if (parts[0] === 'market') {
+        const token = parts[1];
+        console.log('Market token:', token);
+        
+        // Navigate to item list with token
+        this.router.navigate(['/item-list'], { 
+          queryParams: { token: token } 
+        });
+        return;
+      }
+
+      // Handle other URL formats
       let path: string | null = null;
       let params: { [key: string]: string } = {};
 
       if (url.includes('globalrubberhub://')) {
         // Custom scheme URL
-        const parts = url.split('globalrubberhub://')[1].split('?');
-        path = parts[0];
-        if (parts[1]) {
-          params = this.parseQueryParams('?' + parts[1]);
+        const queryParts = slug.split('?');
+        path = queryParts[0];
+        if (queryParts[1]) {
+          params = this.parseQueryParams('?' + queryParts[1]);
         }
       } else if (url.includes('globalrubberhub.com/')) {
         // Universal link URL

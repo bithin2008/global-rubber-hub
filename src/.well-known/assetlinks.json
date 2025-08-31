@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.globalrubber.hub",
+    "sha256_cert_fingerprints": [
+      "D5:FD:D6:12:F9:AD:3E:25:13:33:15:EF:98:4B:22:A0:AB:1A:42:DE:83:AA:45:50:49:8D:D5:2C:FA:7F:5C:54"
+    ]
+  }
+}]

@@ -66,14 +66,16 @@
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
     "cordova": "^12.0.0",
-    "cordova-android": "^11.0.0",
+    "cordova-android": "^14.0.1",
     "cordova-plugin-camera": "^8.0.0",
+    "cordova-plugin-customurlscheme": "^5.0.2",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-googleplus": "^8.5.2",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-splashscreen": "5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
+    "cordova-plugin-universal-links": "^0.3.0",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -90,9 +92,7 @@
   },
   "description": "An Ionic project",
   "cordova": {
-    "platforms": [
-      "android"
-    ],
+    "platforms": [],
     "plugins": {
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -102,7 +102,14 @@
       "cordova-plugin-camera": {},
       "cordova-plugin-googleplus": {
         "PLAY_SERVICES_VERSION": "15.0.1"
-      }
+      },
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "globalrubberhub",
+        "ANDROID_SCHEME": "globalrubberhub",
+        "ANDROID_HOST": "globalrubberhub.com",
+        "ANDROID_PATHPREFIX": "/"
+      },
+      "cordova-plugin-universal-links": {}
     }
   }
 }

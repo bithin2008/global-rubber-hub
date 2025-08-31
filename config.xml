@@ -78,10 +78,26 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^5.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <universal-links>
-        <host name="globalrubberhub.com" scheme="https">
-            <path url="*" />
-        </host>
-    </universal-links>
+    <plugin name="cordova-plugin-customurlscheme" spec="^5.0.2">
+        <variable name="URL_SCHEME" value="globalrubberhub" />
+        <variable name="ANDROID_SCHEME" value="globalrubberhub" />
+        <variable name="ANDROID_HOST" value="globalrubberhub.com" />
+        <variable name="ANDROID_PATHPREFIX" value="/" />
+    </plugin>
     <allow-intent href="globalrubberhub:*" />
+    <platform name="ios">
+        <config-file parent="com.apple.developer.associated-domains" target="*-Debug.plist">
+            <array>
+                <string>applinks:globalrubberhub.com</string>
+            </array>
+        </config-file>
+        <config-file parent="com.apple.developer.associated-domains" target="*-Release.plist">
+            <array>
+                <string>applinks:globalrubberhub.com</string>
+            </array>
+        </config-file>
+    </platform>
+    <platform name="android">
+        <preference name="AndroidLaunchMode" value="singleTask" />
+    </platform>
 </widget>

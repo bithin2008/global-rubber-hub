@@ -77,6 +77,9 @@ export class AppComponent {
         const parts = slug.split('/');
         if (parts[0] === 'market') {
           const token = parts[1];
+
+          console.log('test token',token);
+          
           // Navigate to your item page
           this.router.navigate(['/item-list'], { 
             queryParams: { token: token } 
