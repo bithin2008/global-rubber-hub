@@ -1526,6 +1526,23 @@ ion-card-content {
     --background: #fb7805 !important;
   }
 }
+.market-stats-swiper{
+  .swiper-header{
+    .see-all-btn {
+      font-size: 13px;
+      --border-radius: 10px;
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --background: #6ca657;
+      --color: #fff;
+      text-transform: capitalize;
+    }
+  }
+
+}
+.btn{
+  text-transform: capitalize;
+}
 .section {
   margin-bottom: 24px;
 
