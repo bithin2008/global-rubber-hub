@@ -27,7 +27,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    
+    padding-left: 10px;
+     
     .headerLogo {
       // max-height: 40px;
       width: auto;
@@ -48,6 +49,10 @@
       }
     }
   }
+
+  .header-right {
+    padding-right: 10px;
+  }
   
   // Mobile responsiveness
   @media (max-width: 768px) {
@@ -60,7 +65,7 @@
       display: flex;
       align-items: center;
       cursor: pointer;
-      
+      padding-left: 10px;
       .headerLogo {
         // max-height: 35px;
         width: auto;
@@ -74,6 +79,8 @@
         letter-spacing: 0.5px;
       }
     }
+
+    
     
     .btn-container {
       .btn {

@@ -3,7 +3,7 @@
     <img class="headerLogo" src="assets/img/headerlogo.png" alt="">
     <span class="app-title">{{ pageTitle }}</span>
   </div>
-  <div class="btn-container">
+  <div class="btn-container header-right">
     <ion-button class="btn no-style addicon" (click)="goToProfile()"><img src="assets/img/icons/coin.svg" alt="" title=""> {{ walletBalance | number:'1.0-0' }}</ion-button>
     <ion-button class="btn no-style notification-btn {{unreadNotifications > 0?'blink-after':''}} " (click)="navigateTo('/notification')">
       <div class="notification-container">
