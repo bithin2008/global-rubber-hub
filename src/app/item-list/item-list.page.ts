@@ -18,6 +18,7 @@ import { ImageLightboxComponent } from '../shared/image-lightbox/image-lightbox.
 import { ShareModalComponent } from '../shared/share-modal/share-modal.component';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { WalletService } from '../services/wallet.service';
 
 @Component({
   selector: 'app-item-list',
@@ -56,7 +57,8 @@ export class ItemListPage implements OnInit {
     private popoverController: PopoverController,
     private authenticationService: AuthService,
     private pageTitleService: PageTitleService,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private walletService: WalletService,
     // private sharedService: SharedService,
   ) {
 
@@ -359,10 +361,41 @@ export class ItemListPage implements OnInit {
       if (result.data) {
         // Handle the bid submission
         console.log('Bid submitted:', result.data);
+        this.getProfileData();
       }
     });
 
     return await modal.present();
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          // Set profile image if available, otherwise show placeholder
+          if (response.user.profile_image && response.user.profile_image.trim() !== '') {
+            // Update the service so header reflects the change
+           // this.profileService.updateProfileImage(response.user.profile_image);
+          }  
+          
+          if (response.user.points !== undefined && response.user.points !== null) {
+            this.walletService.updateWalletBalance(parseFloat(response.user.points));
+          }// Update user name in service if available
+                
+        } else {
+          this.showToast('error', response.message, '', 3500, '/profile');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
 

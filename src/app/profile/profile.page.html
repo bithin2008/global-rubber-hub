@@ -172,7 +172,7 @@
         </div>
       </ion-item>
       <div class="file-upload-container">
-        <div class="file-upload-area" 
+        <div class="file-upload-area {{ uploadedFiles.length > 0 ? 'pointer-none' : '' }}" 
              (click)="openCameraForUpload()" 
             >
                      <div class="upload-icon">
@@ -211,7 +211,8 @@
             </ion-button>
           </div>
         </div>
-      </div>
+      </div>     
+    
       <div class="validation-error">
         <span *ngIf="submitted && f['id_proof_image'].errors">
           <div *ngIf="f['id_proof_image'].errors['required']">Please upload at least one file</div>

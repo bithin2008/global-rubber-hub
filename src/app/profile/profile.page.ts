@@ -23,7 +23,7 @@ import { ImageCropperModalComponent } from '../components/image-cropper-modal/im
 })
 export class ProfilePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  
+
   profileForm!: FormGroup;
   public type: any;
   public enableLoader: boolean = false;
@@ -34,10 +34,22 @@ export class ProfilePage implements OnInit {
   public filteredCountries: any[] = [];
   public showCountryDropdown: boolean = false;
   public uploadedFiles: any[] = [];
+  public selectedImages: any[] = [];
   public isDragOver: boolean = false;
   public showCameraInterface: boolean = false;
   public cameraStream: MediaStream | null = null;
   private isDeviceReady: boolean = false;
+
+  // Method to remove an image from selectedImages array
+  removeImage(index: number) {
+    this.selectedImages.splice(index, 1);
+  }
+
+  // Method to preview an image
+  async previewImage(imageUrl: string) {
+    // You can implement image preview functionality here
+    console.log('Preview image:', imageUrl);
+  }
   constructor(
     public router: Router,
     public activatedRoute: ActivatedRoute,
@@ -49,7 +61,7 @@ export class ProfilePage implements OnInit {
     private pageTitleService: PageTitleService,
     private platform: Platform,
     private authGuardService: AuthGuardService
-  ) { 
+  ) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Profile');
       this.platform.ready().then(() => {
@@ -60,18 +72,18 @@ export class ProfilePage implements OnInit {
       this.profileForm = this.formBuilder.group({
         full_name: ['', [Validators.required, Validators.maxLength(60)]],
         email: ['', [Validators.required, Validators.email]],
-        phone: ['', [Validators.required]],
+        phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
         company: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
         pan: [''],
-        id_proof_type: [''],
-        id_proof_image: [[], [Validators.minLength(1)]],
+        id_proof_type: ['', [Validators.required]],
+        id_proof_image: ['', [Validators.required]],
         country: ['India', [Validators.required]],
         company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
         city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
         state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
         zip: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
       });
-  
+
       // Listen for country changes to update PAN validation
       this.profileForm.get('country')?.valueChanges.subscribe(country => {
         console.log('Country changed to:', country);
@@ -122,7 +134,7 @@ export class ProfilePage implements OnInit {
     const searchTerm = event.target.value.toLowerCase();
     console.log('Search term:', searchTerm);
     console.log('All countries:', this.countries);
-    
+
     if (searchTerm) {
       this.filteredCountries = this.countries.filter(country =>
         country.name.toLowerCase().includes(searchTerm)
@@ -160,7 +172,7 @@ export class ProfilePage implements OnInit {
     this.enableLoader = true;
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
-      (response: any) => {
+      async (response: any) => {
         this.enableLoader = false;
         if (response.code == 200) {
           // Set profile image if available, otherwise show placeholder
@@ -169,6 +181,18 @@ export class ProfilePage implements OnInit {
             this.showPlaceholder = false;
             // Update the service so header reflects the change
             this.profileService.updateProfileImage(response.user.profile_image);
+            const url = response.user.id_proof_image;
+            const fileName = url.split('/').pop();
+            const fileResponse = await fetch(url, { method: 'HEAD' });
+            if (!fileResponse.ok) {
+              throw new Error(`HTTP error! Status: ${fileResponse.status}`);
+            }
+            // Extract file size (Content-Length header)
+            const size = fileResponse.headers.get('content-length');
+            this.uploadedFiles.push({
+              name: fileName,
+              size: size
+            });
           } else {
             this.profileImage = '';
             this.showPlaceholder = true;
@@ -180,6 +204,21 @@ export class ProfilePage implements OnInit {
             this.profileService.updateUserName(response.user.full_name);
           }
           this.profileForm.patchValue(response.user)
+                      // Format phone number - remove +91 and ensure 10 digits
+            let formattedPhone = response.user.phone;
+            if (formattedPhone && formattedPhone.startsWith('+91')) {
+              formattedPhone = formattedPhone.substring(3); // Remove +91
+            }
+            // Ensure only last 10 digits
+            if (formattedPhone && formattedPhone.length > 10) {
+              formattedPhone = formattedPhone.slice(-10);
+            }
+
+            this.profileForm.patchValue({
+              company: response.user.company_name,
+              zip: response.user.zipcode,
+              phone: formattedPhone,
+            })
         } else {
           this.showToast('error', response.message, '', 3500, '/profile');
         }
@@ -239,7 +278,7 @@ export class ProfilePage implements OnInit {
       console.log('Is file size > maxSize?', file.size > maxSize);
       console.log('Original size formatted:', this.formatFileSize(file.size));
       console.log('============================');
-      
+
       // Check file type
       if (!allowedTypes.includes(file.type)) {
         this.showToast('error', `${file.name} is not a supported file type`, '', 3000, '/profile');
@@ -268,13 +307,13 @@ export class ProfilePage implements OnInit {
           canvas.toBlob((pngBlob) => {
             if (pngBlob) {
               console.log('Converted file size:', this.formatFileSize(pngBlob.size));
-              
+
               // Check if converted file is still under 2MB
               if (pngBlob.size > maxSize) {
                 this.showToast('error', `Image conversion resulted in file too large (${this.formatFileSize(pngBlob.size)}). Please try a smaller image.`, '', 4000, '/profile');
                 return;
               }
-              
+
               const convertedFile = new File([pngBlob], `${file.name.split('.')[0]}.png`, { type: 'image/png' });
 
               // Create file object with converted file
@@ -342,7 +381,7 @@ export class ProfilePage implements OnInit {
 
   formatFileSize(bytes: number): string {
     console.log('formatFileSize called with bytes:', bytes, 'Type:', typeof bytes);
-    
+
     if (bytes === 0) return '0 Bytes';
     if (bytes < 1024) return bytes + ' Bytes';
     if (bytes < 1024 * 1024) {
@@ -432,13 +471,13 @@ export class ProfilePage implements OnInit {
       console.log('Camera check: Not on mobile device or PWA');
       return false;
     }
-    
+
     // Check if Capacitor Camera plugin is available
     if (!Camera) {
       console.log('Camera check: Capacitor Camera plugin not available');
       return false;
     }
-    
+
     console.log('Camera check: Capacitor Camera is available');
     return true;
   }
@@ -446,7 +485,7 @@ export class ProfilePage implements OnInit {
   async takePicture(source: string) {
     try {
       console.log('takePicture called with source:', source);
-      
+
       // Check if native camera is available
       if (this.checkCameraAvailability()) {
         try {
@@ -458,9 +497,9 @@ export class ProfilePage implements OnInit {
       } else {
         // Fallback to file input for web, desktop, or when camera is not available
         console.log('Native camera not available, using file input');
-      this.openFileInputWithSource(source);
+        this.openFileInputWithSource(source);
       }
-      
+
     } catch (error: any) {
       console.error('Image selection error:', error);
       this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
@@ -471,7 +510,7 @@ export class ProfilePage implements OnInit {
   async takePictureForUpload(source: string) {
     try {
       console.log('takePictureForUpload called with source:', source);
-      
+
       // Check if native camera is available
       if (this.checkCameraAvailability()) {
         try {
@@ -485,7 +524,7 @@ export class ProfilePage implements OnInit {
         console.log('Native camera not available, using file input');
         this.openFileInputForUpload(source);
       }
-      
+
     } catch (error: any) {
       console.error('Image selection error for upload:', error);
       this.showToast('error', 'Failed to select image. Please try again.', '', 4000, '/profile');
@@ -495,7 +534,7 @@ export class ProfilePage implements OnInit {
   private async useNativeCamera(source: string): Promise<void> {
     try {
       console.log('Attempting to use Capacitor camera for source:', source);
-      
+
       // Check if camera is available
       if (!Camera) {
         console.log('Capacitor Camera plugin not available, falling back to file input');
@@ -504,14 +543,14 @@ export class ProfilePage implements OnInit {
       }
 
       const cameraSource = source === 'camera' ? CameraSource.Camera : CameraSource.Photos;
-      
+
       console.log('Using Capacitor camera with source:', cameraSource);
-      
+
       // // Show size limit warning for camera
       // if (source === 'camera') {
       //   this.showToast('info', 'Camera mode: Images will be automatically optimized to stay under 2MB', '', 3000, '/profile');
       // }
-      
+
       const image = await Camera.getPhoto({
         quality: 60, // Reduced quality to help stay under 2MB
         allowEditing: true,
@@ -528,11 +567,11 @@ export class ProfilePage implements OnInit {
           aspectRatio: '1:1'
         })
       });
-      
+
       console.log('Camera returned image:', image);
       console.log('Image webPath:', image.webPath);
       console.log('Image path:', image.path);
-      
+
       if (image.webPath) {
         // Show image cropper modal
         await this.openImageCropper(image.webPath);
@@ -541,26 +580,26 @@ export class ProfilePage implements OnInit {
       }
     } catch (error: any) {
       console.error('Capacitor camera error:', error);
-      
+
       // Handle specific camera errors
       if (error.message && error.message.includes('cancelled')) {
         console.log('User cancelled image selection');
         return;
       }
-      
+
       // Handle permission errors
       if (error.message && (error.message.includes('permission') || error.message.includes('Permission'))) {
         this.showToast('error', 'Camera permission is required. Please enable camera access in your device settings.', '', 5000, '/profile');
         return;
       }
-      
+
       // Handle hardware errors
       if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
         this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '/profile');
         this.openFileInputWithSource('library');
         return;
       }
-      
+
       // Fallback to file input if native camera fails
       console.log('Falling back to file input due to camera error');
       this.openFileInputWithSource(source);
@@ -573,9 +612,9 @@ export class ProfilePage implements OnInit {
       // Fetch the image to check its size
       const response = await fetch(imageUri);
       const blob = await response.blob();
-      
+
       console.log('Image size before processing:', this.formatFileSize(blob.size));
-      
+
       // Check if image is already under 2MB
       const maxSize = 5 * 1024 * 1024; // 2MB
       if (blob.size > maxSize) {
@@ -591,10 +630,10 @@ export class ProfilePage implements OnInit {
         }
         return;
       }
-      
+
       // If size is acceptable, process the image
       this.processImageURI(imageUri);
-      
+
     } catch (error) {
       console.error('Error checking image size:', error);
       this.enableLoader = false;
@@ -606,18 +645,18 @@ export class ProfilePage implements OnInit {
   private async compressImage(imageUri: string, originalSize: number): Promise<string | null> {
     try {
       console.log('Attempting to compress image...');
-      
+
       // Create a canvas to compress the image
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
-      
+
       return new Promise((resolve) => {
         img.onload = () => {
           // Calculate new dimensions to reduce file size
           const maxDimension = 600; // Reduce dimensions to help with compression
           let { width, height } = img;
-          
+
           if (width > height) {
             if (width > maxDimension) {
               height = (height * maxDimension) / width;
@@ -629,18 +668,18 @@ export class ProfilePage implements OnInit {
               height = maxDimension;
             }
           }
-          
+
           canvas.width = width;
           canvas.height = height;
-          
+
           // Draw the resized image
           ctx?.drawImage(img, 0, 0, width, height);
-          
+
           // Convert to blob with lower quality
           canvas.toBlob((blob) => {
             if (blob) {
               console.log('Compressed image size:', this.formatFileSize(blob.size));
-              
+
               // Check if compression was successful
               if (blob.size <= 5 * 1024 * 1024) {
                 const compressedUri = URL.createObjectURL(blob);
@@ -654,15 +693,15 @@ export class ProfilePage implements OnInit {
             }
           }, 'image/jpeg', 0.6); // Use JPEG with 60% quality
         };
-        
+
         img.onerror = () => {
           console.error('Failed to load image for compression');
           resolve(null);
         };
-        
+
         img.src = imageUri;
       });
-      
+
     } catch (error) {
       console.error('Error compressing image:', error);
       this.enableLoader = false;
@@ -673,18 +712,18 @@ export class ProfilePage implements OnInit {
   private compressImageForProfile(imageUri: string, originalSize: number): void {
     console.log('Attempting to compress profile image...');
     console.log('Original size:', this.formatFileSize(originalSize));
-    
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    
+
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       // Calculate new dimensions to reduce file size
       let { width, height } = img;
       const maxDimension = 600; // Reduce dimensions to help with compression
-      
+
       if (width > height) {
         if (width > maxDimension) {
           height = (height * maxDimension) / width;
@@ -696,16 +735,16 @@ export class ProfilePage implements OnInit {
           height = maxDimension;
         }
       }
-      
+
       canvas.width = width;
       canvas.height = height;
-      
+
       // Draw the resized image
       ctx?.drawImage(img, 0, 0, width, height);
-      
+
       // Try different quality levels
       const qualityLevels = [0.8, 0.6, 0.4, 0.2];
-      
+
       const tryCompression = (index: number) => {
         if (index >= qualityLevels.length) {
           // All compression attempts failed
@@ -714,14 +753,14 @@ export class ProfilePage implements OnInit {
           this.enableLoader = false;
           return;
         }
-        
+
         const quality = qualityLevels[index];
         console.log(`Trying compression with quality: ${quality}`);
-        
+
         canvas.toBlob((blob) => {
           if (blob) {
             console.log(`Compressed size with quality ${quality}:`, this.formatFileSize(blob.size));
-            
+
             if (blob.size <= 5 * 1024 * 1024) {
               // Success! Upload the compressed image
               const file = new File([blob], 'profile-photo.jpg', { type: 'image/jpeg' });
@@ -736,17 +775,17 @@ export class ProfilePage implements OnInit {
           }
         }, 'image/jpeg', quality);
       };
-      
+
       tryCompression(0);
     };
-    
+
     img.onerror = () => {
       console.error('Failed to load image for compression');
       this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '/profile');
       this.resetImageDisplay();
       this.enableLoader = false;
     };
-    
+
     img.src = imageUri;
   }
 
@@ -755,14 +794,14 @@ export class ProfilePage implements OnInit {
     console.log('File type:', file.type);
     console.log('File name:', file.name);
     console.log('File lastModified:', file.lastModified);
-    
+
     // Validate file before upload
     if (!file || file.size === 0) {
       this.showToast('error', 'Invalid file: File is empty or corrupted', '', 3000, '/profile');
       this.enableLoader = false;
       return;
     }
-    
+
     // Check if file type is valid
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
@@ -770,7 +809,7 @@ export class ProfilePage implements OnInit {
       this.enableLoader = false;
       return;
     }
-    
+
     // Check file size (max 2MB)
     const maxSize = 5 * 1024 * 1024; // 2MB
     if (file.size > maxSize) {
@@ -778,36 +817,25 @@ export class ProfilePage implements OnInit {
       this.enableLoader = false;
       return;
     }
-    
+
     let url = 'user/update-profile-image';
     const formData = new FormData();
-    
+
     // Try with the standard field name first
     formData.append('profile_image', file);
-    
-    // Log the file details for debugging
-    console.log('File being uploaded:');
-    console.log('- Name:', file.name);
-    console.log('- Type:', file.type);
-    console.log('- Size:', file.size);
-    console.log('- Last Modified:', file.lastModified);
-    
     // Log FormData for debugging
     console.log('FormData created with file:', file.name);
 
     this.commonService.filepost(url, formData).subscribe(
       (res: any) => {
         this.enableLoader = false;
-        console.log('Response type:', typeof res);
-        console.log('Response:', res);
-
         // Handle different response types
         if (res.code == 200) {
           this.showToast('success', res.message, '', 2500, '');
-          
+
         } else {
           this.showToast('error', res.message, '', 2500, '/profile');
-          
+
         }
         this.getProfileData();
       },
@@ -817,7 +845,7 @@ export class ProfilePage implements OnInit {
         console.log('Error status:', error.status);
         console.log('Error message:', error.message);
         console.log('Error response:', error.error);
-        
+
         // Handle specific error cases
         if (error.status === 422) {
           this.showToast('error', 'Invalid image format. Please try with a different image.', '', 3000, '/profile');
@@ -834,7 +862,7 @@ export class ProfilePage implements OnInit {
   public captureImageFromVideo(): void {
     try {
       console.log('Capturing image from video...');
-      
+
       const videoElement = document.getElementById('cameraVideo') as HTMLVideoElement;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -894,13 +922,13 @@ export class ProfilePage implements OnInit {
 
   public closeCameraInterface(): void {
     console.log('Closing camera interface...');
-    
+
     // Stop camera stream
     if (this.cameraStream) {
       this.cameraStream.getTracks().forEach(track => track.stop());
       this.cameraStream = null;
     }
-    
+
     // Hide camera interface
     this.showCameraInterface = false;
   }
@@ -908,10 +936,10 @@ export class ProfilePage implements OnInit {
   private async handleCapturedImage(imageUri: string): Promise<void> {
     try {
       console.log('Handling captured image:', imageUri);
-      
+
       // Close camera interface first
       this.closeCameraInterface();
-      
+
       // Show image cropper modal
       await this.openImageCropper(imageUri);
     } catch (error) {
@@ -938,11 +966,11 @@ export class ProfilePage implements OnInit {
       await modal.present();
 
       const { data } = await modal.onWillDismiss();
-      
+
       if (data && data.cropped) {
         // Show loading indicator
         this.enableLoader = true;
-        
+
         // Process the cropped image
         await this.processCroppedImage(data.file);
       } else {
@@ -959,7 +987,7 @@ export class ProfilePage implements OnInit {
   private async processCroppedImage(file: File): Promise<void> {
     try {
       console.log('Processing cropped image, size:', this.formatFileSize(file.size));
-      
+
       // Check file size
       const maxSize = 5 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
@@ -968,7 +996,7 @@ export class ProfilePage implements OnInit {
         this.enableLoader = false;
         return;
       }
-      
+
       // Upload the cropped image
       this.uploadProfileImage(file);
     } catch (error) {
@@ -995,11 +1023,11 @@ export class ProfilePage implements OnInit {
       await modal.present();
 
       const { data } = await modal.onWillDismiss();
-      
+
       if (data && data.cropped) {
         // Show loading indicator
         this.enableLoader = true;
-        
+
         // Process the cropped image for upload
         await this.processCroppedImageForUpload(data.file);
       } else {
@@ -1016,7 +1044,7 @@ export class ProfilePage implements OnInit {
   private async processCroppedImageForUpload(file: File): Promise<void> {
     try {
       console.log('Processing cropped image for upload, size:', this.formatFileSize(file.size));
-      
+
       // Check file size
       const maxSize = 5 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
@@ -1025,7 +1053,7 @@ export class ProfilePage implements OnInit {
         this.enableLoader = false;
         return;
       }
-      
+
       // Add the file to uploaded files array
       this.uploadedFiles.push({
         file: file,
@@ -1033,11 +1061,11 @@ export class ProfilePage implements OnInit {
         size: file.size,
         preview: URL.createObjectURL(file)
       });
-      
+
       // Update form control
       const currentFiles = this.profileForm.get('id_proof_image')?.value || [];
       this.profileForm.get('id_proof_image')?.setValue([...currentFiles, file]);
-      
+
       this.enableLoader = false;
       this.showToast('success', 'Document image added successfully', '', 2500, '/profile');
     } catch (error) {
@@ -1058,17 +1086,17 @@ export class ProfilePage implements OnInit {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
-    
+
     // Set capture attribute for camera on mobile devices
     if (source === 'camera') {
       fileInput.setAttribute('capture', 'camera');
     }
-    
+
     fileInput.addEventListener('change', (event: any) => {
       const file = event.target.files[0];
       if (file) {
         console.log('File selected:', file.name, 'Size:', file.size);
-        
+
         // Check file size before processing - enforce 2MB limit
         const maxSize = 5 * 1024 * 1024; // 2MB
         if (file.size > maxSize) {
@@ -1076,10 +1104,10 @@ export class ProfilePage implements OnInit {
           document.body.removeChild(fileInput);
           return;
         }
-        
+
         // Show loading indicator
         this.enableLoader = true;
-        
+
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.processImageURI(e.target.result);
@@ -1092,12 +1120,12 @@ export class ProfilePage implements OnInit {
       }
       document.body.removeChild(fileInput);
     });
-    
+
     fileInput.addEventListener('cancel', () => {
       console.log('File selection cancelled');
       document.body.removeChild(fileInput);
     });
-    
+
     document.body.appendChild(fileInput);
     fileInput.click();
   }
@@ -1105,14 +1133,14 @@ export class ProfilePage implements OnInit {
   private async processImageURI(imageURI: string): Promise<void> {
     try {
       console.log('Processing image URI:', imageURI);
-      
+
       // Convert file/content URI to a displayable path in WebView
       const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
         ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
         : imageURI;
-      
+
       console.log('Display source:', displaySrc);
-      
+
       // Store the displayable image URI directly in the variable
       this.profileImage = displaySrc;
       this.showPlaceholder = false;
@@ -1137,11 +1165,11 @@ export class ProfilePage implements OnInit {
       img.onload = () => {
         clearTimeout(timeout);
         console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height);
-        
+
         // Set canvas dimensions
         canvas.width = img.width;
         canvas.height = img.height;
-        
+
         // Clear canvas and draw image
         ctx?.clearRect(0, 0, canvas.width, canvas.height);
         ctx?.drawImage(img, 0, 0);
@@ -1149,7 +1177,7 @@ export class ProfilePage implements OnInit {
         canvas.toBlob((pngBlob) => {
           if (pngBlob) {
             console.log('PNG blob created, size:', pngBlob.size);
-            
+
             // Check file size (2MB = 2 * 1024 * 1024 bytes)
             const maxSize = 5 * 1024 * 1024; // 2MB
             if (pngBlob.size > maxSize) {
@@ -1222,14 +1250,14 @@ export class ProfilePage implements OnInit {
       img.onerror = (error) => {
         console.error('Error loading image:', error);
         console.error('Image source that failed:', displaySrc);
-        
+
         // Check if this is a camera image (file:// URI)
         if (imageURI.startsWith('file://') || imageURI.startsWith('content://')) {
           console.log('Detected camera image, trying alternative processing');
           this.handleImageLoadError(imageURI);
         } else {
           // For other types of images, show generic error
-        this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
+          this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
           this.resetImageDisplay();
           this.enableLoader = false;
         }
@@ -1246,7 +1274,7 @@ export class ProfilePage implements OnInit {
 
   private handleImageLoadError(originalURI: string): void {
     console.log('Attempting alternative image processing for:', originalURI);
-    
+
     // For file:// URIs, try to convert to blob URL
     if (originalURI.startsWith('file://')) {
       this.convertFileUriToBlob(originalURI);
@@ -1262,12 +1290,12 @@ export class ProfilePage implements OnInit {
   private convertFileUriToBlob(fileUri: string): void {
     // For file:// URIs, we need to use a different approach
     console.log('Converting file URI to blob:', fileUri);
-    
+
     // Try to read the file using FileReader
     const xhr = new XMLHttpRequest();
     xhr.open('GET', fileUri, true);
     xhr.responseType = 'blob';
-    
+
     xhr.onload = () => {
       if (xhr.status === 200) {
         const blob = xhr.response;
@@ -1280,20 +1308,20 @@ export class ProfilePage implements OnInit {
         this.resetImageDisplay();
       }
     };
-    
+
     xhr.onerror = () => {
       console.error('XHR error loading file URI');
       this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
       this.enableLoader = false;
       this.resetImageDisplay();
     };
-    
+
     xhr.send();
   }
 
   private convertContentUriToBlob(contentUri: string): void {
     console.log('Converting content URI to blob:', contentUri);
-    
+
     // For content:// URIs, try to use fetch with special handling
     fetch(contentUri)
       .then(response => {
@@ -1316,7 +1344,7 @@ export class ProfilePage implements OnInit {
 
   private convertUriToBlob(uri: string): void {
     console.log('Converting URI to blob:', uri);
-    
+
     fetch(uri)
       .then(response => response.blob())
       .then(blob => {
@@ -1325,7 +1353,7 @@ export class ProfilePage implements OnInit {
       })
       .catch(error => {
         console.error('Failed to create blob from URI:', error);
-        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');``
+        this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile'); ``
         this.resetImageDisplay();
         this.enableLoader = false;
       });
@@ -1333,16 +1361,16 @@ export class ProfilePage implements OnInit {
 
   private processImageFromBlobUrl(blobUrl: string): void {
     console.log('Processing image from blob URL:', blobUrl);
-    
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    
+
     img.onload = () => {
       console.log('Image loaded via blob URL');
       this.processImageWithCanvas(img);
       URL.revokeObjectURL(blobUrl); // Clean up
     };
-    
+
     img.onerror = () => {
       console.error('Failed to load image via blob URL');
       URL.revokeObjectURL(blobUrl); // Clean up
@@ -1350,18 +1378,18 @@ export class ProfilePage implements OnInit {
       this.enableLoader = false;
       this.resetImageDisplay();
     };
-    
+
     img.src = blobUrl;
   }
 
   private processImageWithCanvas(img: HTMLImageElement): void {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     // Set canvas dimensions
     canvas.width = img.width;
     canvas.height = img.height;
-    
+
     // Clear canvas and draw image
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     ctx?.drawImage(img, 0, 0);
@@ -1369,7 +1397,7 @@ export class ProfilePage implements OnInit {
     canvas.toBlob((pngBlob) => {
       if (pngBlob) {
         console.log('PNG blob created via alternative method, size:', pngBlob.size);
-        
+
         // Check file size (2MB = 2 * 1024 * 1024 bytes)
         const maxSize = 5 * 1024 * 1024; // 2MB
         if (pngBlob.size > maxSize) {
@@ -1450,7 +1478,7 @@ export class ProfilePage implements OnInit {
   private async useNativeCameraForUpload(source: string): Promise<void> {
     try {
       console.log('Attempting to use Capacitor camera for upload with source:', source);
-      
+
       // Check if camera is available
       if (!Camera) {
         console.log('Capacitor Camera plugin not available, falling back to file input');
@@ -1459,9 +1487,9 @@ export class ProfilePage implements OnInit {
       }
 
       const cameraSource = source === 'camera' ? CameraSource.Camera : CameraSource.Photos;
-      
+
       console.log('Using Capacitor camera for upload with source:', cameraSource);
-      
+
       const image = await Camera.getPhoto({
         quality: 50, // Very low quality to ensure under 2MB
         allowEditing: true,
@@ -1478,11 +1506,11 @@ export class ProfilePage implements OnInit {
           aspectRatio: '1:1'
         })
       });
-      
+
       console.log('Camera returned image for upload:', image);
       console.log('Image webPath:', image.webPath);
       console.log('Image path:', image.path);
-      
+
       if (image.webPath) {
         // Show image cropper modal for upload
         await this.openImageCropperForUpload(image.webPath);
@@ -1491,26 +1519,26 @@ export class ProfilePage implements OnInit {
       }
     } catch (error: any) {
       console.error('Capacitor camera error for upload:', error);
-      
+
       // Handle specific camera errors
       if (error.message && error.message.includes('cancelled')) {
         console.log('User cancelled image selection');
         return;
       }
-      
+
       // Handle permission errors
       if (error.message && (error.message.includes('permission') || error.message.includes('Permission'))) {
         this.showToast('error', 'Camera permission is required. Please enable camera access in your device settings.', '', 5000, '/profile');
         return;
       }
-      
+
       // Handle hardware errors
       if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
         this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '/profile');
         this.openFileInputForUpload('library');
         return;
       }
-      
+
       // Fallback to file input if native camera fails
       console.log('Falling back to file input due to camera error');
       this.openFileInputForUpload(source);
@@ -1526,12 +1554,12 @@ export class ProfilePage implements OnInit {
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
     fileInput.multiple = true; // Allow multiple selection
-    
+
     // Set capture attribute for camera on mobile devices
     if (source === 'camera') {
       fileInput.setAttribute('capture', 'camera');
     }
-    
+
     fileInput.addEventListener('change', (event: any) => {
       const files = event.target.files;
       if (files) {
@@ -1539,12 +1567,12 @@ export class ProfilePage implements OnInit {
       }
       document.body.removeChild(fileInput);
     });
-    
+
     fileInput.addEventListener('cancel', () => {
       console.log('File selection cancelled');
       document.body.removeChild(fileInput);
     });
-    
+
     document.body.appendChild(fileInput);
     fileInput.click();
   }
@@ -1553,14 +1581,14 @@ export class ProfilePage implements OnInit {
   private async processImageForUpload(imageURI: string): Promise<void> {
     try {
       console.log('Processing camera image for upload:', imageURI);
-      
+
       // Convert file/content URI to a displayable path in WebView
       const displaySrc = (window as any).Ionic?.WebView?.convertFileSrc
         ? (window as any).Ionic.WebView.convertFileSrc(imageURI)
         : imageURI;
-      
+
       console.log('Display source for upload:', displaySrc);
-      
+
       // Convert to PNG format using canvas for better compatibility
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -1579,7 +1607,7 @@ export class ProfilePage implements OnInit {
       img.onload = () => {
         clearTimeout(timeout);
         console.log('Upload image loaded successfully, dimensions:', img.width, 'x', img.height);
-        
+
         // Process image with compression
         this.processImageWithCanvasForUpload(img);
       };
@@ -1588,14 +1616,14 @@ export class ProfilePage implements OnInit {
         clearTimeout(timeout);
         console.error('Error loading upload image:', error);
         console.error('Image source that failed:', displaySrc);
-        
+
         // For upload images, try alternative processing
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
         this.enableLoader = false;
       };
 
       img.src = displaySrc;
-      
+
     } catch (error: any) {
       console.error('Upload image processing error:', error);
       this.showToast('error', 'Failed to process camera image. Please try again.', '', 4000, '/profile');
@@ -1611,11 +1639,11 @@ export class ProfilePage implements OnInit {
   // Process image with canvas for upload with compression
   private processImageWithCanvasForUpload(img: HTMLImageElement): void {
     console.log('Original image dimensions:', img.width, 'x', img.height);
-    
+
     // Calculate new dimensions to force smaller file size
     const maxDimension = 400; // Very small dimensions to ensure small file size
     let { width, height } = img;
-    
+
     // Resize image to smaller dimensions
     if (width > height) {
       if (width > maxDimension) {
@@ -1628,23 +1656,23 @@ export class ProfilePage implements OnInit {
         height = maxDimension;
       }
     }
-    
+
     console.log('Resized dimensions:', width, 'x', height);
-    
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     // Set canvas to resized dimensions
     canvas.width = width;
     canvas.height = height;
-    
+
     // Clear canvas and draw resized image
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     ctx?.drawImage(img, 0, 0, width, height);
 
     // Try different quality levels for compression (more aggressive)
     const qualityLevels = [0.5, 0.4, 0.3, 0.2, 0.1, 0.05];
-    
+
     const tryCompression = (index: number) => {
       if (index >= qualityLevels.length) {
         // If all PNG compression fails, try JPEG with very low quality
@@ -1652,7 +1680,7 @@ export class ProfilePage implements OnInit {
         canvas.toBlob((jpegBlob) => {
           if (jpegBlob) {
             console.log('JPEG blob size:', this.formatFileSize(jpegBlob.size));
-            
+
             const maxSize = 5 * 1024 * 1024; // 2MB
             if (jpegBlob.size <= maxSize) {
               // Success with JPEG! Create file and add to uploads
@@ -1668,14 +1696,14 @@ export class ProfilePage implements OnInit {
         }, 'image/jpeg', 0.3); // Very low JPEG quality
         return;
       }
-      
+
       const quality = qualityLevels[index];
       console.log(`Trying PNG compression with quality: ${quality}`);
-      
+
       canvas.toBlob((pngBlob) => {
         if (pngBlob) {
           console.log(`PNG compressed size with quality ${quality}:`, this.formatFileSize(pngBlob.size));
-          
+
           // Check file size (2MB = 2 * 1024 * 1024 bytes)
           const maxSize = 5 * 1024 * 1024; // 2MB
           if (pngBlob.size <= maxSize) {
@@ -1692,21 +1720,21 @@ export class ProfilePage implements OnInit {
         }
       }, 'image/png', quality);
     };
-    
+
     tryCompression(0);
   }
 
   // Force resize and compress with very small dimensions
   private forceResizeAndCompress(img: HTMLImageElement, maxDimension: number): void {
     console.log(`Force resizing to ${maxDimension}x${maxDimension}`);
-    
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     // Force square dimensions
     canvas.width = maxDimension;
     canvas.height = maxDimension;
-    
+
     // Clear canvas and draw resized image
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     ctx?.drawImage(img, 0, 0, maxDimension, maxDimension);
@@ -1715,7 +1743,7 @@ export class ProfilePage implements OnInit {
     canvas.toBlob((jpegBlob) => {
       if (jpegBlob) {
         console.log('Force compressed JPEG size:', this.formatFileSize(jpegBlob.size));
-        
+
         const maxSize = 5 * 1024 * 1024; // 2MB
         if (jpegBlob.size <= maxSize) {
           // Success! Create file and add to uploads
@@ -1756,7 +1784,7 @@ export class ProfilePage implements OnInit {
           id_proof_image: this.uploadedFiles.map(f => f.file)
         });
       }
-      
+
       console.log('Camera image added to upload files:', this.uploadedFiles.length);
       this.enableLoader = false;
     };
@@ -1776,21 +1804,47 @@ export class ProfilePage implements OnInit {
     formData.append('last_name', this.f['full_name'].value.split(' ')[1]);
     formData.append('full_name', this.f['full_name'].value);
     formData.append('email', this.f['email'].value);
-    formData.append('phone', this.f['phone'].value);
-    formData.append('company', this.f['company'].value);
-    if(this.f['country'].value === 'India'){
+    // Format phone number before submission
+    let phone = this.f['phone'].value;
+    if (phone && phone.length > 10) {
+      phone = phone.slice(-10); // Keep only last 10 digits
+    }
+    formData.append('phone', phone);
+    formData.append('company_name', this.f['company'].value);
+    if (this.f['country'].value === 'India') {
       formData.append('pan', this.f['pan'].value);
-    }    
+    }
     formData.append('id_proof_type', this.f['id_proof_type'].value);
     formData.append('country', this.f['country'].value);
     formData.append('company_address', this.f['company_address'].value);
-    formData.append('zip', this.f['zip'].value);
+    formData.append('zipcode', this.f['zip'].value);
     formData.append('city', this.f['city'].value);
     formData.append('state', this.f['state'].value);
 
-    // Append all files
-    if (this.uploadedFiles && Array.isArray(this.uploadedFiles) && this.uploadedFiles.length > 0) {
-      formData.append(`id_proof_image`, this.uploadedFiles[0].file);
+          // Append all files
+      const idProofValue = this.f['id_proof_image'].value;
+      
+      // Function to check if string is an image URL
+      const isImageUrl = (value: string): boolean => {
+        // Check if it's a URL
+        if (value.startsWith('http://') || value.startsWith('https://')) {
+          // Check if it ends with common image extensions
+          const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+          return imageExtensions.some(ext => value.toLowerCase().endsWith(ext)) ||
+                 value.includes('/uploads/') || // Check for upload path
+                 value.includes('/images/');    // Check for images path
+        }
+        return false;
+      };
+
+      const isNotImageUrl = typeof idProofValue === 'string' ? !isImageUrl(idProofValue) : true;
+
+      if (this.uploadedFiles && 
+          Array.isArray(this.uploadedFiles) && 
+          this.uploadedFiles.length > 0 && 
+          idProofValue && 
+          isNotImageUrl) {
+        formData.append(`id_proof_image`, this.uploadedFiles[0].file);
     }
 
     this.enableLoader = true;
@@ -1800,6 +1854,7 @@ export class ProfilePage implements OnInit {
         this.enableLoader = false;
         console.log('Response type:', typeof response);
         console.log('Response:', response);
+        this.uploadedFiles = [];
 
         // Handle different response types
         let responseData;

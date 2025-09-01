@@ -489,3 +489,33 @@ form ion-item.no-style {
     }
   }
 }
+
+
+.selected-images,
+.selected-video {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.selected-images h4,
+.selected-video h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-images h4::before {
+  content: "📷";
+  font-size: 18px;
+}
+
+.pointer-none {
+  pointer-events: none;
+}
