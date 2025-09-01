@@ -17,24 +17,12 @@
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
   transition: background-color 0.2s;
+  &:hover { background-color: #f5f5f5; }
+  &:last-child { border-bottom: none; }
 }
 
-.country-option:hover {
-  background-color: #f5f5f5;
-}
-
-.country-option:last-child {
-  border-bottom: none;
-}
-
-.custom-inner {
-  position: relative;
-}
-
-form ion-item.no-style {
-  margin-bottom: 0;
-}
-
+.custom-inner { position: relative; }
+form ion-item.no-style { margin-bottom: 0; }
 .no-results {
   color: #999;
   font-style: italic;
@@ -47,21 +35,6 @@ form ion-item.no-style {
   margin-top: 10px;
 }
 
-.uploadfile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  
-  .field-file {
-    flex: 1;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px;
-    background: #f9f9f9;
-  }
-}
-
 .file-upload-area {
   border: 2px dashed #ccc;
   border-radius: 8px;
@@ -72,10 +45,11 @@ form ion-item.no-style {
   background: #f9f9f9;
   margin-bottom: 15px;
 
-  &:hover {
+  &:hover, &.dragover {
     border-color: #007bff;
     background: #f0f8ff;
   }
+  &.dragover { transform: scale(1.02); }
 
   .upload-icon {
     font-size: 48px;
@@ -86,22 +60,14 @@ form ion-item.no-style {
   p {
     margin: 5px 0;
     color: #666;
-  }
-
-  .file-info {
-    font-size: 12px;
-    color: #999;
-  }
-}
-
-.uploaded-files {
-  h4 {
-    margin: 15px 0 10px 0;
-    color: #333;
-    font-size: 14px;
+    &.file-info {
+      font-size: 12px;
+      color: #999;
+    }
   }
 }
 
+// File Items
 .file-item {
   display: flex;
   align-items: center;
@@ -118,12 +84,15 @@ form ion-item.no-style {
 
   .file-preview {
     margin-right: 10px;
-
     .file-thumbnail {
       width: 40px;
       height: 40px;
       object-fit: cover;
       border-radius: 4px;
+    }
+    .file-icon {
+      font-size: 24px;
+      color: #007bff;
     }
   }
 
@@ -132,22 +101,14 @@ form ion-item.no-style {
     align-items: center;
     flex: 1;
 
-    .file-icon {
-      font-size: 24px;
-      color: #007bff;
-      margin-right: 10px;
-    }
-
     .file-details {
       flex: 1;
-
       .file-name {
         margin: 0;
         font-size: 14px;
         color: #333;
         font-weight: 500;
       }
-
       .file-size {
         margin: 0;
         font-size: 12px;
@@ -161,66 +122,11 @@ form ion-item.no-style {
     --padding-end: 8px;
     min-width: auto;
     height: 32px;
+    ion-icon { font-size: 18px; }
   }
 }
 
-// Drag and drop styles
-.file-upload-area.dragover {
-  border-color: #007bff;
-  background: #e3f2fd;
-  transform: scale(1.02);
-}
-
-// Additional styling for better UX
-.file-upload-area {
-  .upload-icon {
-    ion-icon {
-      font-size: 48px;
-      color: #007bff;
-    }
-  }
-}
-
-.file-item {
-  .file-preview {
-    .file-icon {
-      font-size: 24px;
-      color: #007bff;
-    }
-  }
-  
-  .remove-btn {
-    ion-icon {
-      font-size: 18px;
-    }
-  }
-}
-
-// Responsive design
-@media (max-width: 768px) {
-  .file-upload-area {
-    padding: 15px;
-    
-    .upload-icon ion-icon {
-      font-size: 36px;
-    }
-    
-    p {
-      font-size: 14px;
-    }
-  }
-  
-  .file-item {
-    padding: 8px;
-    
-    .file-preview .file-thumbnail {
-      width: 32px;
-      height: 32px;
-    }
-  }
-}
-
-// Profile Photo Styles
+// Profile Photo
 .profile-photo {
   display: flex;
   align-items: center;
@@ -250,61 +156,16 @@ form ion-item.no-style {
       
       &.placeholder {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        
         .user-icon {
           font-size: 48px;
           color: #fff;
         }
       }
     }
-    
-    // .camera {
-    //   position: absolute;
-    //   bottom: 0;
-    //   right: 0;
-    //   background: #007bff;
-    //   border-radius: 50%;
-    //   width: 32px;
-    //   height: 32px;
-    //   display: flex;
-    //   align-items: center;
-    //   justify-content: center;
-    //   cursor: pointer;
-    //   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-    //   transition: all 0.3s ease;
-      
-    //   &:hover {
-    //     transform: scale(1.1);
-    //     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-    //   }
-      
-    //   img {
-    //     width: 16px;
-    //     height: 16px;
-    //     filter: brightness(0) invert(1);
-    //   }
-    // }
   }
-  
-  // .right {
-  //   flex: 1;
-    
-  //   .lgdesc {
-  //     font-size: 18px;
-  //     font-weight: 600;
-  //     color: #333;
-  //     margin: 0 0 8px 0;
-  //   }
-    
-  //   .photo-note {
-  //     font-size: 14px;
-  //     color: #666;
-  //     margin: 0;
-  //   }
-  // }
 }
 
-// Camera Viewfinder Styles
+// Camera Interface
 .camera-viewfinder {
   position: relative;
   width: 100%;
@@ -330,10 +191,7 @@ form ion-item.no-style {
     &::before {
       content: '';
       position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
+      inset: -2px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 8px;
     }
@@ -351,7 +209,6 @@ form ion-item.no-style {
         border-bottom: none;
         border-radius: 8px 0 0 0;
       }
-      
       &.top-right {
         top: -2px;
         right: -2px;
@@ -359,7 +216,6 @@ form ion-item.no-style {
         border-bottom: none;
         border-radius: 0 8px 0 0;
       }
-      
       &.bottom-left {
         bottom: -2px;
         left: -2px;
@@ -367,7 +223,6 @@ form ion-item.no-style {
         border-top: none;
         border-radius: 0 0 0 8px;
       }
-      
       &.bottom-right {
         bottom: -2px;
         right: -2px;
@@ -377,145 +232,107 @@ form ion-item.no-style {
       }
     }
   }
+}
+
+// Camera Controls
+.camera-controls {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  z-index: 20;
   
-  .camera-controls {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    right: 0;
+  .capture-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid rgba(255, 255, 255, 0.3);
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 20px;
-    z-index: 20;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
     
-    .capture-btn {
-      width: 70px;
-      height: 70px;
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+    
+    .inner-circle {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: #fff;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-      }
-      
-      .inner-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #fff;
-        border: 2px solid #333;
-      }
-    }
-    
-    .cancel-btn {
-      padding: 12px 24px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 20px;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
+      border: 2px solid #333;
     }
   }
   
-  .size-indicator {
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 8px 16px;
+  .cancel-btn {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
-    font-size: 12px;
-    z-index: 20;
-  }
-}
-
-// Camera size limit warning
-.camera-size-warning {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  color: #856404;
-  font-size: 14px;
-  
-  .warning-icon {
-    color: #f39c12;
-    margin-right: 8px;
-  }
-  
-  .warning-text {
-    margin: 0;
-    line-height: 1.4;
-  }
-}
-
-// Responsive camera styles
-@media (max-width: 768px) {
-  .camera-viewfinder {
-    .viewfinder-border {
-      width: 240px;
-      height: 240px;
-    }
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     
-    .camera-controls {
-      bottom: 30px;
-      
-      .capture-btn {
-        width: 60px;
-        height: 60px;
-        
-        .inner-circle {
-          width: 40px;
-          height: 40px;
-        }
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.size-indicator {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  z-index: 20;
+}
+
+// Responsive Styles
+@media (max-width: 768px) {
+  .file-upload-area {
+    padding: 15px;
+    .upload-icon ion-icon { font-size: 36px; }
+    p { font-size: 14px; }
+  }
+  
+  .file-item {
+    padding: 8px;
+    .file-preview .file-thumbnail {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .camera-viewfinder .viewfinder-border {
+    width: 240px;
+    height: 240px;
+  }
+  
+  .camera-controls {
+    bottom: 30px;
+    .capture-btn {
+      width: 60px;
+      height: 60px;
+      .inner-circle {
+        width: 40px;
+        height: 40px;
       }
     }
   }
 }
 
-
-.selected-images,
-.selected-video {
-  margin: 20px 0;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.selected-images h4,
-.selected-video h4 {
-  margin: 0 0 15px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.selected-images h4::before {
-  content: "📷";
-  font-size: 18px;
-}
-
-.pointer-none {
-  pointer-events: none;
-}
+.pointer-none { pointer-events: none; }
