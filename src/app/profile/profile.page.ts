@@ -974,11 +974,13 @@ export class ProfilePage implements OnInit {
         // Process the cropped image
         await this.processCroppedImage(data.file);
       } else {
+        this.getProfileData();
         // User cancelled cropping, reset image display
         this.resetImageDisplay();
       }
     } catch (error) {
       console.error('Error opening image cropper:', error);
+      this.getProfileData();
       this.showToast('error', 'Failed to open image cropper', '', 4000, '/profile');
       this.resetImageDisplay();
     }

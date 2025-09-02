@@ -14,6 +14,7 @@ import { PageTitleService } from '../services/page-title.service';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
 import { NotificationDetailModalComponent } from './notification-detail-modal/notification-detail-modal.component';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { WalletService } from '../services/wallet.service';
 
 @Component({
   selector: 'app-notification',
@@ -51,6 +52,7 @@ export class NotificationPage implements OnInit {
     private authenticationService: AuthService,
     private pageTitleService: PageTitleService,
     private authGuardService: AuthGuardService,
+    private walletService: WalletService,
     private location: Location,
     private modalCtrl: ModalController) {
     activatedRoute.params.subscribe(val => {
@@ -63,7 +65,38 @@ export class NotificationPage implements OnInit {
   }
 
   goBack() {
+    this.getProfileData();
     this.location.back();
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          // Set profile image if available, otherwise show placeholder
+          if (response.user.profile_image && response.user.profile_image.trim() !== '') {
+            // Update the service so header reflects the change
+           // this.profileService.updateProfileImage(response.user.profile_image);
+          }  
+          
+          if (response.user.points !== undefined && response.user.points !== null) {
+            this.walletService.updateWalletBalance(parseFloat(response.user.points));
+          }// Update user name in service if available
+                
+        } else {
+          this.showToast('error', response.message, '', 3500, '/profile');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
   async openNotificationDetail(notification: any) {
