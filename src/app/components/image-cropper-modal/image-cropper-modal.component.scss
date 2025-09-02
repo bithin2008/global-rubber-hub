@@ -1,3 +1,4 @@
+
 .cropper-container {
   display: flex;
   justify-content: center;
@@ -15,17 +16,29 @@
 .action-buttons {
   margin-top: 20px;
   padding: 0 16px;
+  background-color: #1a8135 !important;
+  text-transform: capitalize;
 }
 
 ion-content {
   --background: var(--ion-color-light);
 }
 
-ion-header {
-  ion-toolbar {
-    --background: var(--ion-color-primary);
-    --color: white;
-  }
+ion-header{
+    background-color: #1a8135 !important;
+    color: #fff;
+    padding-left: 15px;
+    ion-title{
+        font-size: 18px;
+        --color: #fff;
+    }
+    ion-icon{
+        color: #fff;
+    }
+    ion-toolbar::part(background) {
+        background-color: #1a8135;
+    
+    }
 }
 
 // Responsive adjustments

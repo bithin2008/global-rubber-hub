@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{ cropperTitle }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="cancel()">Cancel</ion-button>
+      <ion-button (click)="cancel()"><ion-icon name="close"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -36,11 +36,10 @@
 
   <div class="action-buttons">
     <ion-button 
+      class="btn btn-grn no-style"
       expand="block" 
-      color="primary" 
       (click)="cropImage()"
       [disabled]="!isCropping">
-      <ion-icon name="checkmark" slot="start"></ion-icon>
       Use Cropped Image
     </ion-button>
   </div>

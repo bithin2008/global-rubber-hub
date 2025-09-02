@@ -2055,3 +2055,11 @@ ion-select::part(icon) {
   }
 }
 
+@media(max-width: 480px){
+
+  .image-cropper-modal {
+      --height: 95vh !important;
+      --max-height: 62vh !important;
+      padding:  0 15px;
+  }
+}
