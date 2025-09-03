@@ -8,6 +8,7 @@ import { AppComponent } from './app/app.component';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -17,7 +18,7 @@ bootstrapApplication(AppComponent, {
       withInterceptors([AuthInterceptor])
     ),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    
+    GooglePlus,
     importProvidersFrom(
       IonicModule.forRoot(),
     ),

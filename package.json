@@ -32,6 +32,8 @@
     "@capacitor/preferences": "^7.0.2",
     "@capacitor/status-bar": "7.0.2",
     "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
+    "@ionic-native/core": "^5.36.0",
+    "@ionic-native/google-plus": "^5.36.0",
     "@ionic/angular": "^8.0.0",
     "cordova-sqlite-storage": "^7.0.0",
     "ionicons": "^7.0.0",
@@ -100,9 +102,7 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-camera": {},
-      "cordova-plugin-googleplus": {
-        "PLAY_SERVICES_VERSION": "15.0.1"
-      },
+      "cordova-plugin-googleplus": {},
       "cordova-plugin-customurlscheme": {
         "URL_SCHEME": "globalrubberhub",
         "ANDROID_SCHEME": "globalrubberhub",

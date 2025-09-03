@@ -13,7 +13,7 @@ import { MustMatch } from '../_helper/must-match.validator';
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { isPlatform } from '@ionic/angular';
 import { authConfig } from '../config/auth.config';
 
@@ -79,8 +79,9 @@ export class LoginPage implements OnInit {
   public profileDetails: any = {};
   token: any;
   constructor(
-    private formBuilder: FormBuilder,
     public router: Router,
+    private formBuilder: FormBuilder,
+    private googlePlus: GooglePlus,
     public authService: AuthService,
     public modalController: ModalController,
     public activatedRoute: ActivatedRoute,
@@ -92,7 +93,7 @@ export class LoginPage implements OnInit {
     private deepLinkService: DeepLinkService
   ) {
     // Initialize Google Auth based on platform
-    this.initializeGoogleAuth();
+   // this.initializeGoogleAuth();
     
     this.activatedRoute.params.subscribe(async val => {
       let hasLoggin: any = await this.alreadyLoggedIn();
@@ -105,38 +106,7 @@ export class LoginPage implements OnInit {
     });
   }
 
-  private async initializeGoogleAuth() {
-    try {
-      // Get client ID from auth config
-      const clientId = authConfig.googleAuth.androidClientId;
-      
-      // Base configuration
-      const config = {
-        clientId,
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
-      };
 
-      // Platform specific configuration
-      if (isPlatform('android')) {
-        // Android specific config
-        Object.assign(config, { androidClientId: clientId });
-      } else if (isPlatform('ios')) {
-        // iOS specific config - add iOS client ID when available
-        // Object.assign(config, { iosClientId: authConfig.googleAuth.iosClientId });
-      } else {
-        // Web specific config
-        Object.assign(config, { 
-          webClientId: clientId,
-          plugin: false // Disable native plugin for web
-        });
-      }
-
-      await GoogleAuth.initialize(config);
-    } catch (error) {
-      console.error('Error initializing Google Auth:', error);
-    }
-  }
 
   async ngOnInit() {
     this.token = localStorage.getItem('token');
@@ -150,52 +120,81 @@ export class LoginPage implements OnInit {
     try {
       this.enableLoader = true;
       
+      // Check if running on a mobile platform
+      if (!isPlatform('cordova') && !isPlatform('capacitor')) {
+        throw new Error('Google Sign-In is only available on mobile devices.');
+      }
+      
       // Check network connectivity
       if (!navigator.onLine) {
         throw new Error('No internet connection. Please check your network and try again.');
       }
-
-      // Initialize Google Auth if needed
-      try {
-        await GoogleAuth.initialize({
-          clientId: authConfig.googleAuth.androidClientId,
-          scopes: ['profile', 'email'],
-          grantOfflineAccess: true
-        });
-      } catch (initError) {
-        console.error('Failed to initialize Google Auth:', initError);
-        throw new Error('Failed to initialize Google Sign-In. Please try again.');
+  
+      // Check if GooglePlus is available
+      if (!this.googlePlus) {
+        throw new Error('Google Sign-In service is not available.');
       }
-
-      // Get user info from Google
-      const user = await GoogleAuth.signIn();
-      console.log('Google login successful:', user);
-      
-      if (!user || !user.email) {
-        throw new Error('Failed to get user information from Google');
-      }
-
-      // Send to backend for authentication/registration
-      const data = {
-        email: user.email,
-        google_id: user.id,
-        first_name: user.givenName || '',
-        last_name: user.familyName || '',
-        full_name: user.name || `${user.givenName} ${user.familyName}`.trim(),
-        photo_url: user.imageUrl || ''
+  
+      // Use platform-specific configuration
+      let loginConfig: any = {
+        offline: true,
+        scopes: 'profile email' // Add required scopes
       };
-
-      let url = 'auth/google-login';
-      const response = await this.commonService.login(url, data).toPromise() as any;
-      
-      if (response?.code === 200) {
-        localStorage.setItem('token', response.access_token);
-        this.authenticationService.handleSuccessfulLogin();
-        await this.showToast('success', response.message || 'Login successful', '', 2000, '/dashboard');
-      } else {
-        const errorMsg = response?.message || 'Authentication failed';
-        throw new Error(errorMsg);
+  
+      // Platform-specific configuration
+      if (isPlatform('android')) {
+        loginConfig.webClientId = '576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1.apps.googleusercontent.com';
+        loginConfig.redirectUri = 'com.googleusercontent.apps.576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1:/oauth2redirect/google';
+      } else if (isPlatform('ios')) {
+        loginConfig.webClientId = '576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1.apps.googleusercontent.com';
+        loginConfig.redirectUri = 'com.googleusercontent.apps.576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1:/oauth2redirect/google';
       }
+  
+      console.log('Google Login Config:', loginConfig);
+  
+      try {
+        const response = await this.googlePlus.login(loginConfig);
+        
+        console.log('Gmail Login success:', response);
+        
+        // Send to backend for authentication/registration
+        const data = {
+          email: response.email,
+          google_id: response.userId,
+          first_name: response.givenName || '',
+          last_name: response.familyName || '',
+          full_name: response.displayName || `${response.givenName} ${response.familyName}`.trim(),
+          photo_url: response.imageUrl || ''
+        };
+  
+        let url = 'auth/google-login';
+        const backendResponse = await this.commonService.login(url, data).toPromise() as any;
+        
+        if (backendResponse?.code === 200) {
+          localStorage.setItem('token', backendResponse.access_token);
+          this.authenticationService.handleSuccessfulLogin();
+          await this.showToast('success', backendResponse.message || 'Login successful', '', 2000, '/dashboard');
+        } else {
+          const errorMsg = backendResponse?.message || 'Authentication failed';
+          throw new Error(errorMsg);
+        }
+      } catch (initError: any) {
+        console.error('Failed to initialize Google Auth:', initError);
+        
+        // Handle specific error codes
+        let errorMessage = 'Failed to initialize Google Sign-In. Please try again.';
+        
+        if (initError.code === 10) {
+          errorMessage = 'Invalid Google configuration. Please check your client ID and redirect URI.';
+        } else if (initError.code === 4) {
+          errorMessage = 'Network error. Please check your internet connection.';
+        } else if (initError.code === 5) {
+          errorMessage = 'User cancelled the login process.';
+        }
+        
+        throw new Error(errorMessage);
+      }
+  
     } catch (error: any) {
       console.error('Google sign in error:', error);
       
@@ -216,7 +215,6 @@ export class LoginPage implements OnInit {
       this.enableLoader = false;
     }
   }
-
   initializeForms() {
     // Login Form
     this.loginForm = this.formBuilder.group({

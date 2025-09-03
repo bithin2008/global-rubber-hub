@@ -147,6 +147,17 @@
           <div *ngIf="f['country'].errors['required']">Please select a country</div>
         </span>
       </div>
+      <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Adhaar No.</ion-label>
+          <ion-input class="form-field" formControlName="adhaar_no" type="text"></ion-input>
+        </div>
+      </ion-item>
+      <!-- <div class="validation-error" *ngIf="f['country'].value === 'India'">
+        <span *ngIf="submitted && f['adhaar_no'].errors">
+          <div *ngIf="f['adhaar_no'].errors['required']">Please enter AAdhaar number</div>
+        </span>
+      </div> -->
 
       <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
         <div class="custom-inner">
@@ -156,8 +167,8 @@
       </ion-item>
       <div class="validation-error" *ngIf="f['country'].value === 'India'">
         <span *ngIf="submitted && f['pan'].errors">
-          <div *ngIf="f['pan'].errors['required']">Please enter pan number</div>
-          <div *ngIf="f['pan'].errors['pattern']">Please enter valid pan number</div>
+          <div *ngIf="f['pan'].errors['required']">Please enter PAN number</div>
+          <div *ngIf="f['pan'].errors['pattern']">Please enter valid PAN number</div>
         </span>
       </div>
       <ion-item class="no-style">
@@ -165,7 +176,7 @@
           <ion-label class="formlebel">Select ID</ion-label>
           <ion-select interface="popover" placeholder="Voter Card" formControlName="id_proof_type" class="form-field" slot="start">
             <ion-select-option value="voter">Voter Card</ion-select-option>
-            <ion-select-option value="aadhar">Aadhar Card</ion-select-option>
+            <!-- <ion-select-option value="aadhar">Aadhar Card</ion-select-option> -->
             <ion-select-option value="passport">Passport</ion-select-option>
           </ion-select>
          

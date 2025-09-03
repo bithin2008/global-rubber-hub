@@ -366,19 +366,19 @@ export class AccountPage implements OnInit, OnDestroy {
 
       // Get user details from local storage or service
       const userDetails = {
-        name: 'Customer',
-        email: 'customer@example.com',  // ✅ required
-        contact: '9999999999'           // ✅ required
+        name: this.profileDetails.full_name,
+        email: this.profileDetails.email,  // ✅ required
+        contact: this.profileDetails.phone           // ✅ required
       };
       console.log("selectedPackage", this.selectedPackage);
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_test_pukxv7Ki2WgVYL',
+        key: 'rzp_live_tAxyS0mxwv0GGX',
         amount: this.totalWithGst * 100, // include GST
         currency: 'INR',
         name: 'Global Rubber Hub',
-        description: 'Test Payment',
+        description: 'Enhance your trading experience',
         order_id: orderId,
         prefill: {
           name: userDetails.name,

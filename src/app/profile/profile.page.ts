@@ -88,13 +88,17 @@ export class ProfilePage implements OnInit {
       this.profileForm.get('country')?.valueChanges.subscribe(country => {
         console.log('Country changed to:', country);
         const panControl = this.profileForm.get('pan');
+        const adhaarControl = this.profileForm.get('adhaar_no');
         if (country === 'India') {
           console.log('Setting PAN as required for India');
           panControl?.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+        //  adhaarControl?.setValidators([Validators.required, Validators.pattern(/^[2-9]{1}[0-9]{11}$/)]);
         } else {
           console.log('Clearing PAN validation for non-India country');
           panControl?.clearValidators();
           panControl?.setValue(''); // Clear the value when not India
+          // adhaarControl?.clearValidators();
+          // adhaarControl?.setValue(''); // Clear the value when not India
         }
         panControl?.updateValueAndValidity();
       });
@@ -1815,6 +1819,7 @@ export class ProfilePage implements OnInit {
     formData.append('company_name', this.f['company'].value);
     if (this.f['country'].value === 'India') {
       formData.append('pan', this.f['pan'].value);
+     // formData.append('adhaar_no', this.f['adhaar_no'].value);
     }
     formData.append('id_proof_type', this.f['id_proof_type'].value);
     formData.append('country', this.f['country'].value);
