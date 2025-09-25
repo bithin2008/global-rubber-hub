@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController, IonSegment, IonSegmentButton, IonLabel, IonItem, IonIcon, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
 import { AlertController, MenuController } from '@ionic/angular';
@@ -13,23 +13,26 @@ import { MustMatch } from '../_helper/must-match.validator';
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
-import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { isPlatform } from '@ionic/angular';
 import { authConfig } from '../config/auth.config';
+import { Subscription } from 'rxjs';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { AuthGuardService } from '../services/auth-guard.service';
+import { SocialLogin } from "@capgo/capacitor-social-login";
 
 
-
+0
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ 
-    CommonModule, 
-    RouterModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
     NgFormsModule,
     IonInput,
     IonButton,
@@ -44,10 +47,10 @@ import { authConfig } from '../config/auth.config';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   @ViewChild('loginInput') loginInput: any;
   user: any;
-  
+
   // Common properties
   public enableLoader: boolean = false;
   public submitted: boolean = false;
@@ -78,10 +81,16 @@ export class LoginPage implements OnInit {
   public resetPasswordForm!: FormGroup;
   public profileDetails: any = {};
   token: any;
+
+  // Subscription management
+  private routeSubscription: Subscription | undefined;
+
+  // Platform checks
+  public isGoogleSignInAvailable: boolean = false;
+
   constructor(
     public router: Router,
     private formBuilder: FormBuilder,
-    private googlePlus: GooglePlus,
     public authService: AuthService,
     public modalController: ModalController,
     public activatedRoute: ActivatedRoute,
@@ -90,23 +99,50 @@ export class LoginPage implements OnInit {
     private authenticationService: AuthService,
     private alertController: AlertController,
     private platform: Platform,
-    private deepLinkService: DeepLinkService
+    private deepLinkService: DeepLinkService,
+    private authGuardService: AuthGuardService
   ) {
     // Initialize Google Auth based on platform
-   // this.initializeGoogleAuth();
+    // this.initializeGoogleAuth();
+
+    // Subscribe to route params with proper unsubscribe handling
+    this.routeSubscription = this.activatedRoute.params.subscribe(async val => {
     
-    this.activatedRoute.params.subscribe(async val => {
-      let hasLoggin: any = await this.alreadyLoggedIn();
-      if (hasLoggin.code === 200) {
-        this.router.navigate(['/dashboard'])
-      } else {
-        localStorage.clear();
-        this.router.navigate(['/login']);
+      // Only check login status if we're not already processing
+      if (!this.enableLoader) {
+        // Fast local check to avoid unnecessary API call
+        const hasToken = this.authGuardService.hasToken();
+        let hasLoggin: any = { code: hasToken ? 200 : 401 };
+
+        // If token exists, optionally verify with backend as before
+        if (hasToken) {
+          hasLoggin = await this.alreadyLoggedIn();
+        }
+
+        if (hasLoggin.code === 200) {
+          // Only navigate if we're not already on dashboard
+          if (this.router.url !== '/dashboard') {
+            this.router.navigate(['/dashboard']);
+          }
+        } else {
+          // Only clear localStorage and navigate if we're not already on login page
+          if (this.router.url !== '/login') {
+            localStorage.clear();
+            this.router.navigate(['/login']);
+          }
+        }
       }
     });
+
+    this.initialize();
   }
 
-
+  ngOnDestroy() {
+    // Unsubscribe to prevent memory leaks
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
 
   async ngOnInit() {
     this.token = localStorage.getItem('token');
@@ -114,107 +150,26 @@ export class LoginPage implements OnInit {
       this.getProfileData();
     }
     this.initializeForms();
-  }
 
-  async signInWithGoogle() {
-    try {
-      this.enableLoader = true;
-      
-      // Check if running on a mobile platform
-      if (!isPlatform('cordova') && !isPlatform('capacitor')) {
-        throw new Error('Google Sign-In is only available on mobile devices.');
-      }
-      
-      // Check network connectivity
-      if (!navigator.onLine) {
-        throw new Error('No internet connection. Please check your network and try again.');
-      }
-  
-      // Check if GooglePlus is available
-      if (!this.googlePlus) {
-        throw new Error('Google Sign-In service is not available.');
-      }
-  
-      // Use platform-specific configuration
-      let loginConfig: any = {
-        offline: true,
-        scopes: 'profile email' // Add required scopes
-      };
-  
-      // Platform-specific configuration
-      if (isPlatform('android')) {
-        loginConfig.webClientId = '576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1.apps.googleusercontent.com';
-        loginConfig.redirectUri = 'com.googleusercontent.apps.576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1:/oauth2redirect/google';
-      } else if (isPlatform('ios')) {
-        loginConfig.webClientId = '576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1.apps.googleusercontent.com';
-        loginConfig.redirectUri = 'com.googleusercontent.apps.576336618943-qqbnlurcabtchp02f9mpavdg52er7ej1:/oauth2redirect/google';
-      }
-  
-      console.log('Google Login Config:', loginConfig);
-  
-      try {
-        const response = await this.googlePlus.login(loginConfig);
-        
-        console.log('Gmail Login success:', response);
-        
-        // Send to backend for authentication/registration
-        const data = {
-          email: response.email,
-          google_id: response.userId,
-          first_name: response.givenName || '',
-          last_name: response.familyName || '',
-          full_name: response.displayName || `${response.givenName} ${response.familyName}`.trim(),
-          photo_url: response.imageUrl || ''
-        };
-  
-        let url = 'auth/google-login';
-        const backendResponse = await this.commonService.login(url, data).toPromise() as any;
-        
-        if (backendResponse?.code === 200) {
-          localStorage.setItem('token', backendResponse.access_token);
-          this.authenticationService.handleSuccessfulLogin();
-          await this.showToast('success', backendResponse.message || 'Login successful', '', 2000, '/dashboard');
-        } else {
-          const errorMsg = backendResponse?.message || 'Authentication failed';
-          throw new Error(errorMsg);
-        }
-      } catch (initError: any) {
-        console.error('Failed to initialize Google Auth:', initError);
-        
-        // Handle specific error codes
-        let errorMessage = 'Failed to initialize Google Sign-In. Please try again.';
-        
-        if (initError.code === 10) {
-          errorMessage = 'Invalid Google configuration. Please check your client ID and redirect URI.';
-        } else if (initError.code === 4) {
-          errorMessage = 'Network error. Please check your internet connection.';
-        } else if (initError.code === 5) {
-          errorMessage = 'User cancelled the login process.';
-        }
-        
-        throw new Error(errorMessage);
-      }
-  
-    } catch (error: any) {
-      console.error('Google sign in error:', error);
-      
-      let errorMessage = 'Google sign in failed';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.name === 'NetworkError' || !navigator.onLine) {
-        errorMessage = 'Network error. Please check your connection and try again.';
-      } else if (error.code === 'CANCELED') {
-        errorMessage = 'Sign in was cancelled';
-      } else if (error.code === 'INVALID_CLIENT_ID') {
-        errorMessage = 'Invalid client configuration. Please contact support.';
-      }
-      
-      await this.showToast('error', errorMessage, '', 3000, '');
-    } finally {
-      this.enableLoader = false;
+    // Initialize Google Auth on component load
+    if (this.platform.is('capacitor')) {
+      const clientId = this.platform.is('android')
+        ? environment.GOOGLE_ANDROID_CLIENT_ID
+        : environment.GOOGLE_WEB_CLIENT_ID;
+
+      await GoogleAuth.initialize({
+        clientId: clientId,
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      });
+      this.isGoogleSignInAvailable = true;
     }
   }
+
+
+
+
+
   initializeForms() {
     // Login Form
     this.loginForm = this.formBuilder.group({
@@ -274,15 +229,15 @@ export class LoginPage implements OnInit {
 
   }
 
- 
+
 
 
   // Tab change handler
   onTabChange(event: any) {
     this.selectedTab = event.detail.value;
     this.resetFormStates();
-    
- 
+
+
   }
 
   // Navigation methods
@@ -317,7 +272,7 @@ export class LoginPage implements OnInit {
     this.forgotPasswordForm.reset();
     this.otpForm.reset();
     this.resetPasswordForm.reset();
-    
+
     // Reset password visibility states
     this.showLoginPassword = false;
     this.showRegisterPassword = false;
@@ -348,8 +303,8 @@ export class LoginPage implements OnInit {
   }
 
   // Form getters
-  get f() { 
-    switch(this.selectedTab) {
+  get f() {
+    switch (this.selectedTab) {
       case 'login':
         return this.loginForm.controls;
       case 'register':
@@ -364,7 +319,7 @@ export class LoginPage implements OnInit {
         return this.loginForm.controls;
     }
   }
- 
+
 
   private decodeJwtToken(token: string): any {
     try {
@@ -372,24 +327,24 @@ export class LoginPage implements OnInit {
       if (!base64Url) {
         throw new Error('Invalid token format: missing payload');
       }
-      
+
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const decoded = atob(base64);
-      
+
       if (!decoded) {
         throw new Error('Invalid token format: failed to decode base64');
       }
-      
-      const jsonPayload = decodeURIComponent(decoded.split('').map(function(c) {
+
+      const jsonPayload = decodeURIComponent(decoded.split('').map(function (c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
-      
+
       return JSON.parse(jsonPayload);
     } catch (error) {
       console.error('Error decoding JWT token:', error);
       throw new Error('Invalid token format');
     }
-  } 
+  }
 
   alreadyLoggedIn() {
     return new Promise((resolve) => {
@@ -398,7 +353,9 @@ export class LoginPage implements OnInit {
           resolve(response);
         },
         (error) => {
-          console.log('error', error);
+          console.log('Login check error:', error);
+          // Return error response instead of leaving promise hanging
+          resolve({ code: 401, message: 'Authentication check failed' });
         }
       );
     });
@@ -419,7 +376,7 @@ export class LoginPage implements OnInit {
     }
   }
 
-  setCredential(item:any) {
+  setCredential(item: any) {
     this.loginForm.controls['email'].setValue(item.email);
     this.loginForm.controls['password'].setValue(item.password);
     this.closeItemModal();
@@ -427,7 +384,7 @@ export class LoginPage implements OnInit {
   }
 
   closeItemModal() {
-    let itmModal:any = document.querySelector('.login-credential-modal');
+    let itmModal: any = document.querySelector('.login-credential-modal');
     itmModal.classList.remove('openMenu');
     itmModal.classList.add('closeMenu');
     this.isOpenCredentialModal = false;
@@ -444,6 +401,12 @@ export class LoginPage implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
+
+    // Prevent multiple simultaneous login attempts
+    if (this.enableLoader) {
+      return;
+    }
+
     let data = {
       email: this.loginForm.get('email')?.value,
       password: this.loginForm.get('password')?.value,
@@ -465,7 +428,7 @@ export class LoginPage implements OnInit {
       },
       (error) => {
         this.enableLoader = false;
-        console.log('error ts: ', error.error);
+        console.log('Login error:', error.error);
       }
     );
   }
@@ -522,7 +485,7 @@ export class LoginPage implements OnInit {
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
-        if (response.code == 200) {         
+        if (response.code == 200) {
           localStorage.setItem('email', this.forgotPasswordForm.get('email')?.value);
           this.showOtpVerification = true;
           this.showForgotPassword = false;
@@ -546,7 +509,7 @@ export class LoginPage implements OnInit {
 
   // OTP functionality
   onOtpChange(ev: any) {
-    this.otpForm.patchValue({emailOTP: ev});
+    this.otpForm.patchValue({ emailOTP: ev });
   }
 
   verifyOtp() {
@@ -563,7 +526,7 @@ export class LoginPage implements OnInit {
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
-        if (response.code == 200) {         
+        if (response.code == 200) {
           this.showResetPassword = true;
           this.showForgotPassword = false;
           this.showOtpVerification = false;
@@ -600,7 +563,7 @@ export class LoginPage implements OnInit {
     this.commonService.login(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;
-        if (response.code == 200) {         
+        if (response.code == 200) {
           this.showToast('success', response.message, '', 2000, '/login');
           this.backToLogin();
         } else if (response.code == 401) {
@@ -618,7 +581,7 @@ export class LoginPage implements OnInit {
     );
   }
 
-  async deleteCredential(item:any) {
+  async deleteCredential(item: any) {
     const alert = await this.alertController.create({
       header: 'Warning',
       message: 'Want to delete password?',
@@ -642,7 +605,7 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  async saveLoginCredential(name:any) {
+  async saveLoginCredential(name: any) {
     const alert = await this.alertController.create({
       header: 'Hi,' + name,
       message: 'Want to save  password?',
@@ -687,8 +650,31 @@ export class LoginPage implements OnInit {
     return await modal.present();
   }
 
+  async initialize() {
+    await SocialLogin.initialize({
+        google: {
+            webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com',
+            mode: 'online'
+        }
+    });
+}
+
   /**
    * Handle Google Sign-in
    */
- 
+  async signInWithGoogle() {
+    const user: any = await SocialLogin.login({
+        provider: 'google',
+        options: {
+            scopes: ['email', 'profile'],
+            forceRefreshToken: true
+        }
+    });
+    debugger;;
+    console.log('user', user);
+    if (user) {
+       
+    }
+}
+
 }

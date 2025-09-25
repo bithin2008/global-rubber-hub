@@ -24,6 +24,7 @@ export class TrustedSellerPage implements OnInit {
   public packageList: any[] = [];
   public selectedPackage: any | null = null;
   public isProcessing: boolean = false;
+  public profileDetails: any = {}
   constructor(
     private router: Router,
     private commonService: CommonService,
@@ -41,6 +42,27 @@ export class TrustedSellerPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.profileDetails = response.user; 
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
   openPlanModal() { this.isPlanModalOpen = true; }
@@ -163,15 +185,15 @@ export class TrustedSellerPage implements OnInit {
 
       // Get user details from local storage or service
       const userDetails = {
-        name: 'Customer',
-        email: 'customer@example.com',  // ✅ required
-        contact: '9999999999'           // ✅ required
+        name: this.profileDetails.full_name,
+        email: this.profileDetails.email,  // ✅ required
+        contact: this.profileDetails.phone       // ✅ required
       };
       console.log("selectedPackage", this.selectedPackage);
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_test_pukxv7Ki2WgVYL',
+        key: 'rzp_live_tAxyS0mxwv0GGX',
         amount: this.getTotalPrice() * 100, // Convert to paise for Razorpay
         currency: 'INR',
         name: 'Global Rubber Hub',

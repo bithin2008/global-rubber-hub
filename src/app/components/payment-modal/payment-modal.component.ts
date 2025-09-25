@@ -19,7 +19,7 @@ export class PaymentModalComponent implements OnInit {
   public packageList: any[] = [];
   public selectedPackage: any | null = null;
   public isProcessing: boolean = false;
-
+  public profileDetails: any = {}
   userDetails: any = {};
   constructor(
     private commonService: CommonService,
@@ -35,6 +35,28 @@ export class PaymentModalComponent implements OnInit {
 
   ngOnInit() {
    
+  }
+
+  getProfileData() {
+    this.enableLoader = true;
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.enableLoader = false;
+        if (response.code == 200) {
+          this.profileDetails = response.user;          
+          // Update profile service with all data including wallet balance
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.enableLoader = false;
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
   get totalWithGst(): number {
@@ -125,15 +147,15 @@ export class PaymentModalComponent implements OnInit {
 
       // Get user details from local storage or service
       const userDetails = {
-        name: 'Customer',
-        email: 'customer@example.com',  // ✅ required
-        contact: '9999999999'           // ✅ required
+        name: this.profileDetails.full_name,
+        email: this.profileDetails.email,  // ✅ required
+        contact: this.profileDetails.phone    // ✅ required
       };
       console.log("selectedPackage", this.selectedPackage);
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_test_pukxv7Ki2WgVYL',
+        key: 'rzp_live_tAxyS0mxwv0GGX',
         amount: this.totalWithGst * 100, // ₹1 for testing
         currency: 'INR',
         name: 'Global Rubber Hub',

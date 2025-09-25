@@ -178,6 +178,14 @@ export class AuthGuardService {
   }
 
   /**
+   * Check if a non-empty token exists in localStorage
+   */
+  hasToken(): boolean {
+    const token = localStorage.getItem('token');
+    return !!(token && token.trim().length > 0);
+  }
+
+  /**
    * Set token in localStorage
    */
   setToken(token: string): void {
