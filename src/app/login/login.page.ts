@@ -659,6 +659,15 @@ export class LoginPage implements OnInit, OnDestroy {
     });
 }
 
+  // Ensure only digits are entered and limit to 10 for phone input
+  onPhoneInput(event: any) {
+    const rawValue = event.target && event.target.value ? String(event.target.value) : '';
+    const digitsOnly = rawValue.replace(/\D+/g, '').slice(0, 10);
+    if (digitsOnly !== rawValue) {
+      this.registerForm.patchValue({ phone: digitsOnly });
+    }
+  }
+
   /**
    * Handle Google Sign-in
    */

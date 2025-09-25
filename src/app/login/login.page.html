@@ -119,7 +119,9 @@
         </div>
         <ion-label class="form-label">Phone</ion-label>
         <ion-item lines="none" class="input-field">
-          <ion-input type="Number" placeholder="+919030053123"  formControlName="phone"></ion-input>
+          <ion-input type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210"  formControlName="phone" (ionInput)="onPhoneInput($event)" style="padding-left: 0;">
+            <span slot="start" style="color: #000; font-size: 14px; margin-right: 4px; padding-right: 0;">+91</span>
+          </ion-input>
         </ion-item>
         <div class="validation-error">
           <span *ngIf="submitted && f['phone'].errors">
