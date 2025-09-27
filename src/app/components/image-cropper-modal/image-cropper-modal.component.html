@@ -7,40 +7,42 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="cropper-container">
-    <!-- Hidden file input for ngx-image-cropper -->
-    <input 
-      #fileInput 
-      type="file" 
-      accept="image/*" 
-      style="display: none;"
-      (change)="onFileSelected($event)">
+<ion-content class="cropper-content">
+  <div class="cropper-wrapper">
+    <div class="cropper-container">
+      <!-- Hidden file input for ngx-image-cropper -->
+      <input 
+        #fileInput 
+        type="file" 
+        accept="image/*" 
+        style="display: none;"
+        (change)="onFileSelected($event)">
+      
+      <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="maintainAspectRatio"
+        [aspectRatio]="aspectRatio"
+        [resizeToWidth]="1200"
+        [resizeToHeight]="1200"
+        [onlyScaleDown]="true"
+        [roundCropper]="false"
     
-    <image-cropper
-      [imageChangedEvent]="imageChangedEvent"
-      [maintainAspectRatio]="maintainAspectRatio"
-      [aspectRatio]="aspectRatio"
-      [resizeToWidth]="1200"
-      [resizeToHeight]="1200"
-      [onlyScaleDown]="true"
-      [roundCropper]="false"
-  
-      [hideResizeSquares]="false"
-      (imageCropped)="imageCropped($event)"
-      (imageLoaded)="imageLoaded()"
-      (cropperReady)="cropperReady()"
-      (loadImageFailed)="loadImageFailed()">
-    </image-cropper>
-  </div>
+        [hideResizeSquares]="false"
+        (imageCropped)="imageCropped($event)"
+        (imageLoaded)="imageLoaded()"
+        (cropperReady)="cropperReady()"
+        (loadImageFailed)="loadImageFailed()">
+      </image-cropper>
+    </div>
 
-  <div class="action-buttons">
-    <ion-button 
-      class="btn btn-grn no-style"
-      expand="block" 
-      (click)="cropImage()"
-      [disabled]="!isCropping">
-      Use Cropped Image
-    </ion-button>
+    <div class="action-buttons">
+      <ion-button 
+        class="btn btn-grn no-style"
+        expand="block" 
+        (click)="cropImage()"
+        [disabled]="!isCropping">
+        Use Cropped Image
+      </ion-button>
+    </div>
   </div>
 </ion-content>

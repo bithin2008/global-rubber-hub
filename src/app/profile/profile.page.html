@@ -147,17 +147,6 @@
           <div *ngIf="f['country'].errors['required']">Please select a country</div>
         </span>
       </div>
-      <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Adhaar No.</ion-label>
-          <ion-input class="form-field" formControlName="adhaar_no" type="text"></ion-input>
-        </div>
-      </ion-item>
-      <!-- <div class="validation-error" *ngIf="f['country'].value === 'India'">
-        <span *ngIf="submitted && f['adhaar_no'].errors">
-          <div *ngIf="f['adhaar_no'].errors['required']">Please enter AAdhaar number</div>
-        </span>
-      </div> -->
 
       <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
         <div class="custom-inner">
@@ -286,7 +275,18 @@
           <div *ngIf="f['zip'].errors['minlength']">Please enter valid zip</div>
         </span>
       </div>
-      <ion-button class="btn btn-grn no-style" expand="block" type="submit"><img class="btntextimg" src="assets/img/icons/bookmark.svg">Save Information</ion-button>
+      <ion-button class="btn btn-grn no-style" expand="block" type="submit"   [disabled]="isSubmitting"
+      >
+      <div class="button-content" [class.loading]="isSubmitting">
+        <ion-spinner 
+          *ngIf="isSubmitting" 
+          name="crescent" 
+          class="button-spinner">
+        </ion-spinner>
+        <span [class.hidden]="isSubmitting"> <img class="btntextimg" src="assets/img/icons/bookmark.svg"> Save Information</span>
+        <span *ngIf="isSubmitting" class="loading-text">Saving...</span>
+      </div>
+      </ion-button>
     </form>
 
   </div>

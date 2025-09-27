@@ -173,6 +173,7 @@ export class AccountPage implements OnInit, OnDestroy {
       package_for: 3
     }
     let url = `general/package-details`;
+    
     this.commonService.post(url, data).subscribe(
       (response: any) => {
         this.enableLoader = false;

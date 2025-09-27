@@ -8,6 +8,7 @@ import {
   IonInput,
   IonLabel,
   IonTextarea,
+  IonSpinner,
   ModalController
 } from '@ionic/angular/standalone';
 import { CommonService } from '../services/common-service';
@@ -27,7 +28,8 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
     IonItem,
     IonInput,
     IonLabel,
-    IonTextarea
+    IonTextarea,
+    IonSpinner
   ]
 })
 export class BidModalComponent implements OnInit {
@@ -37,6 +39,7 @@ export class BidModalComponent implements OnInit {
   public submitted: boolean = false;
   public enableLoader: boolean = false;
   public isEdit: boolean = false;
+  public isSubmitting: boolean = false; // Variable to control button loader
 
   constructor(
     private modalController: ModalController,
@@ -105,6 +108,9 @@ export class BidModalComponent implements OnInit {
       return;
     }
 
+    // Set loading state
+    this.isSubmitting = true;
+
     const formValues = this.bidForm.value;
     const bidData = {
       item_id: this.item.id,
@@ -126,9 +132,10 @@ export class BidModalComponent implements OnInit {
     if(this.isEdit){
       data.id = this.item.id;
     }
-    //this.enableLoader = true;
+    
     this.commonService.filepost(url, data).subscribe(
       (response: any) => {
+        this.isSubmitting = false; // Stop loading
         this.enableLoader = false;
         if (response.code == 200) {
           this.showToast('success', response.message, '', 2500, '');
@@ -138,6 +145,7 @@ export class BidModalComponent implements OnInit {
         }
       },
       (error) => {
+        this.isSubmitting = false; // Stop loading
         this.enableLoader = false;
         console.log('error ts: ', error.error);
         // this.toastr.error(error);

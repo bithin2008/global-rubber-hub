@@ -22,7 +22,8 @@
         </div>
         <div class="info-row">
           <span>Location</span>
-          <span class="bold">{{item?.city}}, {{item?.state}}</span>
+          <span class="bold" *ngIf="item?.city && item?.state">{{item?.city}}, {{item?.state}}</span>
+          <span class="bold" *ngIf="!item?.city && !item?.state">N/A</span>
         </div>
         <div class="info-row">
           <span>Current Price</span>
@@ -95,9 +96,17 @@
         expand="block" 
         class="btn btn-grn no-style"
         type="submit"
+        [disabled]="isSubmitting"
         >
-        <!-- <img src="assets/img/icons/credit_card.svg" alt="" title=""> -->
-       Submit
+        <div class="button-content" [class.loading]="isSubmitting">
+          <ion-spinner 
+            *ngIf="isSubmitting" 
+            name="crescent" 
+            class="button-spinner">
+          </ion-spinner>
+          <span [class.hidden]="isSubmitting">Submit</span>
+          <span *ngIf="isSubmitting" class="loading-text">Submitting...</span>
+        </div>
       </ion-button>
     </form>
 

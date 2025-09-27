@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform, IonSpinner } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
@@ -19,11 +19,11 @@ import { ImageCropperModalComponent } from '../components/image-cropper-modal/im
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent]
+  imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent, IonSpinner]
 })
 export class ProfilePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-
+  public isSubmitting: boolean = false;
   profileForm!: FormGroup;
   public type: any;
   public enableLoader: boolean = false;
@@ -88,17 +88,13 @@ export class ProfilePage implements OnInit {
       this.profileForm.get('country')?.valueChanges.subscribe(country => {
         console.log('Country changed to:', country);
         const panControl = this.profileForm.get('pan');
-        const adhaarControl = this.profileForm.get('adhaar_no');
         if (country === 'India') {
           console.log('Setting PAN as required for India');
           panControl?.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
-        //  adhaarControl?.setValidators([Validators.required, Validators.pattern(/^[2-9]{1}[0-9]{11}$/)]);
         } else {
           console.log('Clearing PAN validation for non-India country');
           panControl?.clearValidators();
           panControl?.setValue(''); // Clear the value when not India
-          // adhaarControl?.clearValidators();
-          // adhaarControl?.setValue(''); // Clear the value when not India
         }
         panControl?.updateValueAndValidity();
       });
@@ -123,11 +119,11 @@ export class ProfilePage implements OnInit {
     fetch('assets/JSON/country.json')
       .then(response => response.json())
       .then(data => {
-        console.log('Loaded countries data:', data);
+     //   console.log('Loaded countries data:', data);
         this.countries = data;
         this.filteredCountries = data; // Initialize filtered countries with all countries
-        console.log('Countries array:', this.countries);
-        console.log('Filtered countries array:', this.filteredCountries);
+      //  console.log('Countries array:', this.countries);
+      //  console.log('Filtered countries array:', this.filteredCountries);
       })
       .catch(error => {
         console.error('Error loading countries:', error);
@@ -136,8 +132,8 @@ export class ProfilePage implements OnInit {
 
   filterCountries(event: any) {
     const searchTerm = event.target.value.toLowerCase();
-    console.log('Search term:', searchTerm);
-    console.log('All countries:', this.countries);
+   // console.log('Search term:', searchTerm);
+   // console.log('All countries:', this.countries);
 
     if (searchTerm) {
       this.filteredCountries = this.countries.filter(country =>
@@ -384,13 +380,12 @@ export class ProfilePage implements OnInit {
   }
 
   formatFileSize(bytes: number): string {
-    console.log('formatFileSize called with bytes:', bytes, 'Type:', typeof bytes);
+  //  console.log('formatFileSize called with bytes:', bytes, 'Type:', typeof bytes);
 
     if (bytes === 0) return '0 Bytes';
     if (bytes < 1024) return bytes + ' Bytes';
     if (bytes < 1024 * 1024) {
       const kb = bytes / 1024;
-      console.log('Converting to KB:', kb);
       return kb.toFixed(2) + ' KB';
     }
     if (bytes < 1024 * 1024 * 1024) {
@@ -1819,7 +1814,6 @@ export class ProfilePage implements OnInit {
     formData.append('company_name', this.f['company'].value);
     if (this.f['country'].value === 'India') {
       formData.append('pan', this.f['pan'].value);
-     // formData.append('adhaar_no', this.f['adhaar_no'].value);
     }
     formData.append('id_proof_type', this.f['id_proof_type'].value);
     formData.append('country', this.f['country'].value);

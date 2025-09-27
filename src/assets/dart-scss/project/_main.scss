@@ -227,7 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 9999;
 }
 
 .loader-container {
@@ -602,6 +602,13 @@ ion-button.btn {
     background-color: #1a8135;
     --color: #fff;
     padding: 5px 0;
+    
+    &[disabled] {
+      --background: #218838;
+     
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
   }
 
   font-size: 14px;
