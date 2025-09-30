@@ -10,6 +10,7 @@ import { CommonService } from '../services/common-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { LoaderService } from '../services/loader.service';
 @Component({
   selector: 'app-trusted-seller',
   templateUrl: './trusted-seller.page.html',
@@ -20,7 +21,6 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 })
 export class TrustedSellerPage implements OnInit {
   public isPlanModalOpen: boolean = false;
-  public enableLoader: boolean = false;
   public packageList: any[] = [];
   public selectedPackage: any | null = null;
   public isProcessing: boolean = false;
@@ -31,7 +31,8 @@ export class TrustedSellerPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private pageTitleService: PageTitleService,
     private modalController: ModalController,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private loaderService: LoaderService
   ) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Trusted Seller');
@@ -45,11 +46,11 @@ export class TrustedSellerPage implements OnInit {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.profileDetails = response.user; 
         } else {
@@ -57,7 +58,7 @@ export class TrustedSellerPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -112,9 +113,10 @@ export class TrustedSellerPage implements OnInit {
       package_for: 2
     }
     let url = `general/package-details`;
+    this.loaderService.show();
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.packageList = response.results;
           if (this.packageList && this.packageList.length > 0) {
@@ -123,7 +125,7 @@ export class TrustedSellerPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error', error);
       }
     );
@@ -276,7 +278,7 @@ export class TrustedSellerPage implements OnInit {
     this.commonService.post(url, data).subscribe(
       (response) => {
         console.log("response", response);
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.modalController.dismiss();
         this.showToast('success', response.message, '', 2000, '/account');
@@ -285,7 +287,7 @@ export class TrustedSellerPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log("error ts: ", error);
       }
     );

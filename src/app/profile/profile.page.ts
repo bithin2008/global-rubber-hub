@@ -14,6 +14,7 @@ import { ProfileService } from '../services/profile.service';
 import { PageTitleService } from '../services/page-title.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ImageCropperModalComponent } from '../components/image-cropper-modal/image-cropper-modal.component';
+import { LoaderService } from '../services/loader.service';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -26,7 +27,6 @@ export class ProfilePage implements OnInit {
   public isSubmitting: boolean = false;
   profileForm!: FormGroup;
   public type: any;
-  public enableLoader: boolean = false;
   public submitted: boolean = false;
   public profileImage: string = '';
   public showPlaceholder: boolean = true;
@@ -60,7 +60,8 @@ export class ProfilePage implements OnInit {
     private profileService: ProfileService,
     private pageTitleService: PageTitleService,
     private platform: Platform,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private loaderService: LoaderService
   ) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Profile');
@@ -169,11 +170,11 @@ export class ProfilePage implements OnInit {
 
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       async (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
@@ -224,7 +225,7 @@ export class ProfilePage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -602,7 +603,7 @@ export class ProfilePage implements OnInit {
       // Fallback to file input if native camera fails
       console.log('Falling back to file input due to camera error');
       this.openFileInputWithSource(source);
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -625,7 +626,7 @@ export class ProfilePage implements OnInit {
         } else {
           this.showToast('error', `Image is too large (${this.formatFileSize(blob.size)}). Maximum size allowed is 5MB. Please try again with a smaller image or lower quality.`, '', 5000, '/profile');
           this.resetImageDisplay();
-          this.enableLoader = false;
+          this.loaderService.hide();
         }
         return;
       }
@@ -635,7 +636,7 @@ export class ProfilePage implements OnInit {
 
     } catch (error) {
       console.error('Error checking image size:', error);
-      this.enableLoader = false;
+      this.loaderService.hide();
       // If we can't check the size, proceed with processing and let the existing size check handle it
       this.processImageURI(imageUri);
     }
@@ -703,7 +704,7 @@ export class ProfilePage implements OnInit {
 
     } catch (error) {
       console.error('Error compressing image:', error);
-      this.enableLoader = false;
+      this.loaderService.hide();
       return null;
     }
   }
@@ -749,7 +750,7 @@ export class ProfilePage implements OnInit {
           // All compression attempts failed
           this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '/profile');
           this.resetImageDisplay();
-          this.enableLoader = false;
+          this.loaderService.hide();
           return;
         }
 
@@ -782,7 +783,7 @@ export class ProfilePage implements OnInit {
       console.error('Failed to load image for compression');
       this.showToast('error', `Image is too large (${this.formatFileSize(originalSize)}). Maximum size allowed is 5MB. Please try again with a smaller image.`, '', 4000, '/profile');
       this.resetImageDisplay();
-      this.enableLoader = false;
+      this.loaderService.hide();
     };
 
     img.src = imageUri;
@@ -797,7 +798,7 @@ export class ProfilePage implements OnInit {
     // Validate file before upload
     if (!file || file.size === 0) {
       this.showToast('error', 'Invalid file: File is empty or corrupted', '', 3000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
       return;
     }
 
@@ -805,7 +806,7 @@ export class ProfilePage implements OnInit {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       this.showToast('error', `Invalid file type: ${file.type}. Please select a valid image file.`, '', 3000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
       return;
     }
 
@@ -813,7 +814,7 @@ export class ProfilePage implements OnInit {
     const maxSize = 5 * 1024 * 1024; // 2MB
     if (file.size > maxSize) {
       this.showToast('error', `File too large: ${this.formatFileSize(file.size)}. Maximum size is 5MB.`, '', 3000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
       return;
     }
 
@@ -827,7 +828,7 @@ export class ProfilePage implements OnInit {
 
     this.commonService.filepost(url, formData).subscribe(
       (res: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         // Handle different response types
         if (res.code == 200) {
           this.showToast('success', res.message, '', 2500, '');
@@ -839,7 +840,7 @@ export class ProfilePage implements OnInit {
         this.getProfileData();
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('Upload error:', error);
         console.log('Error status:', error.status);
         console.log('Error message:', error.message);
@@ -945,7 +946,7 @@ export class ProfilePage implements OnInit {
       console.error('Error handling captured image:', error);
       this.showToast('error', 'Failed to process captured image', '', 4000, '/profile');
       this.resetImageDisplay();
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -968,7 +969,7 @@ export class ProfilePage implements OnInit {
 
       if (data && data.cropped) {
         // Show loading indicator
-        this.enableLoader = true;
+        this.loaderService.show();
 
         // Process the cropped image
         await this.processCroppedImage(data.file);
@@ -994,7 +995,7 @@ export class ProfilePage implements OnInit {
       if (file.size > maxSize) {
         this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 5000, '/profile');
         this.resetImageDisplay();
-        this.enableLoader = false;
+        this.loaderService.hide();
         return;
       }
 
@@ -1004,7 +1005,7 @@ export class ProfilePage implements OnInit {
       console.error('Error processing cropped image:', error);
       this.showToast('error', 'Failed to process cropped image', '', 4000, '/profile');
       this.resetImageDisplay();
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -1027,7 +1028,7 @@ export class ProfilePage implements OnInit {
 
       if (data && data.cropped) {
         // Show loading indicator
-        this.enableLoader = true;
+        this.loaderService.show();
 
         // Process the cropped image for upload
         await this.processCroppedImageForUpload(data.file);
@@ -1051,7 +1052,7 @@ export class ProfilePage implements OnInit {
       if (file.size > maxSize) {
         this.showToast('error', `Image is too large (${this.formatFileSize(file.size)}). Maximum size allowed is 5MB.`, '', 5000, '/profile');
         this.resetImageDisplay();
-        this.enableLoader = false;
+        this.loaderService.hide();
         return;
       }
 
@@ -1067,13 +1068,13 @@ export class ProfilePage implements OnInit {
       const currentFiles = this.profileForm.get('id_proof_image')?.value || [];
       this.profileForm.get('id_proof_image')?.setValue([...currentFiles, file]);
 
-      this.enableLoader = false;
+      this.loaderService.hide();
       this.showToast('success', 'Document image added successfully', '', 2500, '/profile');
     } catch (error) {
       console.error('Error processing cropped image for upload:', error);
       this.showToast('error', 'Failed to process cropped image', '', 4000, '/profile');
       this.resetImageDisplay();
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -1107,14 +1108,14 @@ export class ProfilePage implements OnInit {
         }
 
         // Show loading indicator
-        this.enableLoader = true;
+        this.loaderService.show();
 
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.processImageURI(e.target.result);
         };
         reader.onerror = () => {
-          this.enableLoader = false;
+          this.loaderService.hide();
           this.showToast('error', 'Failed to read image file. Please try again.', '', 4000, '/profile');
         };
         reader.readAsDataURL(file);
@@ -1196,7 +1197,7 @@ export class ProfilePage implements OnInit {
 
             this.commonService.filepost(url, formData).subscribe(
               (res: any) => {
-                this.enableLoader = false;
+                this.loaderService.hide();
                 console.log('Response type:', typeof res);
                 console.log('Response:', res);
 
@@ -1233,7 +1234,7 @@ export class ProfilePage implements OnInit {
                 }
               },
               (error) => {
-                this.enableLoader = false;
+                this.loaderService.hide();
                 console.log('error ts: ', error.error);
                 this.showToast('error', 'Upload failed', '', 2500, '');
                 this.getProfileData()
@@ -1243,7 +1244,7 @@ export class ProfilePage implements OnInit {
             console.error('Failed to create PNG blob');
             this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
             this.resetImageDisplay();
-            this.enableLoader = false;
+            this.loaderService.hide();
           }
         }, 'image/png', 0.9); // Add quality parameter for better compression
       };
@@ -1260,7 +1261,7 @@ export class ProfilePage implements OnInit {
           // For other types of images, show generic error
           this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
           this.resetImageDisplay();
-          this.enableLoader = false;
+          this.loaderService.hide();
         }
       };
 
@@ -1269,7 +1270,7 @@ export class ProfilePage implements OnInit {
       console.error('Image processing error:', error);
       this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
       this.resetImageDisplay();
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -1305,7 +1306,7 @@ export class ProfilePage implements OnInit {
       } else {
         console.error('Failed to load file URI:', xhr.status);
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
-        this.enableLoader = false;
+        this.loaderService.hide();
         this.resetImageDisplay();
       }
     };
@@ -1313,7 +1314,7 @@ export class ProfilePage implements OnInit {
     xhr.onerror = () => {
       console.error('XHR error loading file URI');
       this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
       this.resetImageDisplay();
     };
 
@@ -1338,7 +1339,7 @@ export class ProfilePage implements OnInit {
       .catch(error => {
         console.error('Failed to convert content URI to blob:', error);
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
-        this.enableLoader = false;
+        this.loaderService.hide();
         this.resetImageDisplay();
       });
   }
@@ -1356,7 +1357,7 @@ export class ProfilePage implements OnInit {
         console.error('Failed to create blob from URI:', error);
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile'); ``
         this.resetImageDisplay();
-        this.enableLoader = false;
+        this.loaderService.hide();
       });
   }
 
@@ -1376,7 +1377,7 @@ export class ProfilePage implements OnInit {
       console.error('Failed to load image via blob URL');
       URL.revokeObjectURL(blobUrl); // Clean up
       this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
       this.resetImageDisplay();
     };
 
@@ -1416,7 +1417,7 @@ export class ProfilePage implements OnInit {
 
         this.commonService.filepost(url, formData).subscribe(
           (res: any) => {
-            this.enableLoader = false;
+            this.loaderService.hide();
             console.log('Response type:', typeof res);
             console.log('Response:', res);
 
@@ -1448,13 +1449,13 @@ export class ProfilePage implements OnInit {
                 this.showToast('success', responseData.message, '', 2500, '');
               } else {
                 this.showToast('error', responseData.message, '', 2500, '/profile');
-                this.enableLoader = false;
+                this.loaderService.hide();
               }
               this.getProfileData()
             }
           },
           (error) => {
-            this.enableLoader = false;
+            this.loaderService.hide();
             console.log('error ts: ', error.error);
             this.showToast('error', 'Upload failed', '', 2500, '');
             this.getProfileData()
@@ -1464,7 +1465,7 @@ export class ProfilePage implements OnInit {
         console.error('Failed to create PNG blob via alternative method');
         this.showToast('error', 'Failed to process image format. Please try again.', '', 4000, '/profile');
         this.resetImageDisplay();
-        this.enableLoader = false;
+        this.loaderService.hide();
       }
     }, 'image/png', 0.9);
   }
@@ -1543,7 +1544,7 @@ export class ProfilePage implements OnInit {
       // Fallback to file input if native camera fails
       console.log('Falling back to file input due to camera error');
       this.openFileInputForUpload(source);
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -1602,7 +1603,7 @@ export class ProfilePage implements OnInit {
       const timeout = setTimeout(() => {
         console.error('Image load timeout for upload');
         this.showToast('error', 'Image loading timed out. Please try again.', '', 4000, '/profile');
-        this.enableLoader = false;
+        this.loaderService.hide();
       }, 10000); // 10 second timeout
 
       img.onload = () => {
@@ -1620,7 +1621,7 @@ export class ProfilePage implements OnInit {
 
         // For upload images, try alternative processing
         this.showToast('error', 'Failed to process camera image. Please try selecting from gallery instead.', '', 4000, '/profile');
-        this.enableLoader = false;
+        this.loaderService.hide();
       };
 
       img.src = displaySrc;
@@ -1628,7 +1629,7 @@ export class ProfilePage implements OnInit {
     } catch (error: any) {
       console.error('Upload image processing error:', error);
       this.showToast('error', 'Failed to process camera image. Please try again.', '', 4000, '/profile');
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -1753,11 +1754,11 @@ export class ProfilePage implements OnInit {
         } else {
           // Ultimate fallback - show error
           this.showToast('error', 'Unable to compress image to required size. Please try with a different image.', '', 4000, '/profile');
-          this.enableLoader = false;
+          this.loaderService.hide();
         }
       } else {
         this.showToast('error', 'Failed to process image. Please try again.', '', 4000, '/profile');
-        this.enableLoader = false;
+        this.loaderService.hide();
       }
     }, 'image/jpeg', 0.2); // Very low quality
   }
@@ -1787,7 +1788,7 @@ export class ProfilePage implements OnInit {
       }
 
       console.log('Camera image added to upload files:', this.uploadedFiles.length);
-      this.enableLoader = false;
+      this.loaderService.hide();
     };
     reader.readAsDataURL(file);
   }
@@ -1848,11 +1849,11 @@ export class ProfilePage implements OnInit {
         formData.append(`id_proof_image`, this.uploadedFiles[0].file);
     }
 
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile-update';
     this.commonService.filepost(url, formData).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('Response type:', typeof response);
         console.log('Response:', response);
         this.uploadedFiles = [];
@@ -1893,15 +1894,15 @@ export class ProfilePage implements OnInit {
             this.getProfileData();
           } else if (responseData.code == 423) {
             this.showToast('error', responseData.message, '', 2500, '/profile');
-            this.enableLoader = false;
+            this.loaderService.hide();
           } else {
             this.showToast('error', responseData.message, '', 2500, '/profile');
-            this.enableLoader = false;
+            this.loaderService.hide();
           }
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         this.showToast('error', 'Profile update failed', '', 2500, '/profile');
       }

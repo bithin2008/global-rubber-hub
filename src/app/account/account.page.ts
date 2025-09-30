@@ -16,6 +16,7 @@ import { PaymentModalComponent } from '../components/payment-modal/payment-modal
 import { Subscription } from 'rxjs';
 import { PageTitleService } from '../services/page-title.service';
 import { getRazorpayConfig, createAuthHeader } from '../../environments/razorpay.config';
+import { LoaderService } from '../services/loader.service';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -24,7 +25,6 @@ import { getRazorpayConfig, createAuthHeader } from '../../environments/razorpay
   imports: [IonicModule, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent]
 })
 export class AccountPage implements OnInit, OnDestroy {
-  public enableLoader: boolean = false;
   public profileImage: string = '';
   public showPlaceholder: boolean = true;
   public profileDetails: any = {}
@@ -47,7 +47,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private location: Location,
     private pageTitleService: PageTitleService,
     private profileService: ProfileService,
-    private authGuardService: AuthGuardService) {
+    private authGuardService: AuthGuardService,
+    private loaderService: LoaderService) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Account');
       this.subscription.add(
@@ -76,11 +77,11 @@ export class AccountPage implements OnInit, OnDestroy {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.profileDetails = response.user;
           this.profileDetails.points = parseInt(this.profileDetails.points)
@@ -108,7 +109,7 @@ export class AccountPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -173,10 +174,10 @@ export class AccountPage implements OnInit, OnDestroy {
       package_for: 3
     }
     let url = `general/package-details`;
-    
+    this.loaderService.show();
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.packageList = response.results;
           if (this.packageList && this.packageList.length > 0) {
@@ -185,7 +186,7 @@ export class AccountPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error', error);
       }
     );
@@ -238,6 +239,7 @@ export class AccountPage implements OnInit, OnDestroy {
   // Open Payment Modal for subscription
   async openPaymentModal() {
     // Debug: Check if Razorpay is available
+    this.loaderService.show();
     console.log('Opening payment modal...');
     console.log('Razorpay available:', typeof (window as any).Razorpay !== 'undefined');
     console.log('Profile details:', this.profileDetails);
@@ -261,6 +263,10 @@ export class AccountPage implements OnInit, OnDestroy {
         userDetails: this.profileDetails
       }
     });
+
+    setTimeout(() => {
+      this.loaderService.hide();
+    }, 2000);   
 
     modal.onDidDismiss().then((result) => {
       console.log('Payment modal dismissed with result:', result);
@@ -359,6 +365,7 @@ export class AccountPage implements OnInit, OnDestroy {
       return;
     }
     this.isProcessing = true;
+    this.loaderService.show();
 
     try {
       // Generate order ID from backend API
@@ -392,13 +399,15 @@ export class AccountPage implements OnInit, OnDestroy {
         handler: (response: any) => {
           console.log('🎉 Payment successful:', response);
           this.isProcessing = false;
-          this.capturePayment(response)
+          this.capturePayment(response);
+          this.loaderService.hide();
 
         },
         modal: {
           ondismiss: () => {
             console.log('⚠️ Payment dismissed by user');
             this.isProcessing = false;
+            this.loaderService.hide();
             this.modalController.dismiss({
               success: false,
               error: 'Payment cancelled by user',
@@ -422,6 +431,7 @@ export class AccountPage implements OnInit, OnDestroy {
       rzp.on('payment.failed', (response: any) => {
         console.error('❌ Payment failed:', response);
         this.isProcessing = false;
+        this.loaderService.hide();
         this.modalController.dismiss({
           success: false,
           error: response.error,
@@ -435,6 +445,7 @@ export class AccountPage implements OnInit, OnDestroy {
     } catch (error: any) {
       // Payment failed
       this.isProcessing = false;
+      this.loaderService.hide();
       console.error('Payment error in modal:', error);
       this.modalController.dismiss({
         success: false,
@@ -464,7 +475,7 @@ export class AccountPage implements OnInit, OnDestroy {
     this.commonService.post(url, data).subscribe(
       (response) => {
         console.log("response", response);
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.modalController.dismiss();
           this.showToast('success', response.message, '', 2000, '');
@@ -474,7 +485,7 @@ export class AccountPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log("error ts: ", error);
       }
     );

@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { SocialLogin } from "@capgo/capacitor-social-login";
+import { LoaderService } from '../services/loader.service';
 
 
 0
@@ -52,7 +53,6 @@ export class LoginPage implements OnInit, OnDestroy {
   user: any;
 
   // Common properties
-  public enableLoader: boolean = false;
   public submitted: boolean = false;
   public loginType = 'company';
   public savedLoginCredential: any = [];
@@ -100,7 +100,8 @@ export class LoginPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private platform: Platform,
     private deepLinkService: DeepLinkService,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private loaderService: LoaderService
   ) {
     // Initialize Google Auth based on platform
     // this.initializeGoogleAuth();
@@ -109,7 +110,7 @@ export class LoginPage implements OnInit, OnDestroy {
     this.routeSubscription = this.activatedRoute.params.subscribe(async val => {
     
       // Only check login status if we're not already processing
-      if (!this.enableLoader) {
+      if (!this.loaderService.isLoading()) {
         // Fast local check to avoid unnecessary API call
         const hasToken = this.authGuardService.hasToken();
         let hasLoggin: any = { code: hasToken ? 200 : 401 };
@@ -209,11 +210,11 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.profileDetails = response.user;
         } else {
@@ -221,7 +222,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -403,7 +404,7 @@ export class LoginPage implements OnInit, OnDestroy {
     }
 
     // Prevent multiple simultaneous login attempts
-    if (this.enableLoader) {
+    if (this.loaderService.isLoading()) {
       return;
     }
 
@@ -411,11 +412,11 @@ export class LoginPage implements OnInit, OnDestroy {
       email: this.loginForm.get('email')?.value,
       password: this.loginForm.get('password')?.value,
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'auth/login';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           localStorage.setItem('token', response.access_token);
           this.authenticationService.handleSuccessfulLogin();
@@ -427,7 +428,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('Login error:', error.error);
       }
     );
@@ -448,11 +449,11 @@ export class LoginPage implements OnInit, OnDestroy {
       country_code: "+91",
       password: this.registerForm.get('password')?.value
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'auth/registration';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 201) {
           localStorage.setItem('token', response.access_token);
           this.authenticationService.handleSuccessfulLogin();
@@ -464,7 +465,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
       }
     );
@@ -480,11 +481,11 @@ export class LoginPage implements OnInit, OnDestroy {
       email: this.forgotPasswordForm.get('email')?.value
     };
 
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'auth/forgot-password';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           localStorage.setItem('email', this.forgotPasswordForm.get('email')?.value);
           this.showOtpVerification = true;
@@ -501,7 +502,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
       }
     );
@@ -521,11 +522,11 @@ export class LoginPage implements OnInit, OnDestroy {
       email: localStorage.getItem('email'),
       otp: this.otpForm.get('emailOTP')?.value,
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'auth/verify-otp';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.showResetPassword = true;
           this.showForgotPassword = false;
@@ -541,7 +542,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
       }
     );
@@ -558,11 +559,11 @@ export class LoginPage implements OnInit, OnDestroy {
       new_password: this.resetPasswordForm.get('password')?.value,
       new_password_confirmation: this.resetPasswordForm.get('confirmPassword')?.value,
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'auth/reset-password';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.showToast('success', response.message, '', 2000, '/login');
           this.backToLogin();
@@ -575,7 +576,7 @@ export class LoginPage implements OnInit, OnDestroy {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
       }
     );

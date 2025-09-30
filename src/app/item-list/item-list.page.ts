@@ -19,6 +19,7 @@ import { ShareModalComponent } from '../shared/share-modal/share-modal.component
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { WalletService } from '../services/wallet.service';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-item-list',
@@ -32,7 +33,6 @@ export class ItemListPage implements OnInit {
   public filterWarning: boolean = false;
   public itemList: any = [];
   public itemFilterList: any = [];
-  public enableLoader: boolean = false;
   public hasLoggin: any = {};
   public showNoRecord: boolean = false;
   public page: number = 0;
@@ -59,6 +59,7 @@ export class ItemListPage implements OnInit {
     private pageTitleService: PageTitleService,
     private authGuardService: AuthGuardService,
     private walletService: WalletService,
+    private loaderService: LoaderService,
     // private sharedService: SharedService,
   ) {
 
@@ -157,12 +158,12 @@ export class ItemListPage implements OnInit {
       data.added_by_id = user_id;
     }
     if (this.page == 0) {
-      this.enableLoader = true;
+      this.loaderService.show();
     }
     let url = `items/list`;
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.itemList = this.itemList.concat(response.results);
           this.itemList = _.uniqBy(this.itemList, 'id');
@@ -179,7 +180,7 @@ export class ItemListPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
 
         console.log('error', error);
       }
@@ -369,11 +370,11 @@ export class ItemListPage implements OnInit {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
@@ -390,7 +391,7 @@ export class ItemListPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }

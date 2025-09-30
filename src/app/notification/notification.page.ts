@@ -15,6 +15,7 @@ import { TimeAgoPipe } from '../pipes/time-ago.pipe';
 import { NotificationDetailModalComponent } from './notification-detail-modal/notification-detail-modal.component';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { WalletService } from '../services/wallet.service';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-notification',
@@ -41,7 +42,6 @@ export class NotificationPage implements OnInit {
   public page: number = 0;
   public pageSize: number = 10;
   public orderBy: string = 'desc';
-  public enableLoader: boolean = false;
   public showNoRecord: boolean = false;
   public totalCount: number = 0;
   public notificationList: any = [];
@@ -54,7 +54,8 @@ export class NotificationPage implements OnInit {
     private authGuardService: AuthGuardService,
     private walletService: WalletService,
     private location: Location,
-    private modalCtrl: ModalController) {
+    private modalCtrl: ModalController,
+    private loaderService: LoaderService) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Notifications');
       this.getNotificationList();
@@ -70,11 +71,11 @@ export class NotificationPage implements OnInit {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
@@ -91,7 +92,7 @@ export class NotificationPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -100,7 +101,7 @@ export class NotificationPage implements OnInit {
   }
 
   async openNotificationDetail(notification: any) {
-    this.enableLoader = true;
+    this.loaderService.show();
 
     try {
       // Call API to mark as read and get full details
@@ -135,7 +136,7 @@ export class NotificationPage implements OnInit {
       console.error('Error loading notification details:', error);
       this.showToast('error', 'Failed to load notification details', '', 3000, '');
     } finally {
-      this.enableLoader = false;
+      this.loaderService.hide();
     }
   }
 
@@ -147,12 +148,12 @@ export class NotificationPage implements OnInit {
     }
 
     if (this.page == 0) {
-      this.enableLoader = true;
+      this.loaderService.show();
     }
     let url = `notifications/list`;
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.notificationList = this.notificationList.concat(response.results);
           this.notificationList = _.uniqBy(this.notificationList, 'id');
@@ -166,7 +167,7 @@ export class NotificationPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
 
         console.log('error', error);
       }

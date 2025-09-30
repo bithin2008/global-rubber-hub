@@ -17,6 +17,7 @@ import { AuthGuardService } from '../services/auth-guard.service';
 import { BidModalComponent } from '../item-list/bid-modal.component';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { NotificationService } from '../services/notification.service';
+import { LoaderService } from '../services/loader.service';
 
 
 // Interfaces for type safety
@@ -65,7 +66,6 @@ interface DashboardData {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DashboardPage implements OnInit, AfterViewInit {
-  public enableLoader: boolean = false;
   private subscription: Subscription = new Subscription();
   public profileName: string = '';
   public dashboardData: DashboardData = {
@@ -115,7 +115,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     private commonService: CommonService,
     private authenticationService: AuthService,
     private authGuardService: AuthGuardService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private loaderService: LoaderService
   ) {
     activatedRoute.params.subscribe(async val => {
       register();
@@ -162,11 +163,11 @@ export class DashboardPage implements OnInit, AfterViewInit {
   }
 
   getProfileData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'user/profile';
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {          
           // Update profile service with all data including wallet balance
           this.profileService.updateProfileFromAPI(response.user); 
@@ -179,7 +180,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }
@@ -249,11 +250,11 @@ export class DashboardPage implements OnInit, AfterViewInit {
 
 
   getDashboardData() {
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = `user/dashboard`;
     this.commonService.get(url).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           // Safely assign the response data with proper typing
           this.dashboardData = {
@@ -272,7 +273,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error', error);
         // Set default data on error
         this.dashboardData = {

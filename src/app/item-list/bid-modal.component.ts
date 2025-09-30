@@ -13,6 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-bid-modal',
@@ -37,7 +38,6 @@ export class BidModalComponent implements OnInit {
 
   public bidForm!: FormGroup;
   public submitted: boolean = false;
-  public enableLoader: boolean = false;
   public isEdit: boolean = false;
   public isSubmitting: boolean = false; // Variable to control button loader
 
@@ -45,6 +45,7 @@ export class BidModalComponent implements OnInit {
     private modalController: ModalController,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
+    private loaderService: LoaderService
   ) { }
 
   ngOnInit() {
@@ -136,7 +137,7 @@ export class BidModalComponent implements OnInit {
     this.commonService.filepost(url, data).subscribe(
       (response: any) => {
         this.isSubmitting = false; // Stop loading
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           this.showToast('success', response.message, '', 2500, '');
           this.modalController.dismiss(bidData);
@@ -146,7 +147,7 @@ export class BidModalComponent implements OnInit {
       },
       (error) => {
         this.isSubmitting = false; // Stop loading
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }

@@ -165,7 +165,7 @@
 
     
 
-      <ion-button class="btn btn-grn no-style pay-btn" expand="block" type="button" (click)="paySelectedPlan()">
+      <ion-button class="btn btn-grn no-style pay-btn" expand="block" type="button" (click)="paySelectedPlan()" [disabled]="isProcessing">
         Pay ₹ {{ totalWithGst | number:'1.2-2' }}
       </ion-button>
       <ion-button class="btn no-style cancel-btn" expand="block" type="button" (click)="closeWalletModal()">Cancel</ion-button>
@@ -173,12 +173,4 @@
   </ng-template>
 </ion-modal>
 
-<!--LOADER-->
-<div class="loader-overlay" *ngIf="enableLoader">
-  <div class="loader-container">
-    <img src="assets/img/ajax-loader.gif">
-    <span class="ion-text-center"> Please wait</span>
-  </div>
-</div>
-<!--LOADER-->
 

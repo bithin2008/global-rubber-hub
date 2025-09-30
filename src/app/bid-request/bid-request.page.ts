@@ -14,6 +14,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { PageTitleService } from '../services/page-title.service';
 import { RejectReasonModalComponent } from './reject-reason-modal/reject-reason-modal.component';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-bid-request',
@@ -27,7 +28,6 @@ export class BidRequestPage implements OnInit {
   public filterWarning: boolean = false;
   public itemList: any = [];
   public itemFilterList: any = [];
-  public enableLoader: boolean = false;
   public hasLoggin: any = {};
   public showNoRecord: boolean = false;
   public page: number = 0;
@@ -50,7 +50,8 @@ export class BidRequestPage implements OnInit {
     private popoverController: PopoverController,
     private authenticationService: AuthService,
     private pageTitleService: PageTitleService,
-    private authGuardService: AuthGuardService
+    private authGuardService: AuthGuardService,
+    private loaderService: LoaderService
     // private sharedService: SharedService,
   ) {
 
@@ -131,12 +132,12 @@ export class BidRequestPage implements OnInit {
 
     }
     if (this.page == 0) {
-      this.enableLoader = true;
+      this.loaderService.show();
     }
     let url = `bids/list`;
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           if (this.page === 0) {
             // Replace list on a fresh load so updated items are reflected
@@ -159,7 +160,7 @@ export class BidRequestPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
 
         console.log('error', error);
       }
@@ -305,10 +306,10 @@ export class BidRequestPage implements OnInit {
       bid_status: bidStatus,
       cancel_rejection_reason: cancelRejectionReason ?? null
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     this.commonService.post(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 200) {
           // Reset pagination and reload fresh list so UI reflects changes
           this.page = 0;
@@ -321,7 +322,7 @@ export class BidRequestPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
       }
     );

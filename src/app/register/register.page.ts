@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,6 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 export class RegisterPage implements OnInit {
   public registerForm!: FormGroup;
   public submitted: boolean = false;
-  public enableLoader: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     public router: Router,
@@ -33,7 +33,8 @@ export class RegisterPage implements OnInit {
     private menu: MenuController,
     private commonService: CommonService,
     private authenticationService: AuthService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private loaderService: LoaderService
   ) {
 
     this.activatedRoute.params.subscribe(async val => {
@@ -94,11 +95,11 @@ export class RegisterPage implements OnInit {
       country_code: "+91",
       password: this.f['password'].value
     };
-    this.enableLoader = true;
+    this.loaderService.show();
     let url = 'registration';
     this.commonService.login(url, data).subscribe(
       (response: any) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         if (response.code == 201) {
             this.showToast('success', response.message, '', 2500, '/login');
           localStorage.setItem('token', response.access_token);
@@ -109,7 +110,7 @@ export class RegisterPage implements OnInit {
         }
       },
       (error) => {
-        this.enableLoader = false;
+        this.loaderService.hide();
         console.log('error ts: ', error.error);
         // this.toastr.error(error);
       }

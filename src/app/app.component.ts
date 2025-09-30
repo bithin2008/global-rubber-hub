@@ -7,12 +7,13 @@ import { Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { DeepLinkService } from './services/deep-link.service';
 import { Router } from '@angular/router';
+import { LoaderComponent } from './shared/loader/loader.component';
 
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, LoaderComponent],
 })
 export class AppComponent {
   constructor(
