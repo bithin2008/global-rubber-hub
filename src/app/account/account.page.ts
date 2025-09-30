@@ -17,6 +17,8 @@ import { Subscription } from 'rxjs';
 import { PageTitleService } from '../services/page-title.service';
 import { getRazorpayConfig, createAuthHeader } from '../../environments/razorpay.config';
 import { LoaderService } from '../services/loader.service';
+import { ReferralService } from '../services/referral.service';
+import { SocialShareModalComponent } from '../components/social-share-modal/social-share-modal.component';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -48,7 +50,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private pageTitleService: PageTitleService,
     private profileService: ProfileService,
     private authGuardService: AuthGuardService,
-    private loaderService: LoaderService) {
+    private loaderService: LoaderService,
+    private referralService: ReferralService) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Account');
       this.subscription.add(
@@ -458,6 +461,70 @@ export class AccountPage implements OnInit, OnDestroy {
     // Open YouTube video in browser
     const youtubeUrl = 'https://www.youtube.com/watch?v=qBnMoFpAiOk';
     window.open(youtubeUrl, '_blank');
+  }
+
+  /**
+   * Share app with referral code
+   */
+  async shareWithFriends() {
+    try {
+      this.loaderService.show();
+      
+      // Get user's referral code
+      const referralCode = this.profileDetails.referal_code;
+      
+      if (!referralCode) {
+        this.showToast('error', 'No referral code found. Please contact support.', '', 3000, '');
+        return;
+      }
+
+      // Generate referral link
+      const universalLink = `https://globalrubberhub.com/referral/${referralCode}`;
+      const shareText = `Join me on Global Rubber Hub! Use my referral code: ${referralCode}\n\nDownload the app: ${universalLink}`;
+
+      // Open social share modal
+      const modal = await this.modalController.create({
+        component: SocialShareModalComponent,
+        cssClass: 'social-share-modal',
+        componentProps: {
+          referralLink: universalLink,
+          referralCode: referralCode,
+          shareText: shareText
+        }
+      });
+
+      await modal.present();
+      
+    } catch (error) {
+      console.error('Error opening share modal:', error);
+      this.showToast('error', 'Failed to open share options', '', 2000, '');
+    } finally {
+      this.loaderService.hide();
+    }
+  }
+
+  /**
+   * Copy text to clipboard with fallback
+   */
+  private async copyToClipboard(text: string): Promise<void> {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        this.showToast('success', 'Link copied to clipboard!', '', 2000, '');
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        this.showToast('success', 'Link copied to clipboard!', '', 2000, '');
+      }
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      this.showToast('error', 'Failed to copy to clipboard', '', 2000, '');
+    }
   }
 
   capturePayment(razorPay: any) {

@@ -1,0 +1,150 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.referral-code-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.referral-code-input {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.link-container {
+  margin-bottom: 1rem;
+}
+
+.link-input {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  background-color: var(--ion-color-light);
+  border-radius: 4px;
+}
+
+.share-buttons {
+  margin-top: 1rem;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.stat-item {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.stat-item h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+  margin: 0;
+}
+
+.stat-item p {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  margin: 0.5rem 0 0 0;
+}
+
+.how-it-works {
+  margin-top: 1rem;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--ion-color-dark);
+  font-size: 1.1rem;
+}
+
+.step-content p {
+  margin: 0;
+  color: var(--ion-color-medium);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .referral-code-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .referral-code-input {
+    margin-bottom: 1rem;
+  }
+  
+  .stats-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .stat-item {
+    border-bottom: 1px solid var(--ion-color-light);
+    padding-bottom: 1rem;
+  }
+  
+  .stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .referral-code-input,
+  .link-input {
+    background-color: var(--ion-color-dark);
+    color: var(--ion-color-light);
+  }
+  
+  .step {
+    background-color: var(--ion-color-dark);
+  }
+}

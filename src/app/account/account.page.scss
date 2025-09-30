@@ -7,6 +7,15 @@
     --padding-bottom: 20px;
 }
 
+// Social Share Modal Styles
+.social-share-modal {
+  --width: 95%;
+  --max-width: 500px;
+  --height: 85%;
+  --border-radius: 16px;
+  --backdrop-opacity: 0.5;
+}
+
 .plans-bottom-sheet::part(content) {
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;

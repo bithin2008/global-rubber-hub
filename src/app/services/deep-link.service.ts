@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { ReferralService } from './referral.service';
 
 declare var universalLinks: any;
 
@@ -11,7 +12,8 @@ export class DeepLinkService {
 
   constructor(
     private router: Router,
-    private platform: Platform
+    private platform: Platform,
+    private referralService: ReferralService
   ) { }
 
   /**
@@ -117,6 +119,16 @@ export class DeepLinkService {
         return;
       }
 
+      // Handle referral links specifically
+      if (parts[0] === 'referral') {
+        const referralCode = parts[1];
+        console.log('Referral code:', referralCode);
+        
+        // Handle referral code
+        this.referralService.handleReferralCode(referralCode);
+        return;
+      }
+
       // Handle other URL formats
       let path: string | null = null;
       let params: { [key: string]: string } = {};
@@ -183,6 +195,7 @@ export class DeepLinkService {
       'notification': 'notification',
       'verify': 'verify-now',
       'trusted-seller': 'trusted-seller',
+      'referral': 'register', // Handle referral links
       'deep-link-demo': 'deep-link-demo'
     };
 

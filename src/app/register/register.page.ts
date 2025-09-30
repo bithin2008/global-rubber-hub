@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { MustMatch } from '../_helper/must-match.validator';
 import { AuthService } from '../services/auth.service';
+import { ReferralService } from '../services/referral.service';
 
 
 import { CommonModule } from '@angular/common';
@@ -34,7 +35,8 @@ export class RegisterPage implements OnInit {
     private commonService: CommonService,
     private authenticationService: AuthService,
     private alertController: AlertController,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private referralService: ReferralService
   ) {
 
     this.activatedRoute.params.subscribe(async val => {
@@ -45,7 +47,7 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.registerForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -53,12 +55,42 @@ export class RegisterPage implements OnInit {
       email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(30), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)]],
       confirmPassword: ['', Validators.required],
+      referralCode: [''] // Optional referral code field
     }, {
       validator: MustMatch('password', 'confirmPassword')
     });
+
+    // Check for referral code from URL params or stored referral
+    await this.checkForReferralCode();
   }
 
   get f() { return this.registerForm.controls; }
+
+  /**
+   * Check for referral code from URL params or stored referral
+   */
+  async checkForReferralCode() {
+    try {
+      // Check URL query params for referral code
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralFromUrl = urlParams.get('referral');
+      
+      if (referralFromUrl) {
+        console.log('Referral code from URL:', referralFromUrl);
+        this.registerForm.patchValue({ referralCode: referralFromUrl });
+        return;
+      }
+
+      // Check for stored referral code
+      const storedReferralCode = await this.referralService.getStoredReferralCode();
+      if (storedReferralCode) {
+        console.log('Stored referral code found:', storedReferralCode);
+        this.registerForm.patchValue({ referralCode: storedReferralCode });
+      }
+    } catch (error) {
+      console.error('Error checking for referral code:', error);
+    }
+  }
 
   goToLogin() {
     this.router.navigate(['/login']);
@@ -93,7 +125,8 @@ export class RegisterPage implements OnInit {
       email: this.f['email'].value,
       phone: this.f['phone'].value,
       country_code: "+91",
-      password: this.f['password'].value
+      password: this.f['password'].value,
+      referral_code: this.f['referralCode'].value || null
     };
     this.loaderService.show();
     let url = 'registration';

@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Share with Friends</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="social-share-content">
+  <div class="share-container">
+    <!-- Referral Code Display -->
+    <div class="referral-code-section">
+      <h3>Your Referral Code</h3>
+      <div class="referral-code-display">
+        <span class="referral-code">{{ referralCode }}</span>
+      </div>
+    </div>
+
+    <!-- Share Link Display -->
+    <div class="share-link-section">
+      <h3>Share Link</h3>
+      <div class="link-display">
+        <ion-input 
+          [value]="referralLink" 
+          readonly 
+          class="link-input">
+        </ion-input>
+        <ion-button 
+          fill="outline" 
+          size="small" 
+          (click)="copyToClipboard()"
+          class="copy-button">
+          <ion-icon name="copy" slot="start"></ion-icon>
+          Copy
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Social Media Platforms -->
+    <div class="social-platforms-section">
+      <h3>Share on Social Media</h3>
+      <div class="platforms-grid">
+        <!-- WhatsApp -->
+        <div class="platform-item" (click)="shareToPlatform('whatsapp')">
+          <div class="platform-icon whatsapp">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+          </div>
+          <span class="platform-name">WhatsApp</span>
+        </div>
+
+        <!-- Telegram -->
+        <div class="platform-item" (click)="shareToPlatform('telegram')">
+          <div class="platform-icon telegram">
+            <ion-icon name="send"></ion-icon>
+          </div>
+          <span class="platform-name">Telegram</span>
+        </div>
+
+        <!-- Facebook -->
+        <div class="platform-item" (click)="shareToPlatform('facebook')">
+          <div class="platform-icon facebook">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </div>
+          <span class="platform-name">Facebook</span>
+        </div>
+
+        <!-- Twitter -->
+        <div class="platform-item" (click)="shareToPlatform('twitter')">
+          <div class="platform-icon twitter">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </div>
+          <span class="platform-name">Twitter</span>
+        </div>
+
+        <!-- Instagram -->
+        <div class="platform-item" (click)="shareToPlatform('instagram')">
+          <div class="platform-icon instagram">
+            <ion-icon name="logo-instagram"></ion-icon>
+          </div>
+          <span class="platform-name">Instagram</span>
+        </div>
+
+        <!-- LinkedIn -->
+        <div class="platform-item" (click)="shareToPlatform('linkedin')">
+          <div class="platform-icon linkedin">
+            <ion-icon name="logo-linkedin"></ion-icon>
+          </div>
+          <span class="platform-name">LinkedIn</span>
+        </div>
+
+        <!-- Email -->
+        <div class="platform-item" (click)="shareToPlatform('email')">
+          <div class="platform-icon email">
+            <ion-icon name="mail"></ion-icon>
+          </div>
+          <span class="platform-name">Email</span>
+        </div>
+
+        <!-- Generic Share -->
+        <div class="platform-item" (click)="shareToPlatform('generic')">
+          <div class="platform-icon generic">
+            <ion-icon name="share"></ion-icon>
+          </div>
+          <span class="platform-name">More</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Text Preview -->
+    <div class="share-text-section">
+      <h3>Share Message</h3>
+      <div class="share-text-preview">
+        <p>{{ shareText }}</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

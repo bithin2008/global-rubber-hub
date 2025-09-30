@@ -1,0 +1,165 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Referral Program</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading referral information...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Referral Code Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Your Referral Code</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="referral-code-container">
+          <ion-input 
+            [value]="userReferralCode" 
+            readonly 
+            class="referral-code-input"
+            placeholder="Loading referral code...">
+          </ion-input>
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="copyReferralLink()"
+            [disabled]="!userReferralCode">
+            Copy Code
+          </ion-button>
+        </div>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          (click)="generateNewReferralCode()"
+          [disabled]="isLoading">
+          Generate New Code
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Referral Links Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Share Your Referral Link</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="link-container">
+          <ion-item>
+            <ion-label position="stacked">Universal Link (Web & App)</ion-label>
+            <ion-input 
+              [value]="referralLink" 
+              readonly 
+              class="link-input">
+            </ion-input>
+            <ion-button 
+              slot="end" 
+              fill="outline" 
+              size="small"
+              (click)="copyReferralLink()"
+              [disabled]="!referralLink">
+              Copy
+            </ion-button>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Custom Scheme Link (App Only)</ion-label>
+            <ion-input 
+              [value]="customSchemeLink" 
+              readonly 
+              class="link-input">
+            </ion-input>
+            <ion-button 
+              slot="end" 
+              fill="outline" 
+              size="small"
+              (click)="copyCustomSchemeLink()"
+              [disabled]="!customSchemeLink">
+              Copy
+            </ion-button>
+          </ion-item>
+        </div>
+
+        <div class="share-buttons">
+          <ion-button 
+            expand="block" 
+            fill="solid" 
+            color="primary"
+            (click)="shareReferralLink()"
+            [disabled]="!userReferralCode">
+            <ion-icon name="share" slot="start"></ion-icon>
+            Share Referral Link
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Referral Statistics Card -->
+    <ion-card *ngIf="referralStats">
+      <ion-card-header>
+        <ion-card-title>Your Referral Statistics</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-container">
+          <div class="stat-item">
+            <h3>{{ referralStats.total_referrals || 0 }}</h3>
+            <p>Total Referrals</p>
+          </div>
+          <div class="stat-item">
+            <h3>{{ referralStats.successful_referrals || 0 }}</h3>
+            <p>Successful Referrals</p>
+          </div>
+          <div class="stat-item">
+            <h3>{{ referralStats.rewards_earned || 0 }}</h3>
+            <p>Rewards Earned</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- How It Works Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>How It Works</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="how-it-works">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Share Your Link</h4>
+              <p>Share your referral link with friends and family</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>They Install & Register</h4>
+              <p>When they install the app using your link, they'll get your referral code automatically</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Earn Rewards</h4>
+              <p>You both earn rewards when they complete their first transaction</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Toast for notifications -->
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [color]="toastColor"
+    [duration]="3000"
+    (didDismiss)="onToastDismiss()">
+  </ion-toast>
+</ion-content>

@@ -7,6 +7,7 @@ import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
 import { DeepLinkService } from '../services/deep-link.service';
+import { ReferralService } from '../services/referral.service';
 import { Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
@@ -101,7 +102,8 @@ export class LoginPage implements OnInit, OnDestroy {
     private platform: Platform,
     private deepLinkService: DeepLinkService,
     private authGuardService: AuthGuardService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private referralService: ReferralService
   ) {
     // Initialize Google Auth based on platform
     // this.initializeGoogleAuth();
@@ -152,6 +154,9 @@ export class LoginPage implements OnInit, OnDestroy {
     }
     this.initializeForms();
 
+    // Check for referral code from URL params or stored referral
+    await this.checkForReferralCode();
+
     // Initialize Google Auth on component load
     if (this.platform.is('capacitor')) {
       const clientId = this.platform.is('android')
@@ -171,6 +176,32 @@ export class LoginPage implements OnInit, OnDestroy {
 
 
 
+  /**
+   * Check for referral code from URL params or stored referral
+   */
+  async checkForReferralCode() {
+    try {
+      // Check URL query params for referral code
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralFromUrl = urlParams.get('referral');
+      
+      if (referralFromUrl) {
+        console.log('Referral code from URL:', referralFromUrl);
+        this.registerForm.patchValue({ referralCode: referralFromUrl });
+        return;
+      }
+
+      // Check for stored referral code
+      const storedReferralCode = await this.referralService.getStoredReferralCode();
+      if (storedReferralCode) {
+        console.log('Stored referral code found:', storedReferralCode);
+        this.registerForm.patchValue({ referralCode: storedReferralCode });
+      }
+    } catch (error) {
+      console.error('Error checking for referral code:', error);
+    }
+  }
+
   initializeForms() {
     // Login Form
     this.loginForm = this.formBuilder.group({
@@ -186,6 +217,7 @@ export class LoginPage implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.pattern(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(30), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)]],
       confirmPassword: ['', Validators.required],
+      referralCode: [''] // Optional referral code field
     }, {
       validator: MustMatch('password', 'confirmPassword')
     });
@@ -447,7 +479,8 @@ export class LoginPage implements OnInit, OnDestroy {
       email: this.registerForm.get('email')?.value,
       phone: this.registerForm.get('phone')?.value,
       country_code: "+91",
-      password: this.registerForm.get('password')?.value
+      password: this.registerForm.get('password')?.value,
+      referral_code: this.registerForm.get('referralCode')?.value || null
     };
     this.loaderService.show();
     let url = 'auth/registration';

@@ -6,6 +6,7 @@ declare var navigator: any;
 import { Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { DeepLinkService } from './services/deep-link.service';
+import { ReferralService } from './services/referral.service';
 import { Router } from '@angular/router';
 import { LoaderComponent } from './shared/loader/loader.component';
 
@@ -19,7 +20,8 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private router: Router,
-    private deepLinkService: DeepLinkService
+    private deepLinkService: DeepLinkService,
+    private referralService: ReferralService
   ) {
     this.initializeApp();
     this.listenForDeepLinks();
@@ -73,18 +75,29 @@ export class AppComponent {
   listenForDeepLinks() {
     App.addListener('appUrlOpen', (event: any) => {
       if (event.url) {
+        console.log('Deep link received in app component:', event.url);
+        
         // Example: globalrubberhub://market/ENCRYPTEDTOKEN
         const slug = event.url.split('//')[1]; // "market/ENCRYPTEDTOKEN"
         const parts = slug.split('/');
+        
         if (parts[0] === 'market') {
           const token = parts[1];
-
-          console.log('test token',token);
+          console.log('Market token:', token);
           
           // Navigate to your item page
           this.router.navigate(['/item-list'], { 
             queryParams: { token: token } 
           });
+        } else if (parts[0] === 'referral') {
+          const referralCode = parts[1];
+          console.log('Referral code:', referralCode);
+          
+          // Handle referral code
+          this.referralService.handleReferralCode(referralCode);
+        } else {
+          // Use the deep link service for other links
+          this.deepLinkService.handleDeepLink({ url: event.url });
         }
       }
     });
