@@ -59,6 +59,17 @@ ion-content{
   }
 }
 
+.referral-applied-text {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  
+  small {
+    color: #28a745;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
 // Validation error styles
 .validation-error {
   color: #dc3545;

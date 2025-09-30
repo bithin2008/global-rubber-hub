@@ -2,10 +2,32 @@
   --background: #f8f9fa;
 }
 
+ion-header{
+  background-color: #1a8135 !important;
+  color: #fff;
+  padding-left: 15px;
+  ion-title{
+    font-size: 18px;
+    --color: #fff;
+  }
+  ion-icon{
+    color: #fff;
+  }
+  ion-toolbar::part(background) {
+  background-color: #1a8135;
+  
+}
+}
+
 .share-container {
   padding: 20px;
   max-width: 500px;
   margin: 0 auto;
+}
+
+ion-content {
+  height: 100vh !important;
+  max-height: 100vh !important;
 }
 
 .referral-code-section,

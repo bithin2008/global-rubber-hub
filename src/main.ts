@@ -9,6 +9,7 @@ import { importProvidersFrom } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './app/interceptors/error.interceptor';
+import { NetworkInterceptor } from './app/interceptors/network.interceptor';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
 bootstrapApplication(AppComponent, {
@@ -16,7 +17,7 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideHttpClient(
-      withInterceptors([AuthInterceptor, ErrorInterceptor])
+      withInterceptors([AuthInterceptor, ErrorInterceptor, NetworkInterceptor])
     ),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     GooglePlus,

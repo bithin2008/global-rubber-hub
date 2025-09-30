@@ -158,10 +158,18 @@
         <!-- Referral Code Field -->
         <ion-label class="form-label">Referral Code (Optional)</ion-label>
         <ion-item lines="none" class="input-field">
-          <ion-input type="text" placeholder="Enter referral code" formControlName="referralCode"></ion-input>
+          <ion-input 
+            type="text" 
+            placeholder="Enter referral code" 
+            formControlName="referralCode"
+            [disabled]="isReferralCodeFromUrl">
+          </ion-input>
         </ion-item>
-        <div class="referral-help-text">
+        <div class="referral-help-text" *ngIf="!isReferralCodeFromUrl">
           <small>Have a referral code? Enter it here to get rewards!</small>
+        </div>
+        <div class="referral-applied-text" *ngIf="isReferralCodeFromUrl">
+          <small>✅ Referral code applied from your invitation link!</small>
         </div>
         
         <ion-button expand="block" class="register-button" type="submit">Register</ion-button>

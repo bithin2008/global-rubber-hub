@@ -70,6 +70,9 @@ export class LoginPage implements OnInit, OnDestroy {
   // Password visibility states
   public showLoginPassword: boolean = false;
   public showRegisterPassword: boolean = false;
+  
+  // Referral code state
+  public isReferralCodeFromUrl: boolean = false;
   public showConfirmPassword: boolean = false;
   public showResetPasswordField: boolean = false;
   public showResetConfirmPassword: boolean = false;
@@ -188,6 +191,9 @@ export class LoginPage implements OnInit, OnDestroy {
       if (referralFromUrl) {
         console.log('Referral code from URL:', referralFromUrl);
         this.registerForm.patchValue({ referralCode: referralFromUrl });
+        // Disable the referral code field when populated from URL
+        this.registerForm.get('referralCode')?.disable();
+        this.isReferralCodeFromUrl = true;
         return;
       }
 
@@ -196,6 +202,9 @@ export class LoginPage implements OnInit, OnDestroy {
       if (storedReferralCode) {
         console.log('Stored referral code found:', storedReferralCode);
         this.registerForm.patchValue({ referralCode: storedReferralCode });
+        // Disable the referral code field when populated from stored referral
+        this.registerForm.get('referralCode')?.disable();
+        this.isReferralCodeFromUrl = true;
       }
     } catch (error) {
       console.error('Error checking for referral code:', error);

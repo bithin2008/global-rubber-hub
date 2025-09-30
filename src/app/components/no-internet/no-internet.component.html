@@ -1,0 +1,65 @@
+<ion-content class="no-internet-content">
+  <div class="no-internet-container">
+    <!-- Icon Section -->
+    <div class="icon-section">
+      <div class="wifi-icon-container">
+        <ion-icon name="wifi" class="wifi-off-icon"></ion-icon>
+        <div class="signal-bars">
+          <div class="bar bar-1"></div>
+          <div class="bar bar-2"></div>
+          <div class="bar bar-3"></div>
+          <div class="bar bar-4"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Section -->
+    <div class="message-section">
+      <h1 class="title">No Internet Connection</h1>
+      <p class="description">
+        It looks like you're not connected to the internet. 
+        Please check your connection and try again.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <ion-button 
+        expand="block" 
+        class="retry-button"
+        (click)="retryConnection()"
+        [disabled]="!isOnline">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Try Again
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        class="check-button"
+        (click)="checkConnection()">
+        <ion-icon name="wifi" slot="start"></ion-icon>
+        Check Connection
+      </ion-button>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="status-section">
+      <div class="status-indicator" [class.online]="isOnline" [class.offline]="!isOnline">
+        <ion-icon [name]="isOnline ? 'wifi' : 'wifi'"></ion-icon>
+        <span>{{ isOnline ? 'Connected' : 'Disconnected' }}</span>
+      </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+      <h3>Having trouble connecting?</h3>
+      <ul class="help-list">
+        <li>Check your Wi-Fi or mobile data connection</li>
+        <li>Make sure you're in an area with good signal</li>
+        <li>Try turning your connection off and on again</li>
+        <li>Restart the app if the problem persists</li>
+      </ul>
+    </div>
+  </div>
+</ion-content>

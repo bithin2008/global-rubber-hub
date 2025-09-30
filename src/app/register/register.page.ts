@@ -26,6 +26,7 @@ import { LoaderService } from '../services/loader.service';
 export class RegisterPage implements OnInit {
   public registerForm!: FormGroup;
   public submitted: boolean = false;
+  public isReferralCodeFromUrl: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     public router: Router,
@@ -78,6 +79,9 @@ export class RegisterPage implements OnInit {
       if (referralFromUrl) {
         console.log('Referral code from URL:', referralFromUrl);
         this.registerForm.patchValue({ referralCode: referralFromUrl });
+        // Disable the referral code field when populated from URL
+        this.registerForm.get('referralCode')?.disable();
+        this.isReferralCodeFromUrl = true;
         return;
       }
 
@@ -86,6 +90,9 @@ export class RegisterPage implements OnInit {
       if (storedReferralCode) {
         console.log('Stored referral code found:', storedReferralCode);
         this.registerForm.patchValue({ referralCode: storedReferralCode });
+        // Disable the referral code field when populated from stored referral
+        this.registerForm.get('referralCode')?.disable();
+        this.isReferralCodeFromUrl = true;
       }
     } catch (error) {
       console.error('Error checking for referral code:', error);

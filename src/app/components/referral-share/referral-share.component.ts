@@ -5,6 +5,7 @@ import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonInput, IonIt
 import { ReferralService } from '../../services/referral.service';
 import { CommonService } from '../../services/common-service';
 import { LoaderService } from '../../services/loader.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-referral-share',
@@ -43,6 +44,7 @@ export class ReferralShareComponent implements OnInit {
 
   constructor(
     private referralService: ReferralService,
+    private router: Router,
     private commonService: CommonService,
     private loaderService: LoaderService
   ) {}
@@ -73,6 +75,10 @@ export class ReferralShareComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  goToAccount(){
+    this.router.navigate(['/account']);
   }
 
   /**
