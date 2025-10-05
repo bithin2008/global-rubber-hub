@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { panValidator, formatPanInput } from '../validators/pan.validator';
 import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform, IonSpinner } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
@@ -50,6 +51,14 @@ export class ProfilePage implements OnInit {
     // You can implement image preview functionality here
     console.log('Preview image:', imageUrl);
   }
+
+  // Method to format PAN input
+  onPanInput(event: any) {
+    const value = event.target.value;
+    const formatted = formatPanInput(value);
+    event.target.value = formatted;
+    this.profileForm.get('pan')?.setValue(formatted);
+  }
   constructor(
     public router: Router,
     public activatedRoute: ActivatedRoute,
@@ -91,7 +100,7 @@ export class ProfilePage implements OnInit {
         const panControl = this.profileForm.get('pan');
         if (country === 'India') {
           console.log('Setting PAN as required for India');
-          panControl?.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+          panControl?.setValidators([Validators.required, panValidator()]);
         } else {
           console.log('Clearing PAN validation for non-India country');
           panControl?.clearValidators();
@@ -103,7 +112,7 @@ export class ProfilePage implements OnInit {
       // Set initial PAN validation since India is default
       const panControl = this.profileForm.get('pan');
       if (panControl) {
-        panControl.setValidators([Validators.required, Validators.pattern(/([A-Z]){5}([0-9]){4}([A-Z]){1}$/i)]);
+        panControl.setValidators([Validators.required, panValidator()]);
         panControl.updateValueAndValidity();
       }
     });

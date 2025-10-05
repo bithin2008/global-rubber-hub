@@ -151,13 +151,25 @@
       <ion-item class="no-style" *ngIf="f['country'].value === 'India'">
         <div class="custom-inner">
           <ion-label class="formlebel">Pan No.</ion-label>
-          <ion-input class="form-field" formControlName="pan" type="text"></ion-input>
+          <ion-input 
+            class="form-field" 
+            formControlName="pan" 
+            type="text" 
+            placeholder="ABCDE1234F"
+            maxlength="10"
+            (input)="onPanInput($event)"
+            style="text-transform: uppercase;">
+          </ion-input>
         </div>
       </ion-item>
       <div class="validation-error" *ngIf="f['country'].value === 'India'">
         <span *ngIf="submitted && f['pan'].errors">
           <div *ngIf="f['pan'].errors['required']">Please enter PAN number</div>
-          <div *ngIf="f['pan'].errors['pattern']">Please enter valid PAN number</div>
+          <div *ngIf="f['pan'].errors['panLength']">PAN number must be exactly 10 characters</div>
+          <div *ngIf="f['pan'].errors['panPattern']">Please enter valid PAN number (Format: ABCDE1234F)</div>
+          <div *ngIf="f['pan'].errors['panFirstFive']">First 5 characters must be letters</div>
+          <div *ngIf="f['pan'].errors['panMiddleFour']">Characters 6-9 must be digits</div>
+          <div *ngIf="f['pan'].errors['panLastChar']">Last character must be a letter</div>
         </span>
       </div>
       <ion-item class="no-style">

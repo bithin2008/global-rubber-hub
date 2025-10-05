@@ -70,3 +70,4 @@ export class InternetGuard implements CanActivate {
     }
   }
 }
+

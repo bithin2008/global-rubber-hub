@@ -299,7 +299,7 @@ export class BidRequestPage implements OnInit {
   private submitBidStatus(item: any, bidStatus: number, cancelRejectionReason?: string) {
     const url = 'bids/add';
     const data = {
-      id: item.id,
+      item_id: item.id,
       bid_amount: item.bid_amount,
       actual_bid_amount: item.actual_bid_amount,
       bid_quantity: parseInt(item.bid_quantity, 10),
@@ -314,7 +314,7 @@ export class BidRequestPage implements OnInit {
           // Reset pagination and reload fresh list so UI reflects changes
           this.page = 0;
           this.itemList = [];
-          this.getItemList();
+          this.getItemList();          
           this.showToast('success', response.message, '', 2500, '');
           
         } else {

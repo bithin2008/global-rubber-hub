@@ -14,7 +14,8 @@ import {
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { LoaderService } from '../services/loader.service';
-
+import { Subscription } from 'rxjs';
+import { ProfileService } from '../services/profile.service';
 @Component({
   selector: 'app-bid-modal',
   templateUrl: './bid-modal.component.html',
@@ -35,17 +36,19 @@ import { LoaderService } from '../services/loader.service';
 })
 export class BidModalComponent implements OnInit {
   @Input() item: any;
-
+  private subscription: Subscription = new Subscription();
   public bidForm!: FormGroup;
   public submitted: boolean = false;
   public isEdit: boolean = false;
   public isSubmitting: boolean = false; // Variable to control button loader
+  public profileData: any = null; // Store the complete profile data
 
   constructor(
     private modalController: ModalController,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private profileService: ProfileService,
   ) { }
 
   ngOnInit() {
@@ -56,7 +59,18 @@ export class BidModalComponent implements OnInit {
    // if (this.item && this.item.bid_quantity && this.item.bid_amount) {
       this.isEdit = this.item.isEdit ;
    // }
+   // Check if profile data is already available
+   const currentProfile = this.profileService.getCurrentCompleteProfile();
+   if (currentProfile) {
+     this.profileData = currentProfile;
+     console.log('Complete profile data (from service): ', this.profileData);
+   } else {
+     console.log('No profile data available, loading...');
+     // Load profile data if not available
+     this.loadProfileData();
+   }
 
+   
 
   
 
@@ -85,6 +99,28 @@ export class BidModalComponent implements OnInit {
 
   // Getter for easy access to form controls
   get f() { return this.bidForm.controls; }
+
+  loadProfileData() {
+    this.loaderService.show();
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.loaderService.hide();
+        if (response.code == 200) {
+          // Update profile service with all data including wallet balance
+         // this.profileService.updateProfileFromAPI(response.user);
+          this.profileData = response.user;
+          console.log('Profile data loaded successfully: ', this.profileData);
+        } else {
+          console.error('Failed to load profile data:', response.message);
+        }
+      },
+      (error) => {
+        this.loaderService.hide();
+        console.error('Error loading profile data:', error);
+      }
+    );
+  }
 
   private setModalSpacing() {
     // Add a small delay to ensure modal is rendered
@@ -128,7 +164,8 @@ export class BidModalComponent implements OnInit {
       bid_quantity: bidData.bid_quantity,
       actual_bid_amount: this.item.actual_bid_amount? this.item.actual_bid_amount: bidData.actual_bid_amount,
       remark: bidData.remark,
-      cancel_rejection_reason: null
+      cancel_rejection_reason: null,
+      added_by: this.profileData.id
     }
     if(this.isEdit){
       data.id = this.item.id;

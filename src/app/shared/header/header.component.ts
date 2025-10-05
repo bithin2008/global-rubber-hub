@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   profileImage: string = '';
+  profileInfo: any = {};
   showPlaceholder: boolean = true;
   pageTitle: string = 'Global Rubber Hub';
   walletBalance: number = 0;
@@ -37,6 +38,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.profileService.profileImage$.subscribe((imageUrl) => {
         this.profileImage = imageUrl;
         this.showPlaceholder = !imageUrl;
+      })
+    );
+
+    this.subscription.add(
+      this.profileService.profileInfo$.subscribe((data) => {
+        this.profileInfo = data;
       })
     );
 

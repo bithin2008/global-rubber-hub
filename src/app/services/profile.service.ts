@@ -8,14 +8,19 @@ import { WalletService } from './wallet.service';
 export class ProfileService {
   private profileImageSubject = new BehaviorSubject<string>('');
   private userNameSubject = new BehaviorSubject<string>('');
+  private profileInfoSubject = new BehaviorSubject<string>('');
+  private completeProfileSubject = new BehaviorSubject<any>(null);
   
   public profileImage$: Observable<string> = this.profileImageSubject.asObservable();
   public userName$: Observable<string> = this.userNameSubject.asObservable();
+  public profileInfo$: Observable<string> = this.profileInfoSubject.asObservable();
+  public completeProfile$: Observable<any> = this.completeProfileSubject.asObservable();
 
   constructor(private walletService: WalletService) {
     // Initialize with data from localStorage if available
     const savedProfileImage = localStorage.getItem('userProfileImage');
     const savedUserName = localStorage.getItem('userName');
+    const savedCompleteProfile = localStorage.getItem('completeProfile');
     
     if (savedProfileImage) {
       this.profileImageSubject.next(savedProfileImage);
@@ -23,6 +28,16 @@ export class ProfileService {
     
     if (savedUserName) {
       this.userNameSubject.next(savedUserName);
+    }
+    
+    if (savedCompleteProfile) {
+      try {
+        const profileData = JSON.parse(savedCompleteProfile);
+        this.completeProfileSubject.next(profileData);
+      } catch (error) {
+        console.error('Error parsing saved profile data:', error);
+        localStorage.removeItem('completeProfile');
+      }
     }
   }
 
@@ -53,12 +68,21 @@ export class ProfileService {
   getCurrentUserName(): string {
     return this.userNameSubject.value;
   }
+  getCurrentProfileInfo(): string {
+    return this.profileInfoSubject.value;
+  }
+
+  getCurrentCompleteProfile(): any {
+    return this.completeProfileSubject.value;
+  }
 
   clearProfile(): void {
     this.profileImageSubject.next('');
     this.userNameSubject.next('');
+    this.completeProfileSubject.next(null);
     localStorage.removeItem('userProfileImage');
     localStorage.removeItem('userName');
+    localStorage.removeItem('completeProfile');
   }
 
   /**
@@ -66,6 +90,10 @@ export class ProfileService {
    * @param profileData - Profile data from API
    */
   updateProfileFromAPI(profileData: any): void {
+    // Store complete profile data
+    this.completeProfileSubject.next(profileData);
+    localStorage.setItem('completeProfile', JSON.stringify(profileData));
+
     // Update profile image if available
     if (profileData.profile_image || profileData.user_image) {
       this.updateProfileImage(profileData.profile_image || profileData.user_image);
