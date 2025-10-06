@@ -45,6 +45,7 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
       try {
         // Do not await: we don't want to block the error propagation
         (async () => {
+          console.log('ErrorInterceptor - Creating modal with message:', message);
           const modal = await modalController.create({
             component: ToastModalComponent,
             cssClass: 'toast-modal',
@@ -56,9 +57,13 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
               redirect: ''
             }
           });
+          console.log('ErrorInterceptor - Modal created, presenting...');
           await modal.present();
+          console.log('ErrorInterceptor - Modal presented');
         })();
-      } catch {}
+      } catch (error) {
+        console.error('ErrorInterceptor - Failed to create/present modal:', error);
+      }
 
       return throwError(() => error);
     })

@@ -203,9 +203,9 @@ export class ItemAddPage implements OnInit, AfterViewInit {
           }
           
          // Load existing video if any
-          if (item.video) {
+          if (item.item_video) {
             this.selectedVideo = {
-              preview: item.video,
+              preview: item.item_video,
               file: null // We don't have the actual file for existing video
             };
           }

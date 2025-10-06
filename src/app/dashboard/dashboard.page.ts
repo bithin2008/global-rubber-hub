@@ -248,6 +248,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     }, 3000);
   }
 
+ 
+
 
   getDashboardData() {
     this.loaderService.show();

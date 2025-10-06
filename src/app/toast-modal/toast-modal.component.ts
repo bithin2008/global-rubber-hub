@@ -15,42 +15,37 @@ import { IonicModule } from '@ionic/angular';
   imports: [ CommonModule, FormsModule, IonicModule ]
 })
 export class ToastModalComponent implements OnInit {
-  status!: string;
-  message!: string;
-  submessage!: string;
-  timer!: number;
-  redirect!: string;
+  @Input() status!: string;
+  @Input() message!: string;
+  @Input() submessage!: string;
+  @Input() timer!: number;
+  @Input() redirect!: string;
   defaultLanguage: any = 'beng';
-  constructor(navParams: NavParams, private navCtrl: NavController, public router: Router,private modalController: ModalController ) {
-    // Get values from componentProps
-    this.status = navParams.get('status') || '';
-    this.message = navParams.get('message') || '';
-    this.submessage = navParams.get('submessage') || '';
-    this.timer = navParams.get('timer') || 3000;
-    this.redirect = navParams.get('redirect') || '';
-    
-    console.log('Status:', this.status);
-    console.log('Message:', this.message);
-    console.log('Submessage:', this.submessage);
+  constructor(private navCtrl: NavController, public router: Router, private modalController: ModalController ) {
+    // Component props will be set via @Input decorators
   }
 
   ngOnInit() {
     this.defaultLanguage = localStorage.getItem('language');
+    
+    // Set default timer if not provided
+    const timerDuration = this.timer || 3000;
+    
+    console.log('ToastModal - Status:', this.status);
+    console.log('ToastModal - Message:', this.message);
+    console.log('ToastModal - Timer:', timerDuration);
+    
     setTimeout(() => {
+      console.log('ToastModal - Auto-dismissing after', timerDuration, 'ms');
       this.modalController.dismiss();
-      if (this.redirect != "") {
-        //  this.router.navigate([this.redirect]);
+      if (this.redirect && this.redirect !== "") {
         if (this.redirect == '/dashboard') {
           this.navCtrl.navigateRoot([this.redirect], { replaceUrl: true })
         } else {
           this.navCtrl.navigateRoot([this.redirect])
         }
-
       }
-    }, this.timer);
-
-
-
+    }, timerDuration);
   }
 
 }

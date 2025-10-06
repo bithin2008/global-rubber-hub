@@ -48,7 +48,7 @@
               id="itemsliderimage">
               <swiper-slide class=" slide1" *ngFor="let media of item.item_image; let idx = index">
                 <div class="content myitemImg">
-                  <img [src]="media" alt="" title="" (click)="openLightbox(item.item_image, idx)">
+                  <img [src]="media" alt="" title="" (click)="openLightbox(item.item_image, idx)" (error)="onThumbnailError($event)">
                   <ion-button class="btn no-style share" (click)="shareItem(item)"><img src="assets/img/icons/share.svg" alt="" title=""></ion-button>
                   <div class="verifiedBdg" *ngIf="isTrustedValid(item)"><img class="auto-flip" src="assets/img/icons/verified_user.svg" alt=""></div>
                 </div>

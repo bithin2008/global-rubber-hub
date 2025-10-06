@@ -44,7 +44,7 @@ export class ItemListPage implements OnInit {
   public orderBy: string = 'desc';
   public type: string = '';
   public token: string = '';
-  public fallbackImg: string = 'assets/img/default-photo.png';
+  public fallbackImg: string = 'https://globalrubberhub.com/public/backend/assets/images/default_item_image.jpeg';
   public isSearchVisible: boolean = false;
   private handleOutsideClick: any;
   constructor(
@@ -425,6 +425,13 @@ export class ItemListPage implements OnInit {
   }
 
   onImageError(event: Event) {
+    const target = event.target as HTMLImageElement | null;
+    if (target && target.src !== this.fallbackImg) {
+      target.src = this.fallbackImg;
+    }
+  }
+
+  onThumbnailError(event: Event) {
     const target = event.target as HTMLImageElement | null;
     if (target && target.src !== this.fallbackImg) {
       target.src = this.fallbackImg;
