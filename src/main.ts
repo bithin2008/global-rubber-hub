@@ -10,7 +10,10 @@ import { IonicModule } from '@ionic/angular';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './app/interceptors/error.interceptor';
 import { NetworkInterceptor } from './app/interceptors/network.interceptor';
-import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { environment } from './environments/environment';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -20,9 +23,11 @@ bootstrapApplication(AppComponent, {
       withInterceptors([AuthInterceptor, ErrorInterceptor, NetworkInterceptor])
     ),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    GooglePlus,
     importProvidersFrom(
       IonicModule.forRoot(),
     ),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideMessaging(() => getMessaging()),
   ],
 });

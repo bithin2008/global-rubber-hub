@@ -9,6 +9,7 @@ import { DeepLinkService } from './services/deep-link.service';
 import { ReferralService } from './services/referral.service';
 import { Router } from '@angular/router';
 import { LoaderComponent } from './shared/loader/loader.component';
+import { PushNotificationService } from './services/push-notification.service';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class AppComponent {
     private platform: Platform,
     private router: Router,
     private deepLinkService: DeepLinkService,
-    private referralService: ReferralService
+    private referralService: ReferralService,
+    private pushNotificationService: PushNotificationService
   ) {
     this.initializeApp();
     this.listenForDeepLinks();
@@ -38,6 +40,9 @@ export class AppComponent {
       
       // Initialize deep linking first
       this.deepLinkService.initializeDeepLinking();
+      
+      // Initialize push notifications
+      this.pushNotificationService.initialize();
       
       // Define handleOpenURL globally for Cordova Universal Links
       (window as any).handleOpenURL = (url: string) => {

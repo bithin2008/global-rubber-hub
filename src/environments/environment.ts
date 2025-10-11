@@ -5,9 +5,24 @@
 export const environment = {  
   production: false,
   API_ENDPOINT: 'https://globalrubberhub.com/api/v1/',
-  GOOGLE_WEB_CLIENT_ID: '1067170807523-tg51ukls44cflvp9nc0h9l8tuvjl791m.apps.googleusercontent.com', // Web client ID for browser
-  GOOGLE_ANDROID_CLIENT_ID: '1067170807523-skqbcodkktsctbuvkltjosnaok60j7l2.apps.googleusercontent.com', // Android client ID
-  GOOGLE_SERVER_CLIENT_ID: '1067170807523-bijn3ku7s719261krv6p1fioq4uf1m3v.apps.googleusercontent.com' // Server client ID for backend verification
+  firebase: {
+    // apiKey: 'AIzaSyDbr69b8iu44y3WPF4GlF2jLABWuCPHP-U',
+    // authDomain: 'global-rubber-hub-c754f.firebaseapp.com',
+    // projectId: 'global-rubber-hub-c754f',
+    // storageBucket: 'global-rubber-hub-c754f.firebasestorage.app',
+    // messagingSenderId: '826183488369',
+    // appId: '1:826183488369:android:3074175a90a1984c829cd0',
+    // measurementId: 'G-XXXXXXXXXX', // You'll need to get this from Firebase Console > Project Settings > General
+    // webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com' // Replace with your actual web client ID
+
+    webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com',
+    apiKey: "AIzaSyCrnkAqySAnH2fRyuJKZAkejhbR4vrFMmc",
+    authDomain: "global-rubber-hub-c754f.firebaseapp.com",
+    projectId: "global-rubber-hub-c754f",
+    storageBucket: "global-rubber-hub-c754f.firebasestorage.app",
+    messagingSenderId: "826183488369",
+    appId: "1:826183488369:web:f6f423f0d59d8d44829cd0"
+  }
 };
 
 /*

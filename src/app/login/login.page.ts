@@ -15,12 +15,10 @@ import { NgOtpInputComponent } from 'ng-otp-input';
 import { FormsModule as NgFormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { isPlatform } from '@ionic/angular';
-import { authConfig } from '../config/auth.config';
 import { Subscription } from 'rxjs';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { AuthGuardService } from '../services/auth-guard.service';
-import { SocialLogin } from "@capgo/capacitor-social-login";
 import { LoaderService } from '../services/loader.service';
+import { FirebaseService } from '../services/firebase.service';
 
 
 0
@@ -89,8 +87,6 @@ export class LoginPage implements OnInit, OnDestroy {
   // Subscription management
   private routeSubscription: Subscription | undefined;
 
-  // Platform checks
-  public isGoogleSignInAvailable: boolean = false;
 
   constructor(
     public router: Router,
@@ -106,10 +102,9 @@ export class LoginPage implements OnInit, OnDestroy {
     private deepLinkService: DeepLinkService,
     private authGuardService: AuthGuardService,
     private loaderService: LoaderService,
-    private referralService: ReferralService
+    private referralService: ReferralService,
+    private firebaseService: FirebaseService
   ) {
-    // Initialize Google Auth based on platform
-    // this.initializeGoogleAuth();
 
     // Subscribe to route params with proper unsubscribe handling
     this.routeSubscription = this.activatedRoute.params.subscribe(async val => {
@@ -140,7 +135,6 @@ export class LoginPage implements OnInit, OnDestroy {
       }
     });
 
-    this.initialize();
   }
 
   ngOnDestroy() {
@@ -160,19 +154,6 @@ export class LoginPage implements OnInit, OnDestroy {
     // Check for referral code from URL params or stored referral
     await this.checkForReferralCode();
 
-    // Initialize Google Auth on component load
-    if (this.platform.is('capacitor')) {
-      const clientId = this.platform.is('android')
-        ? environment.GOOGLE_ANDROID_CLIENT_ID
-        : environment.GOOGLE_WEB_CLIENT_ID;
-
-      await GoogleAuth.initialize({
-        clientId: clientId,
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
-      });
-      this.isGoogleSignInAvailable = true;
-    }
   }
 
 
@@ -693,14 +674,6 @@ export class LoginPage implements OnInit, OnDestroy {
     return await modal.present();
   }
 
-  async initialize() {
-    await SocialLogin.initialize({
-        google: {
-            webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com',
-            mode: 'online'
-        }
-    });
-}
 
   // Ensure only digits are entered and limit to 10 for phone input
   onPhoneInput(event: any) {
@@ -711,22 +684,23 @@ export class LoginPage implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Handle Google Sign-in
-   */
+  // Google Sign-In method
   async signInWithGoogle() {
-    const user: any = await SocialLogin.login({
-        provider: 'google',
-        options: {
-            scopes: ['email', 'profile'],
-            forceRefreshToken: true
-        }
-    });
-    debugger;;
-    console.log('user', user);
-    if (user) {
-       
+    try {
+      this.loaderService.show();
+      const response = await this.firebaseService.signInWithGoogle();
+      this.loaderService.hide();
+      
+      if (response.code === 200 || response.code === 201) {
+        this.showToast('success', 'Successfully signed in with Google!', '', 2000, '/dashboard');
+      } else {
+        this.showToast('error', response.message || 'Google Sign-In failed', '', 2000, '');
+      }
+    } catch (error) {
+      this.loaderService.hide();
+      console.error('Google Sign-In Error:', error);
+      this.showToast('error', 'Google Sign-In failed. Please try again.', '', 2000, '');
     }
-}
+  }
 
 }

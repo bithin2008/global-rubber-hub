@@ -38,16 +38,12 @@
         <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
         
-        <!-- Google Auth Configuration -->
-        <preference name="GoogleAndroidClientId" value="5576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com" />
     </platform>
     <platform name="ios">
         <preference name="Scheme" value="globalrubberhub" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         
-        <!-- Google Auth Configuration -->
-        <preference name="GoogleiOSClientId" value="5576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="29" src="resources/ios/icon/icon-small.png" width="29" />
