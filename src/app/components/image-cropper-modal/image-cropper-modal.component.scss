@@ -11,8 +11,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 0;
-  gap: 0;
 }
 
 // Header Styles
@@ -48,9 +46,7 @@
         transform: scale(1.05);
       }
       
-      ion-icon {
-        font-size: 20px;
-      }
+      ion-icon { font-size: 20px; }
     }
   }
 }
@@ -60,9 +56,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px 12px 4px 12px; // Further reduced bottom padding
+  padding: 12px 12px 4px 12px;
   background: white;
-  margin: 8px 8px 2px 8px; // Further reduced bottom margin
+  margin: 8px 8px 2px 8px;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(26, 129, 53, 0.1);
@@ -72,7 +68,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 320px; // Increased height to utilize saved space
+  height: 320px;
   flex: 0 0 auto;
   border-radius: 8px;
   overflow: hidden;
@@ -151,9 +147,7 @@
       transform: scale(1.05);
     }
     
-    ion-icon {
-      font-size: 16px;
-    }
+    ion-icon { font-size: 16px; }
   }
   
   .slider-compact {
@@ -244,216 +238,15 @@
 
 // Responsive Design
 @media (max-width: 768px) {
-  .modern-header {
-    .header-toolbar {
-      padding: 4px 8px;
-      
-      .header-title {
-        font-size: 16px;
-      }
-      
-      .close-button {
-        width: 32px;
-        height: 32px;
-        
-        ion-icon {
-          font-size: 16px;
-        }
-      }
-    }
-  }
-  
-  .cropper-section {
-    margin: 6px 6px 1px 6px; // Further reduced bottom margin
-    padding: 8px 8px 4px 8px; // Further reduced bottom padding
-    border-radius: 8px;
-  }
-  
-  .cropper-container {
-    height: 280px; // Increased height to utilize saved space
-    border-radius: 6px;
-  }
-  
-  .compact-controls {
-    padding: 6px 8px;
-    margin: 0 6px 6px;
-    border-radius: 8px;
-    gap: 8px;
-    
-    .zoom-display-compact {
-      .zoom-percentage {
-        padding: 4px 8px;
-        font-size: 12px;
-        border-radius: 12px;
-        min-width: 40px;
-      }
-    }
-    
-    .zoom-controls-compact {
-      gap: 6px;
-      
-      .reset-btn-compact {
-        width: 28px;
-        height: 28px;
-        
-        ion-icon {
-          font-size: 14px;
-        }
-      }
-      
-      .slider-compact {
-        .compact-zoom-slider {
-          --bar-height: 3px;
-          --knob-size: 16px;
-          
-          .slider-icon {
-            font-size: 12px;
-          }
-        }
-      }
-    }
-  }
-  
-  .action-section {
-    margin: 0 6px 6px;
-    padding: 8px 12px 12px;
-    border-radius: 8px;
-    
-    .primary-action-btn {
-      font-size: 14px;
-      --padding-top: 10px;
-      --padding-bottom: 10px;
-      --padding-start: 16px;
-      --padding-end: 16px;
-      
-      ion-icon {
-        font-size: 16px;
-        margin-right: 4px;
-      }
-    }
-  }
+  .cropper-container { height: 280px; }
+  .cropper-section { margin: 6px 6px 1px 6px; padding: 8px 8px 4px 8px; }
+  .compact-controls { padding: 6px 8px; margin: 0 6px 6px; }
+  .action-section { margin: 0 6px 6px; padding: 8px 12px 12px; }
 }
 
 @media (max-width: 480px) {
-  .modern-header {
-    .header-toolbar {
-      padding: 2px 6px;
-      
-      .header-title {
-        font-size: 14px;
-      }
-      
-      .close-button {
-        width: 28px;
-        height: 28px;
-        
-        ion-icon {
-          font-size: 14px;
-        }
-      }
-    }
-  }
-  
-  .cropper-section {
-    margin: 4px 4px 1px 4px; // Further reduced bottom margin
-    padding: 6px 6px 3px 6px; // Further reduced bottom padding
-    border-radius: 6px;
-  }
-  
-  .cropper-container {
-    height: 240px; // Increased height to utilize saved space
-    border-radius: 4px;
-  }
-  
-  .compact-controls {
-    padding: 4px 6px;
-    margin: 0 4px 4px;
-    border-radius: 6px;
-    gap: 6px;
-    
-    .zoom-display-compact {
-      .zoom-percentage {
-        padding: 3px 6px;
-        font-size: 11px;
-        border-radius: 10px;
-        min-width: 35px;
-      }
-    }
-    
-    .zoom-controls-compact {
-      gap: 4px;
-      
-      .reset-btn-compact {
-        width: 24px;
-        height: 24px;
-        
-        ion-icon {
-          font-size: 12px;
-        }
-      }
-      
-      .slider-compact {
-        .compact-zoom-slider {
-          --bar-height: 2px;
-          --knob-size: 14px;
-          --pin-font-size: 8px;
-          
-          .slider-icon {
-            font-size: 10px;
-          }
-        }
-      }
-    }
-  }
-  
-  .action-section {
-    margin: 0 4px 4px;
-    padding: 6px 8px 10px;
-    border-radius: 6px;
-    
-    .primary-action-btn {
-      font-size: 13px;
-      --padding-top: 8px;
-      --padding-bottom: 8px;
-      --padding-start: 12px;
-      --padding-end: 12px;
-      
-      ion-icon {
-        font-size: 14px;
-        margin-right: 3px;
-      }
-    }
-  }
-}
-
-// Dark mode support (if needed)
-@media (prefers-color-scheme: dark) {
-  .modern-cropper-content {
-    --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  }
-  
-  .cropper-section,
-  .zoom-controls-card,
-  .action-section {
-    background: #2d2d2d;
-    border-color: rgba(26, 129, 53, 0.3);
-  }
-  
-  .card-header {
-    border-bottom-color: #404040;
-    
-    .control-title {
-      color: #ffffff;
-    }
-  }
-  
-  .cropper-container {
-    background: #1a1a1a;
-    border-color: #404040;
-    
-    &:hover {
-      background: #0f1a0f;
-      border-color: #1a8135;
-    }
-  }
+  .cropper-container { height: 240px; }
+  .cropper-section { margin: 4px 4px 1px 4px; padding: 6px 6px 3px 6px; }
+  .compact-controls { padding: 4px 6px; margin: 0 4px 4px; }
+  .action-section { margin: 0 4px 4px; padding: 6px 8px 10px; }
 }
