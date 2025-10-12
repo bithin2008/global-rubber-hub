@@ -37,13 +37,11 @@
         <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
         <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
-        
     </platform>
     <platform name="ios">
         <preference name="Scheme" value="globalrubberhub" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-        
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="29" src="resources/ios/icon/icon-small.png" width="29" />
@@ -85,6 +83,10 @@
         <variable name="ANDROID_SCHEME" value="globalrubberhub" />
         <variable name="ANDROID_HOST" value="globalrubberhub.com" />
         <variable name="ANDROID_PATHPREFIX" value="/" />
+    </plugin>
+    <plugin name="cordova-plugin-googleplus" source="npm">
+        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.826183488369-itvh47edlesonfsq06vrgphvmkpf70ja" />
+        <param name="WEB_APPLICATION_CLIENT_ID" value="826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com" />
     </plugin>
     <allow-intent href="globalrubberhub:*" />
     <platform name="ios">

@@ -109,7 +109,8 @@
         "ANDROID_HOST": "globalrubberhub.com",
         "ANDROID_PATHPREFIX": "/"
       },
-      "cordova-plugin-universal-links": {}
+      "cordova-plugin-universal-links": {},
+      "cordova-plugin-googleplus": {}
     }
   }
 }

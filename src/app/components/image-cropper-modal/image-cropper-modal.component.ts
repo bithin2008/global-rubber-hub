@@ -1,8 +1,8 @@
 import { Component, Input, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
-import { ImageCropperComponent } from 'ngx-image-cropper';
+import { ImageCropperComponent, ImageTransform } from 'ngx-image-cropper';
 import { CommonModule } from '@angular/common';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonRange } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-image-cropper-modal',
@@ -18,7 +18,8 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, Ion
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonIcon
+    IonIcon,
+    IonRange
   ]
 })
 export class ImageCropperModalComponent implements OnInit {
@@ -33,6 +34,13 @@ export class ImageCropperModalComponent implements OnInit {
   croppedImage: string | Blob = '';
   isCropping: boolean = false;
   imageChangedEvent: any = null;
+  
+  // Zoom control properties
+  imageTransform: ImageTransform = {};
+  currentZoom: number = 1;
+  minZoom: number = 0.1;
+  maxZoom: number = 3;
+  zoomStep: number = 0.1;
 
   constructor(
     private modalController: ModalController,
@@ -293,5 +301,45 @@ export class ImageCropperModalComponent implements OnInit {
     } else {
       console.log('Cropper not available');
     }
+  }
+
+  // Zoom control methods
+  zoomIn() {
+    if (this.currentZoom < this.maxZoom) {
+      this.currentZoom = Math.min(this.currentZoom + this.zoomStep, this.maxZoom);
+      this.updateTransform();
+    }
+  }
+
+  zoomOut() {
+    if (this.currentZoom > this.minZoom) {
+      this.currentZoom = Math.max(this.currentZoom - this.zoomStep, this.minZoom);
+      this.updateTransform();
+    }
+  }
+
+  resetZoom() {
+    this.currentZoom = 1;
+    this.updateTransform();
+  }
+
+  private updateTransform() {
+    this.imageTransform = {
+      ...this.imageTransform,
+      scale: this.currentZoom
+    };
+    this.cdr.detectChanges();
+  }
+
+  // Get zoom percentage for display
+  getZoomPercentage(): number {
+    return Math.round(this.currentZoom * 100);
+  }
+
+  // Handle zoom slider change
+  onZoomSliderChange(event: any) {
+    const sliderValue = event.detail.value;
+    this.currentZoom = sliderValue / 100; // Convert percentage back to decimal
+    this.updateTransform();
   }
 }

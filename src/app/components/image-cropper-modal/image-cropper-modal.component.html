@@ -1,46 +1,86 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ cropperTitle }}</ion-title>
+<ion-header class="modern-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-title class="header-title">{{ cropperTitle }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="cancel()"><ion-icon name="close"></ion-icon></ion-button>
+      <ion-button class="close-button" (click)="cancel()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="cropper-content">
-  <div class="cropper-wrapper">
-    <div class="cropper-container">
-      <!-- Hidden file input for ngx-image-cropper -->
-      <input 
-        #fileInput 
-        type="file" 
-        accept="image/*" 
-        style="display: none;"
-        (change)="onFileSelected($event)">
-      
-      <image-cropper
-        [imageChangedEvent]="imageChangedEvent"
-        [maintainAspectRatio]="maintainAspectRatio"
-        [aspectRatio]="aspectRatio"
-        [resizeToWidth]="1200"
-        [resizeToHeight]="1200"
-        [onlyScaleDown]="true"
-        [roundCropper]="false"
-    
-        [hideResizeSquares]="false"
-        (imageCropped)="imageCropped($event)"
-        (imageLoaded)="imageLoaded()"
-        (cropperReady)="cropperReady()"
-        (loadImageFailed)="loadImageFailed()">
-      </image-cropper>
+<ion-content class="modern-cropper-content">
+  <div class="modern-wrapper">
+    <!-- Image Cropper Section -->
+    <div class="cropper-section">
+      <div class="cropper-container">
+        <!-- Hidden file input for ngx-image-cropper -->
+        <input 
+          #fileInput 
+          type="file" 
+          accept="image/*" 
+          style="display: none;"
+          (change)="onFileSelected($event)">
+        
+        <div class="cropper-wrapper">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [transform]="imageTransform"
+            [maintainAspectRatio]="maintainAspectRatio"
+            [aspectRatio]="aspectRatio"
+            [resizeToWidth]="1200"
+            [resizeToHeight]="1200"
+            [onlyScaleDown]="true"
+            [roundCropper]="false"
+            [hideResizeSquares]="false"
+            (imageCropped)="imageCropped($event)"
+            (imageLoaded)="imageLoaded()"
+            (cropperReady)="cropperReady()"
+            (loadImageFailed)="loadImageFailed()">
+          </image-cropper>
+        </div>
+      </div>
     </div>
 
-    <div class="action-buttons">
+    <!-- Compact Controls Section -->
+    <div class="compact-controls">
+      <div class="zoom-display-compact">
+        <span class="zoom-percentage">{{ getZoomPercentage() }}%</span>
+      </div>
+      
+      <div class="zoom-controls-compact">
+        <ion-button 
+          class="reset-btn-compact" 
+          fill="clear" 
+          size="small"
+          (click)="resetZoom()">
+          <ion-icon name="refresh-outline"></ion-icon>
+        </ion-button>
+        
+        <div class="slider-compact">
+          <ion-range
+            class="compact-zoom-slider"
+            [min]="minZoom * 100"
+            [max]="maxZoom * 100"
+            [step]="zoomStep * 100"
+            [value]="getZoomPercentage()"
+            (ionInput)="onZoomSliderChange($event)"
+            color="primary">
+            <ion-icon name="remove-outline" slot="start" class="slider-icon"></ion-icon>
+            <ion-icon name="add-outline" slot="end" class="slider-icon"></ion-icon>
+          </ion-range>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons Section -->
+    <div class="action-section">
       <ion-button 
-        class="btn btn-grn no-style"
+        class="primary-action-btn"
         expand="block" 
         (click)="cropImage()"
         [disabled]="!isCropping">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
         Use Cropped Image
       </ion-button>
     </div>

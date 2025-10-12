@@ -153,15 +153,22 @@ export class FirebaseService {
    */
   async signInWithGoogle(): Promise<any> {
     try {
+      console.log('=== GOOGLE SIGN-IN DEBUG START ===');
       console.log('Platform check:', {
         isCapacitor: this.platform.is('capacitor'),
         isCordova: this.platform.is('cordova'),
         isMobile: this.platform.is('mobile'),
-        isDesktop: this.platform.is('desktop')
+        isDesktop: this.platform.is('desktop'),
+        platform: this.platform.platforms()
       });
 
+      console.log('Environment webClientId:', environment.firebase.webClientId);
+      console.log('Environment androidClientId:', environment.firebase.androidClientId);
+      console.log('Window plugins available:', !!window.plugins);
+      console.log('Google Plus plugin available:', !!(window.plugins && window.plugins.googleplus));
+
       // Check if we're on a mobile platform (Cordova/Capacitor)
-      if (this.platform.is('capacitor') || this.platform.is('cordova')) {
+      if (this.platform.is('capacitor') || this.platform.is('cordova') || this.platform.is('mobile')) {
         console.log('Using native Google Sign-In for mobile platform');
         return await this.signInWithGoogleNative();
       } else {
@@ -169,8 +176,14 @@ export class FirebaseService {
         // Use Firebase web SDK for browser
         return await this.signInWithGoogleWeb();
       }
-    } catch (error) {
-      console.error('Google Sign-In Error:', error);
+    } catch (error: any) {
+      console.error('=== GOOGLE SIGN-IN ERROR ===');
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message);
+      console.error('Error code:', error?.code);
+      console.error('Error details:', error);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
+      console.error('=== END ERROR DEBUG ===');
       throw error;
     }
   }
@@ -180,14 +193,24 @@ export class FirebaseService {
    */
   private async signInWithGoogleNative(): Promise<any> {
     return new Promise((resolve, reject) => {
+      console.log('Starting Google Sign-In Native...');
+      console.log('Environment webClientId:', environment.firebase.webClientId);
+      console.log('Environment androidClientId:', environment.firebase.androidClientId);
+      
       if (!window.plugins || !window.plugins.googleplus) {
+        console.error('Google Plus plugin not available');
         reject(new Error('Google Plus plugin not available. Make sure the cordova-plugin-googleplus is properly installed.'));
         return;
       }
 
+      console.log('Google Plus plugin is available, checking device availability...');
+
       // Check if Google Plus is available on the device
       window.plugins.googleplus.isAvailable((available: boolean) => {
+        console.log('Google Plus availability:', available);
+        
         if (!available) {
+          console.error('Google Sign-In is not available on this device');
           reject(new Error('Google Sign-In is not available on this device.'));
           return;
         }
@@ -195,28 +218,44 @@ export class FirebaseService {
         const options = {
           // You can add scopes here if needed
           scopes: 'profile email',
-          webClientId: environment.firebase.webClientId,
+          webClientId: environment.firebase.androidClientId,
           offline: true
         };
+
+        console.log('Attempting Google Sign-In with options:', options);
 
         window.plugins.googleplus.login(options, (userData: any) => {
           console.log('Google Sign-In Success:', userData);
           
+          // Validate userData before processing
+          if (!userData || !userData.userId) {
+            console.error('Invalid user data received:', userData);
+            reject(new Error('Invalid user data received from Google Sign-In'));
+            return;
+          }
+          
           // Send user data to your backend
           const userInfo = {
-            uid: userData.userId,
-            email: userData.email,
-            displayName: userData.displayName,
-            photoURL: userData.imageUrl,
+            uid: userData.userId || '',
+            email: userData.email || '',
+            displayName: userData.displayName || '',
+            photoURL: userData.imageUrl || '',
             fcmToken: this.fcmToken,
-            idToken: userData.idToken,
-            serverAuthCode: userData.serverAuthCode
+            idToken: userData.idToken || '',
+            serverAuthCode: userData.serverAuthCode || ''
           };
+
+          console.log('Processed user info:', userInfo);
 
           // Call your backend API to create/update user
           this.sendGoogleUserToBackend(userInfo).then(resolve).catch(reject);
         }, (error: any) => {
-          console.error('Google Sign-In Error:', error);
+          console.error('Google Sign-In Error Details:', {
+            error: error,
+            errorCode: error?.errorCode,
+            errorMessage: error?.errorMessage,
+            errorDetails: error?.errorDetails
+          });
           reject(error);
         });
       });

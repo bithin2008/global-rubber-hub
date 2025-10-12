@@ -16,6 +16,7 @@ export const environment = {
     // webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com' // Replace with your actual web client ID
 
     webClientId: '576336618943-s1deq0icisep54938nvch1nmk4f4ekj2.apps.googleusercontent.com',
+    androidClientId: '826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com',
     apiKey: "AIzaSyCrnkAqySAnH2fRyuJKZAkejhbR4vrFMmc",
     authDomain: "global-rubber-hub-c754f.firebaseapp.com",
     projectId: "global-rubber-hub-c754f",
