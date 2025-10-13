@@ -4,13 +4,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compa
 
 // Initialize Firebase in the service worker
 firebase.initializeApp({
-  apiKey: 'your-firebase-api-key',
-  authDomain: 'your-project.firebaseapp.com',
-  projectId: 'your-project-id',
-  storageBucket: 'your-project.appspot.com',
-  messagingSenderId: '123456789',
-  appId: 'your-app-id',
-  measurementId: 'your-measurement-id'
+  apiKey: "AIzaSyCrnkAqySAnH2fRyuJKZAkejhbR4vrFMmc",
+  authDomain: "global-rubber-hub-c754f.firebaseapp.com",
+  projectId: "global-rubber-hub-c754f",
+  storageBucket: "global-rubber-hub-c754f.firebasestorage.app",
+  messagingSenderId: "826183488369",
+  appId: "1:826183488369:web:f6f423f0d59d8d44829cd0"
 });
 
 // Initialize Firebase Cloud Messaging

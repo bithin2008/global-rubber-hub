@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Referrer Test - Fixed Version</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Simple Referrer Test - Fixed Version</h1>
+        <p>This page tests the fixed SimpleReferrerService without circular dependency issues.</p>
+
+        <div class="test-section info">
+            <h3>📋 Test Instructions</h3>
+            <p><strong>Fixed Issues:</strong></p>
+            <ul>
+                <li>✅ Removed automatic initialization from constructor</li>
+                <li>✅ Added manual initialization in app component and login page</li>
+                <li>✅ Added platform detection for native plugins</li>
+                <li>✅ Fixed TypeScript errors</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test 1: URL Parameter Referrer</h3>
+            <p>Test with URL: <code>?referrer=TEST123</code></p>
+            <button onclick="testUrlReferrer()">Test URL Referrer</button>
+            <div id="url-result" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test 2: Document Referrer</h3>
+            <p>Simulate coming from Google Play Store</p>
+            <button onclick="testDocumentReferrer()">Test Document Referrer</button>
+            <div id="document-result" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test 3: LocalStorage Referrer</h3>
+            <p>Test stored referrer from previous session</p>
+            <button onclick="testLocalStorageReferrer()">Test LocalStorage Referrer</button>
+            <div id="localStorage-result" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test 4: Clear All Referrers</h3>
+            <p>Clear all stored referrer data</p>
+            <button onclick="clearAllReferrers()">Clear All Referrers</button>
+            <div id="clear-result" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Current Status</h3>
+            <div id="current-status" class="code"></div>
+            <button onclick="checkCurrentStatus()">Check Current Status</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Test Links</h3>
+            <p>Test with different referrer codes:</p>
+            <a href="?referrer=ABC123" target="_blank">Test with ABC123</a><br>
+            <a href="?referrer=XYZ789" target="_blank">Test with XYZ789</a><br>
+            <a href="?referrer=TEST456" target="_blank">Test with TEST456</a>
+        </div>
+    </div>
+
+    <script>
+        const REFERRER_STORAGE_KEY = 'app_referrer';
+
+        function testUrlReferrer() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerFromUrl = urlParams.get('referrer');
+            
+            if (referrerFromUrl) {
+                localStorage.setItem(REFERRER_STORAGE_KEY, referrerFromUrl);
+                document.getElementById('url-result').innerHTML = 
+                    `<span style="color: green;">✅ URL Referrer found: ${referrerFromUrl}</span>`;
+            } else {
+                document.getElementById('url-result').innerHTML = 
+                    `<span style="color: red;">❌ No referrer in URL</span>`;
+            }
+        }
+
+        function testDocumentReferrer() {
+            // Simulate document.referrer from Play Store
+            const mockReferrer = 'https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=PLAY123';
+            
+            // Extract referrer from mock URL
+            const url = new URL(mockReferrer);
+            const referrerParam = url.searchParams.get('referrer');
+            
+            if (referrerParam) {
+                localStorage.setItem(REFERRER_STORAGE_KEY, referrerParam);
+                document.getElementById('document-result').innerHTML = 
+                    `<span style="color: green;">✅ Document Referrer extracted: ${referrerParam}</span>`;
+            } else {
+                document.getElementById('document-result').innerHTML = 
+                    `<span style="color: red;">❌ No referrer in document</span>`;
+            }
+        }
+
+        function testLocalStorageReferrer() {
+            const storedReferrer = localStorage.getItem(REFERRER_STORAGE_KEY);
+            
+            if (storedReferrer) {
+                document.getElementById('localStorage-result').innerHTML = 
+                    `<span style="color: green;">✅ LocalStorage Referrer found: ${storedReferrer}</span>`;
+            } else {
+                document.getElementById('localStorage-result').innerHTML = 
+                    `<span style="color: red;">❌ No referrer in localStorage</span>`;
+            }
+        }
+
+        function clearAllReferrers() {
+            localStorage.removeItem(REFERRER_STORAGE_KEY);
+            document.getElementById('clear-result').innerHTML = 
+                `<span style="color: blue;">✅ All referrers cleared</span>`;
+        }
+
+        function checkCurrentStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerFromUrl = urlParams.get('referrer');
+            const storedReferrer = localStorage.getItem(REFERRER_STORAGE_KEY);
+            const documentReferrer = document.referrer;
+            
+            let status = `
+Current URL: ${window.location.href}
+URL Referrer: ${referrerFromUrl || 'None'}
+LocalStorage Referrer: ${storedReferrer || 'None'}
+Document Referrer: ${documentReferrer || 'None'}
+            `;
+            
+            document.getElementById('current-status').textContent = status;
+        }
+
+        // Auto-check status on page load
+        window.onload = function() {
+            checkCurrentStatus();
+            testUrlReferrer();
+        };
+    </script>
+</body>
+</html>

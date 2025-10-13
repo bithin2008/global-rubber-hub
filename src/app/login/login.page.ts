@@ -7,7 +7,7 @@ import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { AuthService } from '../services/auth.service';
 import { DeepLinkService } from '../services/deep-link.service';
-import { ReferralService } from '../services/referral.service';
+import { SimpleReferrerService } from '../services/simple-referrer.service';
 import { Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { MustMatch } from '../_helper/must-match.validator';
@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { LoaderService } from '../services/loader.service';
 import { FirebaseService } from '../services/firebase.service';
+import { Device } from '@ionic-native/device/ngx';
 
 
 0
@@ -87,6 +88,12 @@ export class LoginPage implements OnInit, OnDestroy {
   // Subscription management
   private routeSubscription: Subscription | undefined;
 
+  // Device information properties
+  public deviceModel: string = '';
+  public devicePlatform: string = '';
+  public deviceOSVersion: string = '';
+  public deviceInfo: any = {};
+
 
   constructor(
     public router: Router,
@@ -102,8 +109,9 @@ export class LoginPage implements OnInit, OnDestroy {
     private deepLinkService: DeepLinkService,
     private authGuardService: AuthGuardService,
     private loaderService: LoaderService,
-    private referralService: ReferralService,
-    private firebaseService: FirebaseService
+    private simpleReferrerService: SimpleReferrerService,
+    private firebaseService: FirebaseService,
+    private device: Device
   ) {
 
     // Subscribe to route params with proper unsubscribe handling
@@ -151,9 +159,27 @@ export class LoginPage implements OnInit, OnDestroy {
     }
     this.initializeForms();
 
-    // Check for referral code from URL params or stored referral
-    await this.checkForReferralCode();
+    // Get device information
+  //  this.getDeviceInformation();
+    
+    // Check FCM token status
+   // this.checkFCMTokenStatus();
+    
+    // Test FCM token generation (for debugging)
+    setTimeout(() => {
+    //  this.testFCMTokenGeneration();
+    }, 2000); // Wait 2 seconds after component initialization
 
+    // Initialize referrer service and check for referrer
+    setTimeout(async () => {
+      await this.simpleReferrerService.initializeReferrer();
+      this.checkAndStoreReferrer();
+      this.checkStoredReferrer();
+    }, 300);
+
+    // Testing code removed - referral codes will be handled naturally
+
+    // Testing methods removed - referral codes will be handled naturally
   }
 
 
@@ -161,34 +187,106 @@ export class LoginPage implements OnInit, OnDestroy {
 
 
   /**
-   * Check for referral code from URL params or stored referral
+   * Setup listener for referrer changes
    */
-  async checkForReferralCode() {
-    try {
-      // Check URL query params for referral code
-      const urlParams = new URLSearchParams(window.location.search);
-      const referralFromUrl = urlParams.get('referral');
-      
-      if (referralFromUrl) {
-        console.log('Referral code from URL:', referralFromUrl);
-        this.registerForm.patchValue({ referralCode: referralFromUrl });
-        // Disable the referral code field when populated from URL
-        this.registerForm.get('referralCode')?.disable();
-        this.isReferralCodeFromUrl = true;
-        return;
+  setupReferralCodeListener() {
+    // Listen for app state changes to check for new referrer
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        // App became visible, check for new referrer
+        this.checkAndStoreReferrer();
       }
+    });
 
-      // Check for stored referral code
-      const storedReferralCode = await this.referralService.getStoredReferralCode();
-      if (storedReferralCode) {
-        console.log('Stored referral code found:', storedReferralCode);
-        this.registerForm.patchValue({ referralCode: storedReferralCode });
-        // Disable the referral code field when populated from stored referral
+    // Also listen for focus events
+    window.addEventListener('focus', () => {
+      this.checkAndStoreReferrer();
+    });
+  }
+
+  /**
+   * Check for referrer and store it in localStorage
+   */
+  checkAndStoreReferrer() {
+    try {
+      console.log('🔍 Checking for referrer...');
+      const referrer = this.simpleReferrerService.checkAndStoreReferrer();
+      
+      if (referrer) {
+        console.log('✅ Referrer found and stored:', referrer);
+        // Pre-fill the referral code field
+        this.registerForm.patchValue({ referralCode: referrer });
         this.registerForm.get('referralCode')?.disable();
         this.isReferralCodeFromUrl = true;
+        
+        // Show success message to user
+        console.log('✅ Referral code applied from URL:', referrer);
+      } else {
+        console.log('❌ No referrer found');
+        this.isReferralCodeFromUrl = false;
       }
     } catch (error) {
-      console.error('Error checking for referral code:', error);
+      console.error('Error checking for referrer:', error);
+      this.isReferralCodeFromUrl = false;
+    }
+  }
+
+  /**
+   * Check for stored referrer and apply to form
+   */
+  checkStoredReferrer() {
+    try {
+      console.log('🔍 Checking for stored referrer...');
+      const storedReferrer = this.simpleReferrerService.getStoredReferrer();
+      
+      if (storedReferrer) {
+        console.log('✅ Stored referrer found:', storedReferrer);
+        // Pre-fill the referral code field
+        this.registerForm.patchValue({ referralCode: storedReferrer });
+        this.registerForm.get('referralCode')?.disable();
+        this.isReferralCodeFromUrl = true;
+        
+        // Show success message to user
+        console.log('✅ Referral code applied from stored value:', storedReferrer);
+      } else {
+        console.log('❌ No stored referrer found');
+        this.isReferralCodeFromUrl = false;
+      }
+    } catch (error) {
+      console.error('Error checking stored referrer:', error);
+      this.isReferralCodeFromUrl = false;
+    }
+  }
+
+  /**
+   * Manually refresh referrer check
+   */
+  refreshReferralCode() {
+    console.log('Manually refreshing referrer check...');
+    this.checkAndStoreReferrer();
+  }
+
+  /**
+   * Set referrer code for testing (simulates Play Store referrer parameter)
+   */
+  setReferrerCodeForTesting(referrerCode: string) {
+    console.log('Setting referrer code for testing:', referrerCode);
+    this.simpleReferrerService.storeReferrer(referrerCode);
+    this.checkAndStoreReferrer();
+  }
+
+  // Debug methods removed - referral codes will be handled naturally
+
+  /**
+   * Show referral error message
+   */
+  private async showReferralError(message: string): Promise<void> {
+    try {
+      // You can implement a toast or alert here
+      console.error('Referral Error:', message);
+      // For now, just log to console - you can add toast/alert here
+    } catch (error) {
+      console.error('Error showing referral error:', error);
     }
   }
 
@@ -229,6 +327,191 @@ export class LoginPage implements OnInit, OnDestroy {
     }, {
       validator: MustMatch('password', 'confirmPassword')
     });
+  }
+
+  /**
+   * Get device information including model, platform, and OS version
+   */
+  getDeviceInformation() {
+    try {
+      // Check if device plugin is available and we're on a native platform
+      if (this.device && this.device.model && (this.platform.is('capacitor') || this.platform.is('cordova'))) {
+        this.deviceModel = this.device.model || 'Unknown';
+        this.devicePlatform = this.device.platform || 'Unknown';
+        this.deviceOSVersion = this.device.version || 'Unknown';
+        
+        // Store complete device info
+        this.deviceInfo = {
+          model: this.deviceModel,
+          platform: this.devicePlatform,
+          version: this.deviceOSVersion,
+          manufacturer: this.device.manufacturer || 'Unknown',
+          serial: this.device.serial || 'Unknown',
+          uuid: this.device.uuid || 'Unknown',
+          isVirtual: this.device.isVirtual || false,
+          cordova: this.device.cordova || 'Unknown'
+        };
+
+        console.log('Device Information:', this.deviceInfo);
+        
+        // Log device information for debugging
+        console.log('Device Model:', this.deviceModel);
+        console.log('Device Platform:', this.devicePlatform);
+        console.log('Device OS Version:', this.deviceOSVersion);
+        
+        // Display device information in a user-friendly way
+        this.displayDeviceInfo();
+        
+        // Also display FCM token for debugging
+        this.displayFCMToken();
+      } else {
+        console.warn('Device plugin not available or not ready');
+        this.deviceModel = 'Web Browser';
+        this.devicePlatform = this.platform.platforms().join(', ') || 'Web';
+        this.deviceOSVersion = navigator.userAgent || 'Unknown';
+        
+        this.deviceInfo = {
+          model: this.deviceModel,
+          platform: this.devicePlatform,
+          version: this.deviceOSVersion,
+          userAgent: navigator.userAgent,
+          isWeb: true
+        };
+        
+        // Display device information for web browser
+        this.displayDeviceInfo();
+        
+        // Also display FCM token for debugging
+        this.displayFCMToken();
+      }
+    } catch (error) {
+      console.error('Error getting device information:', error);
+      this.deviceModel = 'Unknown';
+      this.devicePlatform = 'Unknown';
+      this.deviceOSVersion = 'Unknown';
+    }
+  }
+
+  /**
+   * Display device information in a user-friendly format
+   */
+  displayDeviceInfo() {
+    console.log('=== DEVICE INFORMATION ===');
+    console.log(`Model: ${this.deviceModel}`);
+    console.log(`Platform: ${this.devicePlatform}`);
+    console.log(`OS Version: ${this.deviceOSVersion}`);
+    console.log('==========================');
+  }
+
+  /**
+   * Display FCM token for debugging
+   */
+  displayFCMToken() {
+    const fcmToken = this.firebaseService.getFCMToken();
+    console.log('=== FCM TOKEN ===');
+    if (fcmToken) {
+      console.log(`FCM Token: ${fcmToken}`);
+    } else {
+      console.log('FCM Token: Not available yet');
+    }
+    console.log('==================');
+  }
+
+  /**
+   * Get FCM token for authentication requests
+   */
+  async getFCMTokenForAuth(): Promise<string> {
+    let fcmToken = this.firebaseService.getFCMToken();
+    
+    if (fcmToken) {
+      console.log('Using existing FCM token for authentication:', fcmToken);
+      return fcmToken;
+    } else {
+      console.warn('FCM token not available, attempting to generate...');
+      
+      // Try to force generate FCM token with service worker
+      fcmToken = await this.firebaseService.forceGenerateFCMToken();
+      
+      if (fcmToken) {
+        console.log('FCM token generated successfully with service worker:', fcmToken);
+        return fcmToken;
+      } else {
+        console.warn('Failed to generate FCM token with service worker, trying without...');
+        
+        // Try fallback method without service worker
+        fcmToken = await this.firebaseService.generateFCMTokenWithoutSW();
+        
+        if (fcmToken) {
+          console.log('FCM token generated successfully without service worker:', fcmToken);
+          return fcmToken;
+        } else {
+          console.warn('Failed to generate FCM token with both methods, using empty string');
+          return '';
+        }
+      }
+    }
+  }
+
+  /**
+   * Trigger FCM token generation
+   */
+  private async triggerFCMTokenGeneration() {
+    console.log('Attempting to trigger FCM token generation...');
+    try {
+      const token = await this.firebaseService.generateFCMToken();
+      if (token) {
+        console.log('FCM token generated successfully:', token);
+      } else {
+        console.warn('Failed to generate FCM token');
+      }
+    } catch (error) {
+      console.error('Error generating FCM token:', error);
+    }
+  }
+
+  /**
+   * Check FCM token status
+   */
+  private checkFCMTokenStatus() {
+    const fcmToken = this.firebaseService.getFCMToken();
+    console.log('=== FCM TOKEN STATUS ===');
+    if (fcmToken) {
+      console.log('FCM Token is available:', fcmToken);
+    } else {
+      console.log('FCM Token is not available yet');
+      console.log('This is normal for the first load. Token will be generated when needed.');
+    }
+    console.log('========================');
+  }
+
+  /**
+   * Test FCM token generation (for debugging)
+   */
+  async testFCMTokenGeneration() {
+    console.log('=== TESTING FCM TOKEN GENERATION ===');
+    try {
+      // Try with service worker first
+      let token = await this.firebaseService.forceGenerateFCMToken();
+      if (token) {
+        console.log('✅ FCM token generated successfully with service worker:', token);
+        return token;
+      } else {
+        console.log('❌ Failed to generate FCM token with service worker, trying without...');
+        
+        // Try without service worker
+        token = await this.firebaseService.generateFCMTokenWithoutSW();
+        if (token) {
+          console.log('✅ FCM token generated successfully without service worker:', token);
+          return token;
+        } else {
+          console.log('❌ Failed to generate FCM token with both methods');
+          return null;
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error testing FCM token generation:', error);
+      return null;
+    }
   }
 
   getProfileData() {
@@ -419,7 +702,7 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   // Login functionality
-  login() {
+  async login() {
     this.submitted = true;
     if (this.loginForm.invalid) {
       return;
@@ -430,9 +713,16 @@ export class LoginPage implements OnInit, OnDestroy {
       return;
     }
 
+    // Get FCM token
+    const fcmToken = await this.getFCMTokenForAuth();
+
     let data = {
       email: this.loginForm.get('email')?.value,
       password: this.loginForm.get('password')?.value,
+      // fcm_token: fcmToken, // Get actual FCM token from Firebase service
+      // device_model: this.deviceModel,
+      // platform: this.devicePlatform,
+      // os_version: this.deviceOSVersion
     };
     this.loaderService.show();
     let url = 'auth/login';
@@ -457,11 +747,15 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   // Register functionality
-  register() {
+  async register() {
     this.submitted = true;
     if (this.registerForm.invalid) {
       return;
     }
+    
+    // Get FCM token
+    const fcmToken = await this.getFCMTokenForAuth();
+    
     let data = {
       first_name: this.registerForm.get('firstName')?.value,
       last_name: this.registerForm.get('lastName')?.value,
@@ -470,7 +764,11 @@ export class LoginPage implements OnInit, OnDestroy {
       phone: this.registerForm.get('phone')?.value,
       country_code: "+91",
       password: this.registerForm.get('password')?.value,
-      referral_code: this.registerForm.get('referralCode')?.value || null
+      ref_code: this.registerForm.get('referralCode')?.value || null,
+      fcm_token: fcmToken, // Get actual FCM token from Firebase service
+      device_model: this.deviceModel,
+      platform: this.devicePlatform,
+      os_version: this.deviceOSVersion
     };
     this.loaderService.show();
     let url = 'auth/registration';

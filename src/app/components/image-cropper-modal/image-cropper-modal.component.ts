@@ -42,6 +42,14 @@ export class ImageCropperModalComponent implements OnInit {
   maxZoom: number = 3;
   zoomStep: number = 0.1;
 
+  // Touch zoom properties
+  private initialDistance: number = 0;
+  private initialZoom: number = 1;
+  private isTouchZooming: boolean = false;
+  private touchStartTime: number = 0;
+  private lastTapTime: number = 0;
+  private doubleTapZoom: number = 2;
+
   constructor(
     private modalController: ModalController,
     private cdr: ChangeDetectorRef
@@ -340,6 +348,90 @@ export class ImageCropperModalComponent implements OnInit {
   onZoomSliderChange(event: any) {
     const sliderValue = event.detail.value;
     this.currentZoom = sliderValue / 100; // Convert percentage back to decimal
+    this.updateTransform();
+  }
+
+  // Touch zoom event handlers
+  onTouchStart(event: TouchEvent) {
+    if (event.touches.length === 2) {
+      this.isTouchZooming = true;
+      this.touchStartTime = Date.now();
+      this.initialDistance = this.getDistance(event.touches[0], event.touches[1]);
+      this.initialZoom = this.currentZoom;
+      event.preventDefault();
+    } else if (event.touches.length === 1) {
+      // Handle single touch for double-tap zoom
+      const currentTime = Date.now();
+      const timeDiff = currentTime - this.lastTapTime;
+      
+      if (timeDiff < 300) { // Double tap within 300ms
+        this.handleDoubleTapZoom();
+        event.preventDefault();
+      }
+      
+      this.lastTapTime = currentTime;
+    }
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (this.isTouchZooming && event.touches.length === 2) {
+      const currentDistance = this.getDistance(event.touches[0], event.touches[1]);
+      const scale = currentDistance / this.initialDistance;
+      const newZoom = this.initialZoom * scale;
+      
+      // Clamp zoom within bounds
+      this.currentZoom = Math.max(this.minZoom, Math.min(this.maxZoom, newZoom));
+      this.updateTransform();
+      event.preventDefault();
+    }
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    if (this.isTouchZooming) {
+      this.isTouchZooming = false;
+      this.initialDistance = 0;
+      this.initialZoom = 1;
+      
+      // Prevent accidental double-tap zoom
+      const touchDuration = Date.now() - this.touchStartTime;
+      if (touchDuration < 200) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  private getDistance(touch1: Touch, touch2: Touch): number {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Handle single touch for pan (if needed)
+  onSingleTouchStart(event: Event) {
+    const touchEvent = event as TouchEvent;
+    if (touchEvent.touches && touchEvent.touches.length === 1 && !this.isTouchZooming) {
+      // Single touch - could be used for panning if needed
+      // For now, we'll just prevent default to avoid conflicts
+      event.preventDefault();
+    }
+  }
+
+  onSingleTouchMove(event: Event) {
+    const touchEvent = event as TouchEvent;
+    if (touchEvent.touches && touchEvent.touches.length === 1 && !this.isTouchZooming) {
+      // Single touch move - could be used for panning if needed
+      event.preventDefault();
+    }
+  }
+
+  private handleDoubleTapZoom() {
+    if (this.currentZoom === 1) {
+      // Zoom in to double-tap zoom level
+      this.currentZoom = this.doubleTapZoom;
+    } else {
+      // Reset to 1x zoom
+      this.currentZoom = 1;
+    }
     this.updateTransform();
   }
 }

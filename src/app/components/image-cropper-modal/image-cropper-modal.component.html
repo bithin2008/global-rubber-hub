@@ -22,7 +22,12 @@
           style="display: none;"
           (change)="onFileSelected($event)">
         
-        <div class="cropper-wrapper">
+        <div class="cropper-wrapper"
+             (touchstart)="onTouchStart($event)"
+             (touchmove)="onTouchMove($event)"
+             (touchend)="onTouchEnd($event)"
+             (touchstart.passive)="onSingleTouchStart($event)"
+             (touchmove.passive)="onSingleTouchMove($event)">
           <image-cropper
             [imageChangedEvent]="imageChangedEvent"
             [transform]="imageTransform"

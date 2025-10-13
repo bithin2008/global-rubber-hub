@@ -67,6 +67,23 @@
           </ion-item>
 
           <ion-item>
+            <ion-label position="stacked">Google Play Store Link</ion-label>
+            <ion-input 
+              [value]="playStoreLink" 
+              readonly 
+              class="link-input">
+            </ion-input>
+            <ion-button 
+              slot="end" 
+              fill="outline" 
+              size="small"
+              (click)="copyPlayStoreLink()"
+              [disabled]="!playStoreLink">
+              Copy
+            </ion-button>
+          </ion-item>
+
+          <ion-item>
             <ion-label position="stacked">Custom Scheme Link (App Only)</ion-label>
             <ion-input 
               [value]="customSchemeLink" 

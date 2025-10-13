@@ -14,6 +14,7 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { environment } from './environments/environment';
+import { Device } from '@ionic-native/device/ngx';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -29,5 +30,6 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideMessaging(() => getMessaging()),
+    Device,
   ],
 });

@@ -12,6 +12,8 @@ export class AuthGuardService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   private isHandlingLogout = false;
   private lastAuthCheckTime = 0;
+  private isLoggingOut = false;
+  private modalQueue: string[] = [];
 
   constructor(
     private router: Router,
@@ -92,9 +94,9 @@ export class AuthGuardService {
   async handle401Error(message: string = 'Session expired. Please login again'): Promise<void> {
     console.log('Handling 401 error - logging out user');
     
-    // Check if we're already handling logout to prevent duplicate messages
-    if (this.isHandlingLogout) {
-      console.log('Already handling logout, skipping duplicate message');
+    // Check if we're already handling logout or logging out to prevent duplicate messages
+    if (this.isHandlingLogout || this.isLoggingOut) {
+      console.log('Already handling logout or logging out, skipping duplicate message');
       return;
     }
     
@@ -102,10 +104,16 @@ export class AuthGuardService {
     const currentUrl = this.router.url;
     const isAlreadyOnLoginPage = currentUrl.includes('/login');
     
-    // Check if a recent authentication check was performed (within last 2 seconds)
+    // Check if a recent authentication check was performed (within last 3 seconds)
     const timeSinceLastCheck = Date.now() - this.lastAuthCheckTime;
-    if (timeSinceLastCheck < 2000) {
+    if (timeSinceLastCheck < 3000) {
       console.log('Recent auth check performed, skipping duplicate message');
+      return;
+    }
+    
+    // Check if this message is already in the queue
+    if (this.modalQueue.includes(message)) {
+      console.log('Message already in queue, skipping duplicate');
       return;
     }
     
@@ -119,8 +127,12 @@ export class AuthGuardService {
    */
   async logoutUser(message: string = 'You have been logged out'): Promise<void> {
     try {
-      // Set flag to prevent duplicate messages
+      // Set flags to prevent duplicate messages and track logout state
       this.isHandlingLogout = true;
+      this.isLoggingOut = true;
+      
+      // Add message to queue to prevent duplicates
+      this.modalQueue.push(message);
       
       // Clear all local storage
       localStorage.clear();
@@ -142,10 +154,12 @@ export class AuthGuardService {
         this.router.navigate(['/login']);
       }
       
-      // Reset flag after navigation
+      // Reset flags after navigation
       setTimeout(() => {
         this.isHandlingLogout = false;
-      }, 1000);
+        this.isLoggingOut = false;
+        this.modalQueue = []; // Clear the queue
+      }, 2000);
       
     } catch (error) {
       console.error('Error during logout:', error);
@@ -156,10 +170,12 @@ export class AuthGuardService {
         this.router.navigate(['/login']);
       }
       
-      // Reset flag even on error
+      // Reset flags even on error
       setTimeout(() => {
         this.isHandlingLogout = false;
-      }, 1000);
+        this.isLoggingOut = false;
+        this.modalQueue = []; // Clear the queue
+      }, 2000);
     }
   }
 

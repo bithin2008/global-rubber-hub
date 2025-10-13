@@ -63,36 +63,96 @@ export class FirebaseService {
    * Initialize Firebase Cloud Messaging
    */
   private async initializeMessaging() {
+    console.log('=== FIREBASE MESSAGING INITIALIZATION ===');
+    console.log('Platform check:', {
+      isCapacitor: this.platform.is('capacitor'),
+      isCordova: this.platform.is('cordova'),
+      isMobile: this.platform.is('mobile'),
+      isDesktop: this.platform.is('desktop'),
+      platforms: this.platform.platforms()
+    });
+    
     if (this.platform.is('capacitor')) {
-      // For mobile platforms, use Capacitor Push Notifications
+      console.log('Initializing Capacitor push notifications...');
       await this.initializeCapacitorPushNotifications();
     } else {
-      // For web platforms, use Firebase Web SDK
+      console.log('Initializing web push notifications...');
       await this.initializeWebPushNotifications();
     }
+    
+    console.log('=== END FIREBASE MESSAGING INITIALIZATION ===');
   }
 
   /**
    * Initialize push notifications for web
    */
   private async initializeWebPushNotifications() {
+    console.log('Initializing web push notifications...');
+    
     if (!isSupported()) {
       console.log('Firebase Messaging is not supported in this browser');
       return;
     }
 
     try {
+      // Register service worker first
+      console.log('Registering service worker...');
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          console.log('Service Worker registered successfully:', registration);
+          
+          // Wait for service worker to be ready
+          await navigator.serviceWorker.ready;
+          console.log('Service Worker is ready');
+        } catch (swError) {
+          console.error('Service Worker registration failed:', swError);
+          // Continue without service worker
+        }
+      } else {
+        console.warn('Service Worker not supported in this browser');
+      }
+
+      console.log('Requesting notification permission...');
       // Request permission for notifications
       const permission = await Notification.requestPermission();
+      console.log('Notification permission result:', permission);
+      
       if (permission === 'granted') {
-        // Get FCM token
-        this.fcmToken = await getToken(messaging, {
-          vapidKey: 'your-vapid-key' // Replace with your VAPID key
-        });
+        console.log('Permission granted, getting FCM token...');
+        console.log('Using VAPID key:', environment.firebase.vapidKey);
         
-        if (this.fcmToken) {
-          console.log('FCM Token:', this.fcmToken);
-          this.sendFCMTokenToBackend();
+        // Get FCM token with retry mechanism
+        let retries = 3;
+        while (retries > 0 && !this.fcmToken) {
+          try {
+            console.log(`Attempting to get FCM token (${4 - retries}/3)...`);
+            this.fcmToken = await getToken(messaging, {
+              vapidKey: environment.firebase.vapidKey
+            });
+            
+            if (this.fcmToken) {
+              console.log('FCM Token generated successfully:', this.fcmToken);
+              this.sendFCMTokenToBackend();
+              break;
+            } else {
+              console.warn('FCM Token is null, retrying...');
+              retries--;
+              if (retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+              }
+            }
+          } catch (tokenError) {
+            console.error('Error getting FCM token:', tokenError);
+            retries--;
+            if (retries > 0) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+        }
+
+        if (!this.fcmToken) {
+          console.error('Failed to generate FCM token after 3 attempts');
         }
 
         // Listen for foreground messages
@@ -100,9 +160,12 @@ export class FirebaseService {
           console.log('Message received in foreground:', payload);
           this.handleForegroundMessage(payload);
         });
+      } else {
+        console.log('Notification permission denied');
       }
     } catch (error) {
       console.error('Error initializing web push notifications:', error);
+      console.error('Error details:', error);
     }
   }
 
@@ -218,7 +281,7 @@ export class FirebaseService {
         const options = {
           // You can add scopes here if needed
           scopes: 'profile email',
-          webClientId: environment.firebase.androidClientId,
+          webClientId: environment.firebase.webClientId,
           offline: true
         };
 
@@ -405,5 +468,154 @@ export class FirebaseService {
    */
   getFCMToken(): string | null {
     return this.fcmToken;
+  }
+
+  /**
+   * Manually trigger FCM token generation
+   */
+  async generateFCMToken(): Promise<string | null> {
+    try {
+      console.log('=== MANUAL FCM TOKEN GENERATION ===');
+      console.log('Current FCM token:', this.fcmToken);
+      console.log('Platform:', this.platform.platforms());
+      
+      if (this.platform.is('capacitor') || this.platform.is('cordova')) {
+        console.log('Using Capacitor push notifications for FCM token');
+        await this.initializeCapacitorPushNotifications();
+      } else {
+        console.log('Using web push notifications for FCM token');
+        await this.initializeWebPushNotifications();
+      }
+      
+      console.log('FCM token after generation:', this.fcmToken);
+      console.log('=== END MANUAL FCM TOKEN GENERATION ===');
+      
+      return this.fcmToken;
+    } catch (error) {
+      console.error('Error generating FCM token:', error);
+      console.error('Error details:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Force FCM token generation with retry mechanism
+   */
+  async forceGenerateFCMToken(): Promise<string | null> {
+    console.log('=== FORCE FCM TOKEN GENERATION ===');
+    
+    try {
+      // Check if messaging is supported
+      if (!isSupported()) {
+        console.error('Firebase Messaging is not supported in this browser');
+        return null;
+      }
+
+      // Register service worker if not already registered
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          console.log('Service Worker registered for FCM:', registration);
+          await navigator.serviceWorker.ready;
+        } catch (swError) {
+          console.warn('Service Worker registration failed, continuing without it:', swError);
+        }
+      }
+
+      // Request permission
+      console.log('Requesting notification permission...');
+      const permission = await Notification.requestPermission();
+      console.log('Permission result:', permission);
+
+      if (permission !== 'granted') {
+        console.warn('Notification permission not granted');
+        return null;
+      }
+
+      // Get token with retry
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          console.log(`Attempting to get FCM token (${4 - retries}/3)...`);
+          console.log('Using VAPID key:', environment.firebase.vapidKey);
+          
+          const token = await getToken(messaging, {
+            vapidKey: environment.firebase.vapidKey
+          });
+          
+          if (token) {
+            console.log('FCM token generated successfully:', token);
+            this.fcmToken = token;
+            return token;
+          } else {
+            console.warn('FCM token is null, retrying...');
+            retries--;
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+          }
+        } catch (tokenError) {
+          console.error('Error getting FCM token:', tokenError);
+          retries--;
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+          }
+        }
+      }
+      
+      console.error('Failed to generate FCM token after 3 attempts');
+      return null;
+    } catch (error) {
+      console.error('Error in force FCM token generation:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Generate FCM token without service worker (fallback method)
+   */
+  async generateFCMTokenWithoutSW(): Promise<string | null> {
+    console.log('=== FCM TOKEN GENERATION WITHOUT SERVICE WORKER ===');
+    
+    try {
+      // Check if messaging is supported
+      if (!isSupported()) {
+        console.error('Firebase Messaging is not supported in this browser');
+        return null;
+      }
+
+      // Request permission
+      console.log('Requesting notification permission...');
+      const permission = await Notification.requestPermission();
+      console.log('Permission result:', permission);
+
+      if (permission !== 'granted') {
+        console.warn('Notification permission not granted');
+        return null;
+      }
+
+      // Try to get token without service worker
+      try {
+        console.log('Attempting to get FCM token without service worker...');
+        console.log('Using VAPID key:', environment.firebase.vapidKey);
+        
+        const token = await getToken(messaging, {
+          vapidKey: environment.firebase.vapidKey
+        });
+        
+        if (token) {
+          console.log('FCM token generated successfully (without SW):', token);
+          this.fcmToken = token;
+          return token;
+        } else {
+          console.warn('FCM token is null');
+          return null;
+        }
+      } catch (tokenError) {
+        console.error('Error getting FCM token without service worker:', tokenError);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error in FCM token generation without service worker:', error);
+      return null;
+    }
   }
 }

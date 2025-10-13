@@ -6,7 +6,7 @@ declare var navigator: any;
 import { Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { DeepLinkService } from './services/deep-link.service';
-import { ReferralService } from './services/referral.service';
+import { SimpleReferrerService } from './services/simple-referrer.service';
 import { Router } from '@angular/router';
 import { LoaderComponent } from './shared/loader/loader.component';
 import { PushNotificationService } from './services/push-notification.service';
@@ -22,7 +22,7 @@ export class AppComponent {
     private platform: Platform,
     private router: Router,
     private deepLinkService: DeepLinkService,
-    private referralService: ReferralService,
+    private simpleReferrerService: SimpleReferrerService,
     private pushNotificationService: PushNotificationService
   ) {
     this.initializeApp();
@@ -43,6 +43,12 @@ export class AppComponent {
       
       // Initialize push notifications
       this.pushNotificationService.initialize();
+      
+      // Initialize referrer service and check for referrer
+      setTimeout(async () => {
+        await this.simpleReferrerService.initializeReferrer();
+        this.simpleReferrerService.checkAndStoreReferrer();
+      }, 200);
       
       // Define handleOpenURL globally for Cordova Universal Links
       (window as any).handleOpenURL = (url: string) => {
@@ -98,8 +104,9 @@ export class AppComponent {
           const referralCode = parts[1];
           console.log('Referral code:', referralCode);
           
-          // Handle referral code
-          this.referralService.handleReferralCode(referralCode);
+          // Store referral code in localStorage
+          localStorage.setItem('app_referrer', referralCode);
+          console.log('Referral code stored:', referralCode);
         } else {
           // Use the deep link service for other links
           this.deepLinkService.handleDeepLink({ url: event.url });
@@ -114,6 +121,8 @@ export class AppComponent {
       this.hideSplashScreen();
     }, 100);
   }
+
+  // Play Store referrer handling removed - now using simple localStorage approach
 
   hideSplashScreen() {
     try {

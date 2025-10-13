@@ -7,6 +7,22 @@
     --padding-bottom: 20px;
 }
 
+// Review item styling
+.accountItem {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background-color: rgba(45, 211, 111, 0.1);
+        transform: translateX(2px);
+    }
+    
+    &:active {
+        background-color: rgba(45, 211, 111, 0.2);
+        transform: translateX(1px);
+    }
+}
+
 // Social Share Modal Styles
 .social-share-modal {
   --width: 95%;

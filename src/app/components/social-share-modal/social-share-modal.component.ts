@@ -14,7 +14,8 @@ import {
   logoLinkedin, 
   mail, 
   share,
-  send
+  send,
+  storefront
 } from 'ionicons/icons';
 
 @Component({
@@ -39,6 +40,7 @@ import {
 })
 export class SocialShareModalComponent implements OnInit {
   @Input() referralLink: string = '';
+  @Input() playStoreLink: string = '';
   @Input() referralCode: string = '';
   @Input() shareText: string = '';
 
@@ -53,11 +55,20 @@ export class SocialShareModalComponent implements OnInit {
       logoLinkedin, 
       mail, 
       share,
-      send
+      send,
+      storefront
     });
   }
 
   ngOnInit() {
+    // Debug logging
+    console.log('SocialShareModal initialized with:', {
+      referralLink: this.referralLink,
+      playStoreLink: this.playStoreLink,
+      referralCode: this.referralCode,
+      shareText: this.shareText
+    });
+
     // Generate share text if not provided
     if (!this.shareText && this.referralCode) {
       this.shareText = `Join me on Global Rubber Hub! Use my referral code: ${this.referralCode}\n\nDownload the app: ${this.referralLink}`;
@@ -101,15 +112,21 @@ export class SocialShareModalComponent implements OnInit {
     window.open(shareUrl, '_blank', 'width=600,height=400');
   }
 
-  async copyToClipboard() {
+  async copyToClipboard(text?: string) {
     try {
+      const textToCopy = text || this.referralLink || this.playStoreLink;
+      if (!textToCopy) {
+        this.showToast('error', 'No link to copy', 2000);
+        return;
+      }
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(this.referralLink);
+        await navigator.clipboard.writeText(textToCopy);
         this.showToast('success', 'Link copied to clipboard!', 2000);
       } else {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
-        textArea.value = this.referralLink;
+        textArea.value = textToCopy;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');

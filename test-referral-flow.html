@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Referral Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #28a745;
+            margin: 10px 0;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .info {
+            border-left-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        .code {
+            background: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Referral Flow Test</h1>
+    <p>This page tests the referral code functionality for the Global Rubber Hub app.</p>
+
+    <div class="test-section">
+        <h2>📱 Test Scenarios</h2>
+        
+        <h3>1. Play Store Link with Referrer</h3>
+        <p>Test the main scenario: Play Store link with referrer parameter</p>
+        <a href="https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=BA8597" 
+           class="test-link" target="_blank">
+            Test Play Store Link (referrer=BA8597)
+        </a>
+        
+        <h3>2. Direct URL with Referrer Parameter</h3>
+        <p>Test direct URL with referrer parameter</p>
+        <a href="?referrer=TEST123" class="test-link">
+            Test Direct URL (referrer=TEST123)
+        </a>
+        
+        <h3>3. Clear Referrer and Test Again</h3>
+        <button onclick="clearReferrer()" class="test-link" style="background: #6c757d;">
+            Clear Stored Referrer
+        </button>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Current Status</h2>
+        <div id="status">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Results</h2>
+        <div id="results">
+            <p>Run tests to see results here.</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛠️ Manual Testing</h2>
+        <h3>Steps to Test:</h3>
+        <ol>
+            <li>Click the Play Store link above</li>
+            <li>Check if referrer code <span class="code">BA8597</span> is extracted and stored</li>
+            <li>Navigate to the app's login/register page</li>
+            <li>Verify the referral code field is pre-filled and disabled</li>
+            <li>Check that the field shows "✅ Referral code applied from your invitation link!"</li>
+        </ol>
+        
+        <h3>Expected Behavior:</h3>
+        <ul>
+            <li>✅ Referrer code should be extracted from URL: <span class="code">BA8597</span></li>
+            <li>✅ Code should be stored in localStorage with key: <span class="code">app_referrer</span></li>
+            <li>✅ Register form should pre-fill with the code</li>
+            <li>✅ Referral code field should be disabled/readonly</li>
+            <li>✅ Success message should be displayed</li>
+        </ul>
+    </div>
+
+    <script>
+        // Simple referrer service simulation
+        const REFERRER_STORAGE_KEY = 'app_referrer';
+        
+        function checkAndStoreReferrer() {
+            try {
+                console.log('🔍 Checking for referrer...');
+                console.log('Current URL:', window.location.href);
+                console.log('Document referrer:', document.referrer);
+
+                // Check if we already have a stored referrer
+                const storedReferrer = getStoredReferrer();
+                if (storedReferrer) {
+                    console.log('✅ Stored referrer found:', storedReferrer);
+                    return storedReferrer;
+                }
+
+                // Check current URL for referrer (including Play Store links)
+                const referrerFromCurrentUrl = extractReferrerFromCurrentUrl();
+                if (referrerFromCurrentUrl) {
+                    console.log('✅ Referrer found in current URL:', referrerFromCurrentUrl);
+                    storeReferrer(referrerFromCurrentUrl);
+                    return referrerFromCurrentUrl;
+                }
+
+                // Check document.referrer for Play Store links
+                const referrerFromDocument = extractReferrerFromDocument();
+                if (referrerFromDocument) {
+                    console.log('✅ Referrer found in document:', referrerFromDocument);
+                    storeReferrer(referrerFromDocument);
+                    return referrerFromDocument;
+                }
+
+                console.log('❌ No referrer found');
+                return null;
+            } catch (error) {
+                console.error('Error checking for referrer:', error);
+                return null;
+            }
+        }
+
+        function extractReferrerFromCurrentUrl() {
+            try {
+                const currentUrl = window.location.href;
+                console.log('🔍 Checking current URL for referrer:', currentUrl);
+
+                // Check if current URL is a Play Store link
+                if (currentUrl.includes('play.google.com/store/apps/details')) {
+                    const url = new URL(currentUrl);
+                    const referrerParam = url.searchParams.get('referrer');
+                    if (referrerParam) {
+                        console.log('✅ Play Store referrer found in current URL:', referrerParam);
+                        return referrerParam;
+                    }
+                }
+
+                // Also check for direct referrer parameter in any URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const referrerFromUrl = urlParams.get('referrer');
+                if (referrerFromUrl) {
+                    console.log('✅ Referrer found in current URL params:', referrerFromUrl);
+                    return referrerFromUrl;
+                }
+
+                return null;
+            } catch (error) {
+                console.error('Error extracting referrer from current URL:', error);
+                return null;
+            }
+        }
+
+        function extractReferrerFromDocument() {
+            try {
+                const referrer = document.referrer;
+                if (!referrer) return null;
+
+                // Check if referrer is from Google Play Store
+                if (referrer.includes('play.google.com/store/apps/details')) {
+                    const url = new URL(referrer);
+                    const referrerParam = url.searchParams.get('referrer');
+                    if (referrerParam) {
+                        console.log('✅ Play Store referrer extracted:', referrerParam);
+                        return referrerParam;
+                    }
+                }
+
+                return null;
+            } catch (error) {
+                console.error('Error extracting referrer from document:', error);
+                return null;
+            }
+        }
+
+        function storeReferrer(referrer) {
+            try {
+                localStorage.setItem(REFERRER_STORAGE_KEY, referrer);
+                console.log('✅ Referrer stored:', referrer);
+            } catch (error) {
+                console.error('Error storing referrer:', error);
+            }
+        }
+
+        function getStoredReferrer() {
+            try {
+                return localStorage.getItem(REFERRER_STORAGE_KEY);
+            } catch (error) {
+                console.error('Error getting stored referrer:', error);
+                return null;
+            }
+        }
+
+        function clearReferrer() {
+            try {
+                localStorage.removeItem(REFERRER_STORAGE_KEY);
+                console.log('✅ Referrer cleared');
+                updateStatus();
+                addResult('Referrer cleared successfully', 'success');
+            } catch (error) {
+                console.error('Error clearing referrer:', error);
+                addResult('Error clearing referrer: ' + error.message, 'error');
+            }
+        }
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('status');
+            const currentUrl = window.location.href;
+            const documentReferrer = document.referrer;
+            const storedReferrer = getStoredReferrer();
+            const detectedReferrer = checkAndStoreReferrer();
+
+            statusDiv.innerHTML = `
+                <div class="result">
+                    <strong>Current URL:</strong> <span class="code">${currentUrl}</span>
+                </div>
+                <div class="result">
+                    <strong>Document Referrer:</strong> <span class="code">${documentReferrer || 'None'}</span>
+                </div>
+                <div class="result">
+                    <strong>Stored Referrer:</strong> <span class="code">${storedReferrer || 'None'}</span>
+                </div>
+                <div class="result">
+                    <strong>Detected Referrer:</strong> <span class="code">${detectedReferrer || 'None'}</span>
+                </div>
+            `;
+        }
+
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            
+            // Check for referrer on page load
+            const referrer = checkAndStoreReferrer();
+            if (referrer) {
+                addResult(`Referrer detected and stored: ${referrer}`, 'success');
+                updateStatus();
+            } else {
+                addResult('No referrer detected', 'info');
+            }
+        });
+
+        // Listen for URL changes (for testing)
+        window.addEventListener('popstate', function() {
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

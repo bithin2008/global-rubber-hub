@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonBackButton, IonToolbar } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, AlertController, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonBackButton, IonToolbar, Platform } from '@ionic/angular/standalone';
 
 import { IonicModule } from '@ionic/angular';
 import { CommonService } from '../services/common-service';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 import { PageTitleService } from '../services/page-title.service';
 import { getRazorpayConfig, createAuthHeader } from '../../environments/razorpay.config';
 import { LoaderService } from '../services/loader.service';
-import { ReferralService } from '../services/referral.service';
+// ReferralService removed - using simple localStorage approach
 import { SocialShareModalComponent } from '../components/social-share-modal/social-share-modal.component';
 @Component({
   selector: 'app-account',
@@ -51,7 +51,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private profileService: ProfileService,
     private authGuardService: AuthGuardService,
     private loaderService: LoaderService,
-    private referralService: ReferralService) {
+    // ReferralService removed - using simple localStorage approach
+    private platform: Platform) {
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Account');
       this.subscription.add(
@@ -478,16 +479,16 @@ export class AccountPage implements OnInit, OnDestroy {
         return;
       }
 
-      // Generate referral link
-      const universalLink = `https://globalrubberhub.com/referral/${referralCode}`;
-      const shareText = `Join me on Global Rubber Hub! Use my referral code: ${referralCode}\n\nDownload the app: ${universalLink}`;
+      // Generate simple referral text
+      const shareText = `Join me on Global Rubber Hub!\n\nUse my referral code: ${referralCode}\n\nDownload from Play Store: https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=${referralCode}`;
 
       // Open social share modal
       const modal = await this.modalController.create({
         component: SocialShareModalComponent,
         cssClass: 'social-share-modal',
         componentProps: {
-          referralLink: universalLink,
+          referralLink: `https://globalrubberhub.com/register?referrer=${referralCode}`,
+          playStoreLink: `https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=${referralCode}`,
           referralCode: referralCode,
           shareText: shareText
         }
@@ -579,6 +580,157 @@ export class AccountPage implements OnInit, OnDestroy {
       }
     });
     return await modal.present();
+  }
+
+  /**
+   * Open Google review functionality
+   */
+  async openGoogleReview() {
+    try {
+      console.log('Opening Google review...');
+      console.log('Platform check:', {
+        isCapacitor: this.platform.is('capacitor'),
+        isCordova: this.platform.is('cordova'),
+        isMobile: this.platform.is('mobile'),
+        isDesktop: this.platform.is('desktop'),
+        isAndroid: this.platform.is('android'),
+        isIOS: this.platform.is('ios'),
+        platforms: this.platform.platforms()
+      });
+
+      // Check if we're on a mobile platform
+      if (this.platform.is('capacitor') || this.platform.is('cordova') || this.platform.is('mobile')) {
+        await this.openMobileGoogleReview();
+      } else {
+        await this.openWebGoogleReview();
+      }
+    } catch (error) {
+      console.error('Error opening Google review:', error);
+      this.showToast('error', 'Failed to open review', 'Please try again later', 3000, '');
+    }
+  }
+
+  /**
+   * Open Google review for mobile platforms
+   */
+  private async openMobileGoogleReview() {
+    try {
+      // For Android - try to open Google Play Store
+      if (this.platform.is('android')) {
+        const playStoreUrl = 'market://details?id=com.globalrubber.hub';
+        const playStoreWebUrl = 'https://play.google.com/store/apps/details?id=com.globalrubber.hub';
+        
+        console.log('Attempting to open Play Store for Android...');
+        await this.openUrlWithFallback(playStoreUrl, playStoreWebUrl);
+      }
+      // For iOS - try to open App Store
+      else if (this.platform.is('ios')) {
+        const appStoreUrl = 'https://apps.apple.com/app/global-rubber-hub/id1234567890'; // Replace with actual App Store ID
+        const appStoreWebUrl = 'https://apps.apple.com/app/global-rubber-hub/id1234567890';
+        
+        console.log('Attempting to open App Store for iOS...');
+        await this.openUrlWithFallback(appStoreUrl, appStoreWebUrl);
+      }
+      // For other mobile platforms
+      else {
+        const genericUrl = 'https://play.google.com/store/apps/details?id=com.globalrubber.hub';
+        const fallbackUrl = 'https://www.google.com/search?q=Global+Rubber+Hub+review';
+        
+        console.log('Attempting to open Play Store for other mobile platforms...');
+        await this.openUrlWithFallback(genericUrl, fallbackUrl);
+      }
+    } catch (error) {
+      console.error('Error opening mobile Google review:', error);
+      // Fallback to web review
+      await this.openWebGoogleReview();
+    }
+  }
+
+  /**
+   * Open Google review for web platforms
+   */
+  private async openWebGoogleReview() {
+    try {
+      // For web platforms, we can't directly open app stores
+      // Instead, show a modal with options or redirect to a review page
+      const alert = await this.alertController.create({
+        header: 'Rate Global Rubber Hub',
+        message: 'We appreciate your feedback! Please choose how you\'d like to rate us:',
+        buttons: [
+          {
+            text: 'Google Play Store',
+            handler: () => {
+              console.log('Opening Google Play Store...');
+              window.open('https://play.google.com/store/apps/details?id=com.globalrubberhub.app', '_blank');
+            }
+          },
+          {
+            text: 'App Store',
+            handler: () => {
+              console.log('Opening App Store...');
+              window.open('https://apps.apple.com/app/global-rubber-hub/id1234567890', '_blank');
+            }
+          },
+          {
+            text: 'Web Review',
+            handler: () => {
+              console.log('Opening web review...');
+              window.open('https://www.google.com/search?q=Global+Rubber+Hub+review', '_blank');
+            }
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          }
+        ]
+      });
+      
+      await alert.present();
+    } catch (error) {
+      console.error('Error opening web Google review:', error);
+      // Final fallback - just open a generic search
+      window.open('https://www.google.com/search?q=Global+Rubber+Hub+review', '_blank');
+    }
+  }
+
+  /**
+   * Alternative method using In-App Review (if available)
+   */
+  private async openInAppReview() {
+    try {
+      // Check if In-App Review is available (for Capacitor apps)
+      if (this.platform.is('capacitor')) {
+        // You can implement In-App Review using a Capacitor plugin
+        // For now, we'll use the standard review methods
+        await this.openMobileGoogleReview();
+      } else {
+        await this.openWebGoogleReview();
+      }
+    } catch (error) {
+      console.error('Error with in-app review:', error);
+      // Fallback to standard review
+      await this.openGoogleReview();
+    }
+  }
+
+  /**
+   * Direct URL opening method with multiple fallbacks
+   */
+  private async openUrlWithFallback(url: string, fallbackUrl: string) {
+    try {
+      console.log('Attempting to open URL:', url);
+      const newWindow = window.open(url, '_blank');
+      
+      // Check if window opened successfully
+      if (!newWindow || newWindow.closed) {
+        console.log('Primary URL failed, trying fallback:', fallbackUrl);
+        window.open(fallbackUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Error opening URL:', error);
+      console.log('Trying fallback URL:', fallbackUrl);
+      window.open(fallbackUrl, '_blank');
+    }
   }
 
 }

@@ -72,12 +72,12 @@
         </div>
         
         <ion-button expand="block" class="login-button" type="submit">Log In</ion-button>
-        <div style="opacity: 1;">
+        <div style="opacity: 0;">
           <div class="divider">
             <span>Or</span>
           </div>
           
-          <button type="button" class="google-signin" (click)="signInWithGoogle()">
+          <button type="button" class="google-signin" (click)="signInWithGoogle()" style="display: none;">
             <img src="assets/img/google.svg" alt="Google" />
             <span>Sign in with Google</span>
           </button>

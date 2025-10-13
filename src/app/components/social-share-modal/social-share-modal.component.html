@@ -22,22 +22,30 @@
 
     <!-- Share Link Display -->
     <div class="share-link-section">
-      <h3>Share Link</h3>
-      <div class="link-display">
+      <h3>Share Links</h3>
+      
+      <!-- Play Store Link -->
+      <label class="link-label">
+        <ion-icon name="storefront" class="label-icon"></ion-icon>
+        Google Play Store Link
+      </label>
+      <div class="link-container">
         <ion-input 
-          [value]="referralLink" 
+          [value]="playStoreLink || 'https://play.google.com/store/apps/details?id=com.globalrubber.hub'" 
           readonly 
           class="link-input">
         </ion-input>
         <ion-button 
           fill="outline" 
           size="small" 
-          (click)="copyToClipboard()"
+          (click)="copyToClipboard(playStoreLink || 'https://play.google.com/store/apps/details?id=com.globalrubber.hub')"
           class="copy-button">
           <ion-icon name="copy" slot="start"></ion-icon>
           Copy
         </ion-button>
       </div>
+
+    
     </div>
 
     <!-- Social Media Platforms -->

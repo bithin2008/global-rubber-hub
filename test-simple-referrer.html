@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Referrer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .url-example {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Simple Referrer Test</h1>
+        
+        <h3>Test 1: URL Parameter Test</h3>
+        <p>Test with referrer parameter in URL:</p>
+        <div class="url-example">
+            http://localhost:4200/login?referrer=BA8597
+        </div>
+        <button class="test-button" onclick="testUrlParameter()">Test URL Parameter</button>
+        
+        <h3>Test 2: Simulate Play Store Referrer</h3>
+        <p>Simulate coming from Play Store URL:</p>
+        <div class="url-example">
+            https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=BA8597
+        </div>
+        <button class="test-button" onclick="simulatePlayStoreReferrer()">Simulate Play Store</button>
+        
+        <h3>Test 3: Check Current State</h3>
+        <button class="test-button" onclick="checkCurrentState()">Check Current State</button>
+        <button class="test-button" onclick="clearReferrer()">Clear Referrer</button>
+        
+        <h3>Test 4: Navigate to App</h3>
+        <button class="test-button" onclick="goToLogin()">Go to Login Page</button>
+        <button class="test-button" onclick="goToRegister()">Go to Register Page</button>
+        
+        <div id="results" class="result" style="display: none;">
+            <h4>Test Results:</h4>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function testUrlParameter() {
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.split('?')[0];
+            const newUrl = `${baseUrl}?referrer=BA8597`;
+            
+            showResult(`Testing URL parameter: ${newUrl}`, 'info');
+            window.location.href = newUrl;
+        }
+
+        function simulatePlayStoreReferrer() {
+            // Simulate the Play Store URL with referrer parameter
+            const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=BA8597';
+            
+            // Set document.referrer to simulate coming from Play Store
+            Object.defineProperty(document, 'referrer', {
+                value: playStoreUrl,
+                writable: false
+            });
+            
+            showResult(`✅ Simulated Play Store referrer: ${playStoreUrl}`, 'success');
+            showResult('Now navigate to the app to test referrer functionality', 'info');
+        }
+
+        function checkCurrentState() {
+            const url = window.location.href;
+            const referrer = document.referrer;
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerParam = urlParams.get('referrer');
+            const storedReferrer = localStorage.getItem('app_referrer');
+            
+            showResult(`📊 Current State:
+URL: ${url}
+Document Referrer: ${referrer || 'None'}
+URL Referrer Param: ${referrerParam || 'None'}
+Stored Referrer: ${storedReferrer || 'None'}`, 'info');
+        }
+
+        function clearReferrer() {
+            localStorage.removeItem('app_referrer');
+            showResult('✅ Referrer cleared from localStorage', 'success');
+        }
+
+        function goToLogin() {
+            window.location.href = '/login';
+        }
+
+        function goToRegister() {
+            window.location.href = '/register';
+        }
+
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            const contentDiv = document.getElementById('resultsContent');
+            
+            resultsDiv.style.display = 'block';
+            contentDiv.innerHTML = `<div style="color: ${type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue'}">${message}</div>`;
+        }
+
+        // Auto-check current state on load
+        window.onload = function() {
+            checkCurrentState();
+        };
+    </script>
+</body>
+</html>

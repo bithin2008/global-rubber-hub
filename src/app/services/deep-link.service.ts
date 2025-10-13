@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
-import { ReferralService } from './referral.service';
 
 declare var universalLinks: any;
 
@@ -12,8 +11,7 @@ export class DeepLinkService {
 
   constructor(
     private router: Router,
-    private platform: Platform,
-    private referralService: ReferralService
+    private platform: Platform
   ) { }
 
   /**
@@ -124,8 +122,12 @@ export class DeepLinkService {
         const referralCode = parts[1];
         console.log('Referral code:', referralCode);
         
-        // Handle referral code
-        this.referralService.handleReferralCode(referralCode);
+        // Store referral code in localStorage
+        localStorage.setItem('app_referrer', referralCode);
+        console.log('Referral code stored:', referralCode);
+        
+        // Navigate to register page
+        this.router.navigate(['/register']);
         return;
       }
 
@@ -234,8 +236,8 @@ export class DeepLinkService {
       // Use production domain for mobile
       url = `https://globalrubberhub.com/${path}`;
     } else {
-      // Use localhost for web testing
-      url = `http://localhost:4200/${path}`;
+      // Use production domain for web as well
+      url = `https://globalrubberhub.com/${path}`;
     }
     
     if (params && Object.keys(params).length > 0) {

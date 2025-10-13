@@ -35,6 +35,7 @@ import { Router } from '@angular/router';
 export class ReferralShareComponent implements OnInit {
   userReferralCode: string = '';
   referralLink: string = '';
+  playStoreLink: string = '';
   customSchemeLink: string = '';
   isLoading: boolean = false;
   showToast: boolean = false;
@@ -65,6 +66,7 @@ export class ReferralShareComponent implements OnInit {
       if (referralCode) {
         this.userReferralCode = referralCode;
         this.referralLink = this.referralService.createReferralLink(referralCode);
+        this.playStoreLink = this.referralService.createPlayStoreReferralLink(referralCode);
         this.customSchemeLink = this.referralService.createCustomSchemeReferralLink(referralCode);
       } else {
         this.showToastMessage('Failed to load referral code', 'danger');
@@ -125,6 +127,24 @@ export class ReferralShareComponent implements OnInit {
     } catch (error) {
       console.error('Error copying referral link:', error);
       this.showToastMessage('Error copying referral link', 'danger');
+    }
+  }
+
+  /**
+   * Copy Play Store link to clipboard
+   */
+  async copyPlayStoreLink() {
+    try {
+      if (!this.playStoreLink) {
+        this.showToastMessage('No Play Store link available', 'danger');
+        return;
+      }
+
+      await navigator.clipboard.writeText(this.playStoreLink);
+      this.showToastMessage('Play Store link copied to clipboard!', 'success');
+    } catch (error) {
+      console.error('Error copying Play Store link:', error);
+      this.showToastMessage('Error copying Play Store link', 'danger');
     }
   }
 

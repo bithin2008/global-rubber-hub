@@ -34,7 +34,10 @@
     "@capacitor/push-notifications": "^7.0.3",
     "@capacitor/status-bar": "7.0.2",
     "@ionic-native/core": "^5.36.0",
+    "@ionic-native/device": "^5.36.0",
+    "@ionic-native/play-install-referrer": "^5.36.0",
     "@ionic/angular": "^8.0.0",
+    "@ionic/storage-angular": "^4.0.0",
     "cordova-sqlite-storage": "^7.0.0",
     "firebase": "^12.4.0",
     "ionicons": "^7.0.0",
@@ -76,6 +79,7 @@
     "cordova-plugin-googleplus": "^8.5.2",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^5.0.0",
+    "cordova-plugin-play-installreferrer": "^1.0.2",
     "cordova-plugin-splashscreen": "5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-universal-links": "^0.3.0",
@@ -110,7 +114,8 @@
         "ANDROID_PATHPREFIX": "/"
       },
       "cordova-plugin-universal-links": {},
-      "cordova-plugin-googleplus": {}
+      "cordova-plugin-googleplus": {},
+      "cordova-plugin-play-installreferrer": {}
     }
   }
 }
