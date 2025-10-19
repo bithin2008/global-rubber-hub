@@ -15,74 +15,100 @@ ion-header{
   }
   }
 
+  ion-content {
+    overflow: visible;
+    --offset-top: 0px !important;
+    height: calc(100vh - 68px) !important;
+    max-height: calc(100vh - 68px) !important;
+}
+
 .help-support-modal {
   --background: #f5f5f5;
-  height: 50vh;
-  max-height: 50vh;
+  height: 30vh;
+  max-height: 30vh;
   overflow-y: auto;
 }
 
 .modal-content {
-  padding: 12px;
+  padding: 4px 8px 8px 8px;
 }
 
 .support-options {
-  margin-bottom: 16px;
+  margin-bottom: 0;
+  margin-top: 45px;
 }
 
 .support-options h3 {
   color: #333;
-  margin-bottom: 12px;
-  font-size: 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .options-grid {
   display: flex;
-  justify-content: space-around;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 0 4px;
 }
 
 .support-card {
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   margin: 0;
   flex: 1;
   min-width: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid rgba(0,123,255,0.1);
 }
 
 .support-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,123,255,0.2);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
 
 .option-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 8px;
+  padding: 8px 4px;
   text-align: center;
+  min-height: 60px;
+  justify-content: center;
 }
 
 .option-icon {
-  font-size: 24px;
+  font-size: 20px;
   color: #007bff;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 1px 2px rgba(0,123,255,0.2));
 }
 
 .option-text h4 {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #333;
+  color: #333 !important;
+  line-height: 1.2;
+  text-align: center;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+.option-text {
+  display: block;
+  width: 100%;
 }
 
 .option-text p {
   margin: 0;
-  font-size: 10px;
+  font-size: 9px;
   color: #666;
+  line-height: 1.1;
 }
 
 .contact-form {
@@ -122,10 +148,24 @@ ion-button:disabled {
 
 @media (max-width: 768px) {
   .options-grid {
-    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0 2px;
   }
   
   .modal-content {
-    padding: 8px;
+    padding: 2px 4px 6px 4px;
+  }
+  
+  .option-content {
+    padding: 6px 2px;
+  }
+  
+  .option-icon {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .option-text h4 {
+    font-size: 10px;
   }
 }

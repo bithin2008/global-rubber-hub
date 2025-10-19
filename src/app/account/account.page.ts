@@ -481,7 +481,7 @@ export class AccountPage implements OnInit, OnDestroy {
       }
 
       // Generate simple referral text
-      const shareText = `Join me on Global Rubber Hub!\n\nUse my referral code: ${referralCode}\n\nDownload from Play Store: https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=${referralCode}`;
+      const shareText = `Join me on Global Rubber Hub!\n\nUse my referral code: ${referralCode} while signing up and get 20 points bonus on your first recharge.\n\nDownload from Play Store: https://play.google.com/store/apps/details?id=com.globalrubber.hub&referrer=${referralCode}`;
 
       // Open social share modal
       const modal = await this.modalController.create({
@@ -744,8 +744,8 @@ export class AccountPage implements OnInit, OnDestroy {
       showBackdrop: true,
       backdropDismiss: true,
       cssClass: 'help-support-modal',
-      breakpoints: [0, 0.5],
-      initialBreakpoint: 0.5
+      breakpoints: [0, 0.3],
+      initialBreakpoint: 0.3
     });
     return await modal.present();
   }

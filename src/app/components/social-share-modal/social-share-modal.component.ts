@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonItem, IonLabel, IonInput, IonButtons } from '@ionic/angular/standalone';
@@ -39,12 +39,12 @@ import {
   ]
 })
 export class SocialShareModalComponent implements OnInit {
-  @Input() referralLink: string = '';
-  @Input() playStoreLink: string = '';
-  @Input() referralCode: string = '';
-  @Input() shareText: string = '';
+  referralLink: string = '';
+  playStoreLink: string = '';
+  referralCode: string = '';
+  shareText: string = '';
 
-  constructor(private modalController: ModalController) {
+  constructor(private modalController: ModalController, private navParams: NavParams) {
     addIcons({ 
       close, 
       copy, 
@@ -61,6 +61,12 @@ export class SocialShareModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Get data from NavParams
+    this.referralLink = this.navParams.get('referralLink') || '';
+    this.playStoreLink = this.navParams.get('playStoreLink') || '';
+    this.referralCode = this.navParams.get('referralCode') || '';
+    this.shareText = this.navParams.get('shareText') || '';
+
     // Debug logging
     console.log('SocialShareModal initialized with:', {
       referralLink: this.referralLink,
@@ -71,7 +77,7 @@ export class SocialShareModalComponent implements OnInit {
 
     // Generate share text if not provided
     if (!this.shareText && this.referralCode) {
-      this.shareText = `Join me on Global Rubber Hub! Use my referral code: ${this.referralCode}\n\nDownload the app: ${this.referralLink}`;
+      this.shareText = `Join me on Global Rubber Hub! Use my referral code: ${this.referralCode} while signing up and get 20 points bonus on your first recharge.\n\nDownload the app: ${this.referralLink}`;
     }
   }
 
