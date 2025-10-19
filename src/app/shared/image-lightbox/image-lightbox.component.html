@@ -5,7 +5,7 @@
   <swiper-container pagination="true" slides-per-view="1" [initial-slide]="startIndex">
     <swiper-slide *ngFor="let img of images">
       <div class="img-wrapper">
-        <img [src]="img" />
+        <img [src]="img" (error)="onThumbnailError($event)" />
       </div>
     </swiper-slide>
   </swiper-container>
