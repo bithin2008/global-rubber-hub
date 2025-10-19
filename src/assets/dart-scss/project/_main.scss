@@ -1558,9 +1558,24 @@ ion-card-content {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px 10px;
+    
+    .product-card,
+    .more-card {
+      width: 100%;
+      min-width: 0;
+    }
+    
+    // When there are 3 or fewer cards, they should maintain 2-column layout
+    // When there are 4 cards (3 product + 1 more), they should be in 2x2 grid
+    // This is handled by the default grid-template-columns: repeat(2, 1fr)
+    
     @media(max-width: 350px){
-    grid-template-columns: repeat(1, 1fr);
-
+      grid-template-columns: 1fr;
+      
+      .product-card,
+      .more-card {
+        width: 100%;
+      }
     }
   }
 
@@ -1568,7 +1583,6 @@ ion-card-content {
     background: #fff;
     padding: 15px;
     border-radius: 10px;
-    flex: 1;
     position: relative;
     border: 1px solid #bcbcbc;
     .logoCompname {
@@ -1628,7 +1642,6 @@ ion-card-content {
   }
 
   .more-card {
-    flex: 1;
     background: #05611d;
     color: #fff;
     border-radius: 12px;
