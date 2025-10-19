@@ -43,7 +43,7 @@
         <ion-badge class="success_badg">On Sale</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="item?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
           <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
@@ -60,7 +60,7 @@
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
         <figure class="compIcon" *ngFor="let ts of (dashboardData.topSellerItems.results | slice:3:7)" (click)="openBidModal(ts)">
-            <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
         <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('seller')">
@@ -88,7 +88,7 @@
         <ion-badge class="worning_badg">On Buy</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="item?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
           <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
@@ -103,7 +103,7 @@
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
         <figure class="compIcon" *ngFor="let ts of (dashboardData.topBuyerItems.results | slice:3:7)" (click)="openBidModal(ts)">
-            <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
         <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('buyer')">
@@ -123,7 +123,7 @@
         <ion-badge class="{{item?.item_listed_for==1?'success_badg':'worning_badg'}}">On {{item?.item_listed_for==1?'Sell':'Buy'}}</ion-badge>
         <div class="logoCompname">
           <figure class="compIcon">
-            <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="item?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
           <h4>{{ item?.item_name || 'Item Name' }}</h4>
         </div>
@@ -138,7 +138,7 @@
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
           <figure class="compIcon" *ngFor="let ts of (dashboardData.recentListedItems.results | slice:3:7)" (click)="openBidModal(ts)">
-            <img [src]="ts?.item_image?.[0] || 'assets/img/placeholder.png'" />
+            <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
         <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('')">
@@ -160,7 +160,7 @@
       <ion-item class="no-style" *ngFor="let item of (dashboardData.otherItems.results | slice:0:5)" (click)="openBidModal(item)">
         <ion-avatar slot="start">
           <!-- <img src="assets/img/sail.png" /> -->
-          <img [src]="item?.item_image?.[0] || 'assets/img/placeholder.png'" />
+          <img [src]="item?.item_image?.[0]" (error)="onImageError($event)" />
         </ion-avatar>
         <ion-label>
           <h4>{{ item?.item_name || 'Item Name' }}</h4>

@@ -68,6 +68,7 @@ interface DashboardData {
 export class DashboardPage implements OnInit, AfterViewInit {
   private subscription: Subscription = new Subscription();
   public profileName: string = '';
+  public fallbackImg: string = 'assets/img/item-placeholder.jpg';
   public dashboardData: DashboardData = {
     rubberRates: { results: [] },
     topSellerItems: { results: [] },
@@ -309,6 +310,15 @@ export class DashboardPage implements OnInit, AfterViewInit {
       }
     });
     return await modal.present();
+  }
+
+  // Handle image error - set placeholder
+  onImageError(event: any) {
+   // event.target.src = 'assets/img/item-placeholder.jpg';
+    const target = event.target as HTMLImageElement | null;
+    if (target && target.src !== this.fallbackImg) {
+      target.src = this.fallbackImg;
+    }
   }
 
   // Open bid modal

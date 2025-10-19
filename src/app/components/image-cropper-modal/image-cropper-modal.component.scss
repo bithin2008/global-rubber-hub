@@ -5,6 +5,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
 .modern-wrapper {
@@ -62,6 +63,8 @@
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(26, 129, 53, 0.1);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cropper-container {
@@ -195,12 +198,13 @@
 
 // Compact Action Section
 .action-section {
-  padding: 12px 16px 16px;
+  padding: 12px 16px 20px;
   background: white;
-  margin: 0 8px 8px;
+  margin: 0 8px 16px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(26, 129, 53, 0.1);
+  flex-shrink: 0;
   
   .primary-action-btn {
     --background: linear-gradient(135deg, #1a8135, #2d9a47);
@@ -282,8 +286,8 @@
   }
   
   .action-section { 
-    margin: 0 6px 6px; 
-    padding: 10px 12px 12px; // Increased padding
+    margin: 0 6px 12px; 
+    padding: 10px 12px 16px; // Increased padding
   }
   
   // Improve touch targets for mobile
@@ -304,5 +308,5 @@
   .cropper-container { height: 240px; }
   .cropper-section { margin: 4px 4px 1px 4px; padding: 6px 6px 3px 6px; }
   .compact-controls { padding: 4px 6px; margin: 0 4px 4px; }
-  .action-section { margin: 0 4px 4px; padding: 6px 8px 10px; }
+  .action-section { margin: 0 4px 8px; padding: 8px 8px 10px; }
 }
