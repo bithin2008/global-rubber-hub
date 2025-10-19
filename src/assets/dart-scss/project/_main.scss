@@ -1006,6 +1006,8 @@ ion-item.no-style {
           color: #3c3c43;
           padding: 3px 6px;
           border: 1px solid #3c3c43;
+          display: inline-block;
+          margin-top: 10px;
         }
       }
     }
@@ -1632,10 +1634,7 @@ ion-card-content {
     border-radius: 12px;
     padding: 15px;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    
     .title {
       color: #fff;
       margin-bottom: 10px;
@@ -1647,12 +1646,21 @@ ion-card-content {
     .logo-group {
       gap: 8px;
       margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
 
       figure {
         position: relative;
         float: left;
         &:not(:first-child) {
-          margin-left: -14%;
+          margin-left: -8%;
+        }
+        &:only-child {
+          width: 30%;
+          margin-left: auto;  // push from left
+          margin-right: auto; // push from right
+          float: none;
         }
       }
       .compIcon {
@@ -2047,7 +2055,7 @@ ion-select::part(icon) {
 
   .image-cropper-modal {
       --height: 95vh !important;
-      --max-height: 62vh !important;
+      --max-height: 66vh !important;
       padding:  0 15px;
   }
 }
