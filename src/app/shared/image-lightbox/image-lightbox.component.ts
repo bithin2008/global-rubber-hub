@@ -14,6 +14,7 @@ import { register } from 'swiper/element/bundle';
 export class ImageLightboxComponent implements OnInit {
   @Input() images: string[] = [];
   @Input() startIndex: number = 0;
+  @Input() isVideo: boolean = false;
   public fallbackImg: string = 'https://globalrubberhub.com/public/backend/assets/images/default_item_image.jpeg';
   constructor(private modalController: ModalController) {}
 
@@ -30,6 +31,19 @@ export class ImageLightboxComponent implements OnInit {
     if (target && target.src !== this.fallbackImg) {
       target.src = this.fallbackImg;
     }
+  }
+
+  // Check if a URL is a video file
+  isVideoFile(url: string): boolean {
+    if (!url) return false;
+    const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.wmv', '.flv', '.mkv'];
+    const lowerUrl = url.toLowerCase();
+    return videoExtensions.some(ext => lowerUrl.includes(ext));
+  }
+
+  // Handle video error
+  onVideoError(event: Event) {
+    console.log('Video failed to load:', event);
   }
 }
 

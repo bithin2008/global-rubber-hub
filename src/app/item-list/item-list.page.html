@@ -46,9 +46,32 @@
             <swiper-container #swiperContainer pagination="true" pagination-clickable="true" slides-per-view="1"
               centered-slides="true" space-between="12" loop="true" autoplay="true" autoplay-delay="3000" style="overflow: visible;" class="itemSlider"
               id="itemsliderimage">
-              <swiper-slide class=" slide1" *ngFor="let media of item.item_image; let idx = index">
+              
+              <!-- Image slides -->
+              <swiper-slide class="slide" *ngFor="let media of item.item_image; let idx = index">
                 <div class="content myitemImg">
-                  <img [src]="media" alt="" title="" (click)="openLightbox(item.item_image, idx)" (error)="onThumbnailError($event)">
+                  <img [src]="media" alt="" title="" (click)="openLightbox(item.item_image, idx)" (error)="onThumbnailError($event)" style="width: 100%; height: 200px; object-fit: cover;">
+                  <ion-button class="btn no-style share" (click)="shareItem(item)"><img src="assets/img/icons/share.svg" alt="" title=""></ion-button>
+                  <div class="verifiedBdg" *ngIf="isTrustedValid(item)"><img class="auto-flip" src="assets/img/icons/verified_user.svg" alt=""></div>
+                </div>
+              </swiper-slide>
+              
+              <!-- Video slide -->
+              <swiper-slide class="slide" *ngIf="item.item_video">
+                <div class="content myitemVideo" style="position: relative;">
+                  <video #videoElement [src]="item.item_video" (error)="onVideoError($event)" style="width: 100%; height: 200px; object-fit: cover;" preload="metadata" muted>
+                    Your browser does not support the video tag.
+                  </video>
+                  <!-- Play button overlay -->
+                  <div class="video-play-overlay" (click)="openVideoLightbox(item.item_video)" 
+                       style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; z-index: 10;"
+                       onmouseover="this.querySelector('.play-button').style.background='rgba(0,0,0,0.9)'"
+                       onmouseout="this.querySelector('.play-button').style.background='rgba(0,0,0,0.7)'">
+                    <div class="play-button" 
+                         style="width: 60px; height: 60px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; border: 2px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                      <ion-icon name="play" style="color: white; font-size: 24px; margin-left: 4px;"></ion-icon>
+                    </div>
+                  </div>
                   <ion-button class="btn no-style share" (click)="shareItem(item)"><img src="assets/img/icons/share.svg" alt="" title=""></ion-button>
                   <div class="verifiedBdg" *ngIf="isTrustedValid(item)"><img class="auto-flip" src="assets/img/icons/verified_user.svg" alt=""></div>
                 </div>

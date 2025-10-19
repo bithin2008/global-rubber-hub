@@ -3,9 +3,20 @@
     <ion-button fill="clear" class="close-btn" (click)="dismiss()">Close</ion-button>
   </div>
   <swiper-container pagination="true" slides-per-view="1" [initial-slide]="startIndex">
-    <swiper-slide *ngFor="let img of images">
-      <div class="img-wrapper">
-        <img [src]="img" (error)="onThumbnailError($event)" />
+    <swiper-slide *ngFor="let media of images; let i = index">
+      <div class="media-wrapper">
+        <!-- Video display -->
+        <video *ngIf="isVideo || isVideoFile(media)" 
+               [src]="media" 
+               controls 
+               autoplay 
+               (error)="onVideoError($event)">
+          Your browser does not support the video tag.
+        </video>
+        <!-- Image display -->
+        <img *ngIf="!isVideo && !isVideoFile(media)" 
+             [src]="media" 
+             (error)="onThumbnailError($event)" />
       </div>
     </swiper-slide>
   </swiper-container>

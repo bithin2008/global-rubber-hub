@@ -12,14 +12,17 @@ min-height: 650px;
   z-index: 10;
 }
 
-.img-wrapper {
+.img-wrapper,
+.media-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
 
-.img-wrapper img {
+.img-wrapper img,
+.media-wrapper img,
+.media-wrapper video {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;

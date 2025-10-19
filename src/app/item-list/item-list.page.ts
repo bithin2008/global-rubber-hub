@@ -1,4 +1,4 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,7 +29,7 @@ import { LoaderService } from '../services/loader.service';
   imports: [IonContent, IonHeader, IonTitle, CommonModule, NgIf, NgFor, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ItemListPage implements OnInit {
+export class ItemListPage implements OnInit, OnDestroy {
   public filterWarning: boolean = false;
   public itemList: any = [];
   public itemFilterList: any = [];
@@ -103,6 +103,35 @@ export class ItemListPage implements OnInit {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
 
+    // Initialize swiper event listeners after view is ready
+    setTimeout(() => {
+      this.initializeSwiperEvents();
+    }, 1000);
+  }
+
+  initializeSwiperEvents() {
+    // Add event listeners to all swiper containers
+    const swiperContainers = document.querySelectorAll('swiper-container');
+    swiperContainers.forEach((container: any) => {
+      container.addEventListener('slidechange', (event: any) => {
+        this.handleSlideChange(event);
+      });
+    });
+  }
+
+  handleSlideChange(event: any) {
+    const swiper = event.detail[0];
+    const activeIndex = swiper.activeIndex;
+    const slides = swiper.slides;
+    
+    // Pause all videos first
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach((video: HTMLVideoElement) => {
+      video.pause();
+    });
+    
+    // For video slides, we just pause them since we use play button overlay
+    // No automatic playing since user needs to click the play button
   }
 
   handleSearchToggle() {
@@ -176,6 +205,8 @@ export class ItemListPage implements OnInit {
           }
           setTimeout(() => {
             register();
+            // Reinitialize swiper events for new items
+            this.initializeSwiperEvents();
           }, 1000);
         }
       },
@@ -194,6 +225,42 @@ export class ItemListPage implements OnInit {
       cssClass: 'image-lightbox-modal'
     });
     return await modal.present();
+  }
+
+  async openVideoLightbox(videoUrl: string) {
+    const modal = await this.modalController.create({
+      component: ImageLightboxComponent,
+      componentProps: { 
+        images: [videoUrl], 
+        startIndex: 0,
+        isVideo: true 
+      },
+      cssClass: 'video-lightbox-modal'
+    });
+    return await modal.present();
+  }
+
+  // Generate video thumbnail for display
+  generateVideoThumbnail(videoElement: HTMLVideoElement): void {
+    if (videoElement) {
+      videoElement.currentTime = 1; // Seek to 1 second for thumbnail
+      videoElement.addEventListener('loadeddata', () => {
+        videoElement.currentTime = 1;
+      });
+    }
+  }
+
+  onVideoError(event: Event) {
+    console.log('Video failed to load:', event);
+    // You can add fallback handling here if needed
+  }
+
+  ngOnDestroy() {
+    // Pause all videos when component is destroyed
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach((video: HTMLVideoElement) => {
+      video.pause();
+    });
   }
 
   loadData(event: any) {
