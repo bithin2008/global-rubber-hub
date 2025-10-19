@@ -19,6 +19,7 @@ import { getRazorpayConfig, createAuthHeader } from '../../environments/razorpay
 import { LoaderService } from '../services/loader.service';
 // ReferralService removed - using simple localStorage approach
 import { SocialShareModalComponent } from '../components/social-share-modal/social-share-modal.component';
+import { HelpSupportModalComponent } from '../components/help-support-modal/help-support-modal.component';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -731,6 +732,22 @@ export class AccountPage implements OnInit, OnDestroy {
       console.log('Trying fallback URL:', fallbackUrl);
       window.open(fallbackUrl, '_blank');
     }
+  }
+
+  /**
+   * Open Help and Support Modal
+   */
+  async openHelpSupportModal() {
+    const modal = await this.modalController.create({
+      component: HelpSupportModalComponent,
+      presentingElement: document.querySelector('ion-router-outlet') || undefined,
+      showBackdrop: true,
+      backdropDismiss: true,
+      cssClass: 'help-support-modal',
+      breakpoints: [0, 0.5],
+      initialBreakpoint: 0.5
+    });
+    return await modal.present();
   }
 
 }

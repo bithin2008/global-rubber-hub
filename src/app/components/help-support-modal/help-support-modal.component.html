@@ -1,0 +1,36 @@
+<ion-header class="trusted-header">
+    <ion-toolbar>
+      <ion-title>Help & Support</ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="dismiss()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+<ion-content class="help-support-modal">
+  <div class="modal-content">
+    
+    <!-- Support Options -->
+    <div class="support-options">
+      <div class="options-grid">
+        <ion-card *ngFor="let option of supportOptions" (click)="handleSupportAction(option.action)" class="support-card">
+          <ion-card-content>
+            <div class="option-content">
+              <ion-icon [name]="option.icon" class="option-icon"></ion-icon>
+              <div class="option-text">
+                <h4>{{ option.title }}</h4>
+                <p *ngIf="option.description">{{ option.description }}</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+
+
+  </div>
+</ion-content>
