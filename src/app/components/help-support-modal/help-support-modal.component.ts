@@ -19,12 +19,7 @@ export class HelpSupportModalComponent implements OnInit {
   };
 
   public supportOptions = [
-    {
-      title: 'Email Support',
-      description: '', // Hidden from display
-      icon: 'mail',
-      action: 'email'
-    },
+   
     {
       title: 'Phone Support',
       description: '', // Hidden from display
@@ -36,7 +31,13 @@ export class HelpSupportModalComponent implements OnInit {
       description: '', // Hidden from display
       icon: 'logo-whatsapp',
       action: 'whatsapp'
-    }
+    },
+    {
+        title: 'Email Support',
+        description: '', // Hidden from display
+        icon: 'mail',
+        action: 'email'
+      }
   ];
 
   constructor(private modalController: ModalController) {}

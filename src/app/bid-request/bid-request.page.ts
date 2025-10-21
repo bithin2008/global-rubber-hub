@@ -300,6 +300,7 @@ export class BidRequestPage implements OnInit {
     const url = 'bids/add';
     const data = {
       item_id: item.id,
+      id: item.id,
       bid_amount: item.bid_amount,
       actual_bid_amount: item.actual_bid_amount,
       bid_quantity: parseInt(item.bid_quantity, 10),

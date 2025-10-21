@@ -12,15 +12,13 @@ export const NetworkInterceptor: HttpInterceptorFn = (req, next) => {
   let noInternetModal: any = null;
 
   const isNetworkError = (error: HttpErrorResponse): boolean => {
-    // Check for various network error conditions
+    // Check for actual network connectivity issues only
     return (
       !navigator.onLine ||
-      error.status === 0 ||
-      error.status === 408 ||
-      error.status === 504 ||
-      error.status === 503 ||
-      error.status === 502 ||
-      error.status === 500 ||
+      error.status === 0 || // Network error (no response)
+      error.status === 408 || // Request timeout
+      error.status === 504 || // Gateway timeout
+      error.status === 503 || // Service unavailable (temporary)
       (error as any).name === 'NetworkError' ||
       error.message.includes('Network Error') ||
       error.message.includes('Failed to fetch') ||

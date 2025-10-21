@@ -853,6 +853,9 @@ export class LoginPage implements OnInit, OnDestroy {
           this.showForgotPassword = false;
           this.showOtpVerification = false;
           this.selectedTab = 'reset-password';
+          // Reset the reset password form and submitted state
+          this.resetPasswordForm.reset();
+          this.submitted = false;
           this.showToast('success', response.message, '', 2000, '');
         } else if (response.code == 401) {
           this.showToast('error', response.message, '', 2000, '');

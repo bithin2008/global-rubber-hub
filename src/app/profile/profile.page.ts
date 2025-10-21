@@ -26,6 +26,7 @@ import { LoaderService } from '../services/loader.service';
 export class ProfilePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   public isSubmitting: boolean = false;
+  public profileInfo: any={};
   profileForm!: FormGroup;
   public type: any;
   public submitted: boolean = false;
@@ -78,7 +79,7 @@ export class ProfilePage implements OnInit {
         this.isDeviceReady = true;
       });
       this.getProfileData()
-      this.loadCountries();
+    //  this.loadCountries();
       this.profileForm = this.formBuilder.group({
         full_name: ['', [Validators.required, Validators.maxLength(60)]],
         email: ['', [Validators.required, Validators.email]],
@@ -87,7 +88,7 @@ export class ProfilePage implements OnInit {
         pan: [''],
         id_proof_type: ['', [Validators.required]],
         id_proof_image: ['', [Validators.required]],
-        country: ['India', [Validators.required]],
+        country: ['', [Validators.required]],
         company_address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
         city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
         state: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
@@ -95,87 +96,100 @@ export class ProfilePage implements OnInit {
       });
 
       // Listen for country changes to update PAN validation
-      this.profileForm.get('country')?.valueChanges.subscribe(country => {
-        console.log('Country changed to:', country);
-        const panControl = this.profileForm.get('pan');
-        if (country === 'India') {
-          console.log('Setting PAN as required for India');
-          panControl?.setValidators([Validators.required, panValidator()]);
-        } else {
-          console.log('Clearing PAN validation for non-India country');
-          panControl?.clearValidators();
-          panControl?.setValue(''); // Clear the value when not India
-        }
-        panControl?.updateValueAndValidity();
-      });
+      // this.profileForm.get('country')?.valueChanges.subscribe(country => {
+      //   console.log('Country changed to:', country);
+      //   const panControl = this.profileForm.get('pan');
+      //   if (country === 'India') {
+      //     console.log('Setting PAN as required for India');
+      //     panControl?.setValidators([Validators.required, panValidator()]);
+      //   } else {
+      //     console.log('Clearing PAN validation for non-India country');
+      //     panControl?.clearValidators();
+      //     panControl?.setValue(''); // Clear the value when not India
+      //   }
+      //   panControl?.updateValueAndValidity();
+      // });
 
       // Set initial PAN validation since India is default
-      const panControl = this.profileForm.get('pan');
-      if (panControl) {
-        panControl.setValidators([Validators.required, panValidator()]);
-        panControl.updateValueAndValidity();
-      }
+      // const panControl = this.profileForm.get('pan');
+      // if (panControl) {
+      //   panControl.setValidators([Validators.required, panValidator()]);
+      //   panControl.updateValueAndValidity();
+      // }
+     
     });
   }
 
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
+    
+    // Set default country value
+    this.profileForm.patchValue({
+      country: 'India'
+    });
+    
+    // Ensure country is set even if form is not yet initialized
+    setTimeout(() => {
+      if (this.profileForm.get('country')?.value !== 'India') {
+        this.profileForm.patchValue({ country: 'India' });
+      }
+    }, 100);
   }
 
   get f() { return this.profileForm.controls; }
 
-  loadCountries() {
-    fetch('assets/JSON/country.json')
-      .then(response => response.json())
-      .then(data => {
-     //   console.log('Loaded countries data:', data);
-        this.countries = data;
-        this.filteredCountries = data; // Initialize filtered countries with all countries
-      //  console.log('Countries array:', this.countries);
-      //  console.log('Filtered countries array:', this.filteredCountries);
-      })
-      .catch(error => {
-        console.error('Error loading countries:', error);
-      });
-  }
+  // loadCountries() {
+  //   fetch('assets/JSON/country.json')
+  //     .then(response => response.json())
+  //     .then(data => {
+  //    //   console.log('Loaded countries data:', data);
+  //       this.countries = data;
+  //       this.filteredCountries = data; // Initialize filtered countries with all countries
+  //     //  console.log('Countries array:', this.countries);
+  //     //  console.log('Filtered countries array:', this.filteredCountries);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error loading countries:', error);
+  //     });
+  // }
 
-  filterCountries(event: any) {
-    const searchTerm = event.target.value.toLowerCase();
-   // console.log('Search term:', searchTerm);
-   // console.log('All countries:', this.countries);
+  // filterCountries(event: any) {
+  //   const searchTerm = event.target.value.toLowerCase();
+  //  // console.log('Search term:', searchTerm);
+  //  // console.log('All countries:', this.countries);
 
-    if (searchTerm) {
-      this.filteredCountries = this.countries.filter(country =>
-        country.name.toLowerCase().includes(searchTerm)
-      );
-    } else {
-      this.filteredCountries = this.countries;
-    }
-    console.log('Filtered countries:', this.filteredCountries);
-    this.showCountryDropdown = true;
-  }
+  //   if (searchTerm) {
+  //     this.filteredCountries = this.countries.filter(country =>
+  //       country.name.toLowerCase().includes(searchTerm)
+  //     );
+  //   } else {
+  //     this.filteredCountries = this.countries;
+  //   }
+  //   console.log('Filtered countries:', this.filteredCountries);
+  //   this.showCountryDropdown = true;
+  // }
 
-  selectCountry(countryName: string) {
-    this.profileForm.patchValue({ country: countryName });
-    this.showCountryDropdown = false;
-    this.filteredCountries = this.countries; // Reset filtered countries
-  }
+  // selectCountry(countryName: string) {
+  //   this.profileForm.patchValue({ country: countryName });
+  //   this.showCountryDropdown = false;
+  //   this.filteredCountries = this.countries; // Reset filtered countries
+  // }
 
-  onCountryBlur() {
-    console.log('Country field blurred');
-    // Delay hiding dropdown to allow for click events
-    setTimeout(() => {
-      this.showCountryDropdown = false;
-      console.log('Dropdown hidden after blur');
-    }, 200);
-  }
+  // onCountryBlur() {
+  //   console.log('Country field blurred');
+  //   // Delay hiding dropdown to allow for click events
+  //   setTimeout(() => {
+  //     this.showCountryDropdown = false;
+  //     console.log('Dropdown hidden after blur');
+  //   }, 200);
+  // }
 
-  onCountryFocus() {
-    console.log('Country field focused');
-    this.showCountryDropdown = true;
-    console.log('Dropdown shown on focus');
-  }
+  // onCountryFocus() {
+  //   console.log('Country field focused');
+  //   this.showCountryDropdown = true;
+  //   console.log('Dropdown shown on focus');
+  // }
 
 
   getProfileData() {
@@ -185,6 +199,7 @@ export class ProfilePage implements OnInit {
       async (response: any) => {
         this.loaderService.hide();
         if (response.code == 200) {
+          this.profileInfo = response.user;
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             this.profileImage = response.user.profile_image;
@@ -213,8 +228,17 @@ export class ProfilePage implements OnInit {
           if (response.user.full_name) {
             this.profileService.updateUserName(response.user.full_name);
           }
+          // Store current country value before patching
+          const currentCountry = this.profileForm.get('country')?.value;
+          
           this.profileForm.patchValue(response.user)
-                      // Format phone number - remove +91 and ensure 10 digits
+          
+          // Restore default country if not provided by server or if it's empty
+          if (!response.user.country || response.user.country.trim() === '') {
+            this.profileForm.patchValue({ country: 'India' });
+          }
+          
+          // Format phone number - remove +91 and ensure 10 digits
             let formattedPhone = response.user.phone;
             if (formattedPhone && formattedPhone.startsWith('+91')) {
               formattedPhone = formattedPhone.substring(3); // Remove +91
@@ -1803,9 +1827,128 @@ export class ProfilePage implements OnInit {
   }
 
 
+  showSpecificFormErrors() {
+    const errors: string[] = [];
+    
+    // Check full_name errors
+    if (this.f['full_name'].errors) {
+      if (this.f['full_name'].errors['required']) {
+        errors.push('Name is required');
+      } else if (this.f['full_name'].errors['maxlength']) {
+        errors.push('Name should be less than 60 characters');
+      }
+    }
+    
+    // Check email errors
+    if (this.f['email'].errors) {
+      if (this.f['email'].errors['required']) {
+        errors.push('Email is required');
+      } else if (this.f['email'].errors['email']) {
+        errors.push('Please enter a valid email address');
+      }
+    }
+    
+    // Check phone errors
+    if (this.f['phone'].errors) {
+      if (this.f['phone'].errors['required']) {
+        errors.push('Phone number is required');
+      } else if (this.f['phone'].errors['pattern']) {
+        errors.push('Please enter a valid 10-digit phone number');
+      }
+    }
+    
+    // Check company errors
+    if (this.f['company'].errors) {
+      if (this.f['company'].errors['required']) {
+        errors.push('Company name is required');
+      } else if (this.f['company'].errors['minlength']) {
+        errors.push('Company name should be at least 3 characters');
+      } else if (this.f['company'].errors['maxlength']) {
+        errors.push('Company name should be less than 40 characters');
+      }
+    }
+    
+    // Check country errors
+    if (this.f['country'].errors) {
+      if (this.f['country'].errors['required']) {
+        errors.push('Please select a country');
+      }
+    }
+    
+    // Check PAN errors (only for India)
+    if (this.f['country'].value === 'India' && this.f['pan'].errors) {
+      if (this.f['pan'].errors['required']) {
+        errors.push('PAN number is required for India');
+      } else if (this.f['pan'].errors['panLength']) {
+        errors.push('PAN number must be exactly 10 characters');
+      }
+    }
+    
+    // Check ID proof type errors
+    if (this.f['id_proof_type'].errors) {
+      if (this.f['id_proof_type'].errors['required']) {
+        errors.push('Please select an ID proof type');
+      }
+    }
+    
+    // Check ID proof image errors
+    if (this.f['id_proof_image'].errors) {
+      if (this.f['id_proof_image'].errors['required']) {
+        errors.push('Please upload at least one ID proof document');
+      }
+    }
+    
+    // Check company address errors
+    if (this.f['company_address'].errors) {
+      if (this.f['company_address'].errors['required']) {
+        errors.push('Company address is required');
+      } else if (this.f['company_address'].errors['minlength']) {
+        errors.push('Address should be at least 5 characters');
+      } else if (this.f['company_address'].errors['maxlength']) {
+        errors.push('Address should be less than 50 characters');
+      }
+    }
+    
+    // Check city errors
+    if (this.f['city'].errors) {
+      if (this.f['city'].errors['required']) {
+        errors.push('City is required');
+      } else if (this.f['city'].errors['minlength']) {
+        errors.push('City name should be at least 3 characters');
+      } else if (this.f['city'].errors['maxlength']) {
+        errors.push('City name should be less than 25 characters');
+      }
+    }
+    
+    // Check state errors
+    if (this.f['state'].errors) {
+      if (this.f['state'].errors['required']) {
+        errors.push('State is required');
+      } else if (this.f['state'].errors['minlength']) {
+        errors.push('State name should be at least 3 characters');
+      } else if (this.f['state'].errors['maxlength']) {
+        errors.push('State name should be less than 25 characters');
+      }
+    }
+    
+    // Check zip code errors
+    if (this.f['zip'].errors) {
+      if (this.f['zip'].errors['required']) {
+        errors.push('ZIP code is required');
+      } else if (this.f['zip'].errors['minlength'] || this.f['zip'].errors['maxlength']) {
+        errors.push('ZIP code must be exactly 6 digits');
+      }
+    }
+    
+    // Show the first error or a generic message
+    const errorMessage = errors.length > 0 ? errors[0] : 'Please fill all required fields correctly';
+    this.showToast('error', errorMessage, '', 2500, '/profile');
+  }
+
   updateProfile() {
     this.submitted = true;
     if (this.profileForm.invalid) {
+      this.showSpecificFormErrors();
       return;
     }
 

@@ -9,7 +9,8 @@
       <div class="bid-info-box">
         <div class="info-row">
           <span>{{item?.item_name}}</span>
-          <span class="bold">{{item?.item_quantity?item?.item_quantity:item?.quantity}} {{getUOMText(item?.uom_id)}}</span>
+          <span class="bold">{{item?.item_quantity?item?.item_quantity:item?.quantity}}
+            {{getUOMText(item?.uom_id)}}</span>
         </div>
         <div class="info-row">
           <span>In Stock</span>
@@ -27,92 +28,80 @@
         </div>
         <div class="info-row">
           <span>Current Price</span>
-          <span class="bold">₹{{item?.actual_bid_amount?item?.actual_bid_amount:item?.price}}/{{getUOMText(item.uom_id)}}</span>
+          <span
+            class="bold">₹{{item?.actual_bid_amount?item?.actual_bid_amount:item?.price}}/{{getUOMText(item.uom_id)}}</span>
         </div>
       </div>
-    <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Your bid price (₹/{{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
-                     <ion-input 
-             class="form-field" 
-             type="number" 
-             formControlName="bid_amount"
-             placeholder="190.00"
-             >
-           </ion-input>
+      <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Your bid price (₹/{{getUOMText(item.uom_id)}})<span
+                class="required">*</span></ion-label>
+            <ion-input class="form-field" type="number" formControlName="bid_amount" placeholder="190.00">
+            </ion-input>
+          </div>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['bid_amount'].errors">
+            <span *ngIf="f['bid_amount'].errors['required']">Bid amount is required</span>
+            <span *ngIf="f['bid_amount'].errors['min']">Bid amount must be greater than 0</span>
+            <span *ngIf="f['bid_amount'].errors['pattern']">Please enter a valid amount (e.g., 190.50)</span>
+          </span>
         </div>
-      </ion-item>
-      <div class="validation-error">
-        <span *ngIf="submitted && f['bid_amount'].errors">
-        <span *ngIf="f['bid_amount'].errors['required']">Bid amount is required</span>
-        <span *ngIf="f['bid_amount'].errors['min']">Bid amount must be greater than 0</span>
-        <span *ngIf="f['bid_amount'].errors['pattern']">Please enter a valid amount (e.g., 190.50)</span>
-      </span>
-      </div>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Quantity Interested ({{getUOMText(item.uom_id)}})<span class="required">*</span></ion-label>
-                     <ion-input 
-             class="form-field" 
-             type="number" 
-             formControlName="bid_quantity"
-             placeholder="50">
-           </ion-input>
-          
-        </div>
-      </ion-item>
-      <div class="validation-error" >
-        <span *ngIf="submitted && f['bid_quantity'].errors">
-          <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
-          <span *ngIf="f['bid_quantity'].errors['min']">Quantity must be at least 1</span>
-          <span *ngIf="f['bid_quantity'].errors['max']">Quantity cannot exceed {{ item?.in_stock | number:'1.2-2' }} {{ getUOMText(item?.uom_id) }}</span>
-          <span *ngIf="f['bid_quantity'].errors['pattern']">Please enter a valid number</span>
-        </span>
-      </div>
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Quantity Interested ({{getUOMText(item.uom_id)}})<span
+                class="required">*</span></ion-label>
+            <ion-input class="form-field" type="number" formControlName="bid_quantity" placeholder="50">
+            </ion-input>
 
-      <ion-item class="no-style">
-        <div class="custom-inner">
-          <ion-label class="formlebel">Message to <span *ngIf="item.item_listed_for == 1">Seller</span> <span
-            *ngIf="item.item_listed_for == 2">Buyer</span></ion-label>
-                     <ion-textarea 
-             class="form-field" 
-             formControlName="remark"
-             placeholder="Type your message here"
-             [readonly]="isEdit">
-           </ion-textarea>
+          </div>
+        </ion-item>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['bid_quantity'].errors">
+            <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
+            <span *ngIf="f['bid_quantity'].errors['min']">Quantity must be at least 1</span>
+            <span *ngIf="f['bid_quantity'].errors['max']">Quantity cannot exceed {{ item?.in_stock | number:'1.2-2' }}
+              {{ getUOMText(item?.uom_id) }}</span>
+            <span *ngIf="f['bid_quantity'].errors['pattern']">Please enter a valid number</span>
+          </span>
         </div>
-      </ion-item>
-      <div class="validation-error" >
-        <span *ngIf="submitted && f['remark'].errors">
-        <span *ngIf="f['remark'].errors['required']">Message is required</span>
-        <span *ngIf="f['remark'].errors['minlength']">Message must be at least 5 characters</span>
-        <span *ngIf="f['remark'].errors['maxlength']">Message must be less than 100 characters</span>
-      </span>
-      </div>
-      
-      <ion-button 
-        expand="block" 
-        class="btn btn-grn no-style"
-        type="submit"
-        [disabled]="isSubmitting"
-        >
-        <div class="button-content" [class.loading]="isSubmitting">
-          <ion-spinner 
-            *ngIf="isSubmitting" 
-            name="crescent" 
-            class="button-spinner">
-          </ion-spinner>
-          <span [class.hidden]="isSubmitting">Submit</span>
-          <span *ngIf="isSubmitting" class="loading-text">Submitting...</span>
-        </div>
-      </ion-button>
-    </form>
 
-      
+        <ion-item class="no-style">
+          <div class="custom-inner">
+            <ion-label class="formlebel">Message to <span *ngIf="item.item_listed_for == 1">Seller</span> <span
+                *ngIf="item.item_listed_for == 2">Buyer</span></ion-label>
+            <ion-textarea class="form-field" formControlName="remark" placeholder="Type your message here"
+              [readonly]="isEdit" maxlength="100">
+            </ion-textarea>
+            
+          </div>
+        </ion-item>
+        <div class="validation-error character-count">
+          <span>{{ (f['remark'].value || '').length }}/100</span>
+        </div>
+        <div class="validation-error">
+          <span *ngIf="submitted && f['remark'].errors">
+            <span *ngIf="f['remark'].errors['required']">Message is required</span>
+            <span *ngIf="f['remark'].errors['minlength']">Message must be at least 5 characters</span>
+            <span *ngIf="f['remark'].errors['maxlength']">Message must be less than 100 characters</span>
+          </span>
+        </div>
+
+        <ion-button expand="block" class="btn btn-grn no-style" type="submit" [disabled]="isSubmitting">
+          <div class="button-content" [class.loading]="isSubmitting">
+            <ion-spinner *ngIf="isSubmitting" name="crescent" class="button-spinner">
+            </ion-spinner>
+            <span [class.hidden]="isSubmitting">Submit</span>
+            <span *ngIf="isSubmitting" class="loading-text">Submitting...</span>
+          </div>
+        </ion-button>
+      </form>
+
+
     </div>
   </div>
-</ion-content> 
+</ion-content>
 
 <!--LOADER-->

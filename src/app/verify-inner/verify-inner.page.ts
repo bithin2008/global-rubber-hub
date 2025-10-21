@@ -33,6 +33,13 @@ export class VerifyInnerPage implements OnInit {
     this.validateForm();
   }
 
+  onDestroy() {
+    this.panNumber = '';
+    this.isFormValid = false;
+    this.showPanError = false;
+    this.enableLoader = false;
+  }
+
   goBack() {
     this.location.back();
   }

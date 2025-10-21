@@ -217,8 +217,8 @@
       <form [formGroup]="resetPasswordForm" (ngSubmit)="resetPassword()">
         <ion-label class="form-label">Password</ion-label>
         <ion-item lines="none" class="input-field">
-          <ion-input type="{{showResetPassword ? 'text' : 'password'}}" placeholder="********" formControlName="password"></ion-input>
-          <ion-icon name="{{showResetPassword ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleResetPassword()"></ion-icon>
+          <ion-input type="{{showResetPasswordField ? 'text' : 'password'}}" placeholder="********" formControlName="password"></ion-input>
+          <ion-icon name="{{showResetPasswordField ? 'eye-off-outline' : 'eye-outline'}}" slot="end" (click)="toggleResetPassword()"></ion-icon>
         </ion-item>
         <div class="validation-error">
           <span *ngIf="submitted && f['password'].errors">

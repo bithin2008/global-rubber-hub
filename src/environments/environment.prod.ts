@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   API_ENDPOINT: 'https://globalrubberhub.com/api/v1/',
+  Razor_Pay_KeyId: 'rzp_live_tAxyS0mxwv0GGX',
   firebase: {
     webClientId: '826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com',
     androidClientId: '826183488369-9cb19ikmqo929a92crssfchglsnpm0m4.apps.googleusercontent.com',

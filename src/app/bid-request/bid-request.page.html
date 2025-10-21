@@ -63,6 +63,13 @@
             <ion-icon name="checkmark-outline"></ion-icon>
           </ion-button>
         </div>
+
+
+        
+          <div class="status-badge" *ngIf="item.bid_status==1"><span class="badge accepted">Accepted</span></div>
+          <div class="status-badge" *ngIf="item.bid_status==2"><span class="badge rejected">Rejected</span></div>
+         
+       
       </ion-item>
 
     </div>

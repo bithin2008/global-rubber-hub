@@ -155,7 +155,16 @@
   // Validation error styling
   .validation-error {
     padding: 0 0 0 5px;
-    
+    &.character-count {
+      padding: 0 0 0 5px;
+      font-size: 12px;
+      font-weight: 400;
+      display: block;
+      span {
+        color: #6C7278;
+      }
+      
+    }
     span {
       color: #dc3545;
       font-size: 12px;

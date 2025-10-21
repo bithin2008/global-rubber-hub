@@ -6,6 +6,7 @@ import { CommonService } from '../../services/common-service';
 import { ActivatedRoute } from '@angular/router';
 import { PageTitleService } from 'src/app/services/page-title.service';
 import { ToastModalComponent } from 'src/app/toast-modal/toast-modal.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-payment-modal',
@@ -155,7 +156,7 @@ export class PaymentModalComponent implements OnInit {
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_live_tAxyS0mxwv0GGX',
+        key: environment.Razor_Pay_KeyId,
         amount: this.totalWithGst * 100, // ₹1 for testing
         currency: 'INR',
         name: 'Global Rubber Hub',

@@ -10,46 +10,57 @@ import { SimpleReferrerService } from './services/simple-referrer.service';
 import { Router } from '@angular/router';
 import { LoaderComponent } from './shared/loader/loader.component';
 import { PushNotificationService } from './services/push-notification.service';
+import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet, LoaderComponent],
+  providers: [AppVersion]
 })
 export class AppComponent {
   constructor(
     private platform: Platform,
     private router: Router,
+    private appVersion: AppVersion,
     private deepLinkService: DeepLinkService,
     private simpleReferrerService: SimpleReferrerService,
     private pushNotificationService: PushNotificationService
   ) {
     this.initializeApp();
     this.listenForDeepLinks();
+    this.appVersion.getVersionNumber().then(version => {
+      console.log('App Version:', version);
+      const storedVersion = localStorage.getItem('app_version');
+      if (storedVersion !== version) {
+        localStorage.clear(); // or only remove auth-related keys
+        localStorage.setItem('app_version', version);
+      }
+    });
   }
 
   initializeApp() {
     console.log('App component initialized');
-    
+
     // Immediately try to hide splash screen
     this.hideSplashScreenImmediately();
-    
+
     this.platform.ready().then(() => {
       console.log('Platform ready');
-      
+
       // Initialize deep linking first
       this.deepLinkService.initializeDeepLinking();
-      
+
       // Initialize push notifications
       this.pushNotificationService.initialize();
-      
+
       // Initialize referrer service and check for referrer
       setTimeout(async () => {
         await this.simpleReferrerService.initializeReferrer();
         this.simpleReferrerService.checkAndStoreReferrer();
       }, 200);
-      
+
       // Define handleOpenURL globally for Cordova Universal Links
       (window as any).handleOpenURL = (url: string) => {
         console.log('handleOpenURL called with:', url);
@@ -58,23 +69,23 @@ export class AppComponent {
           this.deepLinkService.handleDeepLink({ url });
         }, 0);
       };
-      
+
       // Configure status bar for proper header display
       this.configureStatusBar();
-      
+
       // Hide splash screen immediately when platform is ready
       this.hideSplashScreen();
-      
+
       // Additional fallback to hide splash screen after a short delay
       setTimeout(() => {
         this.hideSplashScreen();
       }, 500);
-      
+
       // Final fallback after 1 second
       setTimeout(() => {
         this.hideSplashScreen();
       }, 1000);
-      
+
       console.log('App initialization completed');
     }).catch(error => {
       console.error('Error during app initialization:', error);
@@ -87,23 +98,23 @@ export class AppComponent {
     App.addListener('appUrlOpen', (event: any) => {
       if (event.url) {
         console.log('Deep link received in app component:', event.url);
-        
+
         // Example: globalrubberhub://market/ENCRYPTEDTOKEN
         const slug = event.url.split('//')[1]; // "market/ENCRYPTEDTOKEN"
         const parts = slug.split('/');
-        
+
         if (parts[0] === 'market') {
           const token = parts[1];
           console.log('Market token:', token);
-          
+
           // Navigate to your item page
-          this.router.navigate(['/item-list'], { 
-            queryParams: { token: token } 
+          this.router.navigate(['/item-list'], {
+            queryParams: { token: token }
           });
         } else if (parts[0] === 'referral') {
           const referralCode = parts[1];
           console.log('Referral code:', referralCode);
-          
+
           // Store referral code in localStorage
           localStorage.setItem('app_referrer', referralCode);
           console.log('Referral code stored:', referralCode);
@@ -127,19 +138,19 @@ export class AppComponent {
   hideSplashScreen() {
     try {
       console.log('Attempting to hide splash screen...');
-      
+
       // Method 1: Try Cordova splash screen plugin
       if (typeof navigator !== 'undefined' && navigator.splashscreen) {
         navigator.splashscreen.hide();
         console.log('Splash screen hidden via navigator.splashscreen');
       }
-      
+
       // Method 2: Try DOM manipulation
       this.hideSplashScreenViaDOM();
-      
+
       // Method 3: Try to hide by CSS
       this.hideSplashScreenViaCSS();
-      
+
     } catch (error) {
       console.error('Error hiding splash screen:', error);
     }

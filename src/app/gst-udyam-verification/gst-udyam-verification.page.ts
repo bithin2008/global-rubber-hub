@@ -36,6 +36,13 @@ export class GstUdyamVerificationPage implements OnInit {
     this.location.back();
   }
 
+  onDestroy() {
+    this.selectedVerificationType = 'gst';
+    this.verificationNumber = '';
+    this.isFormValid = false;
+    this.enableLoader = false;
+  }
+
   selectOption(type: string) {
     this.selectedVerificationType = type;
     this.verificationNumber = '';

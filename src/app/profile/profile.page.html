@@ -77,7 +77,7 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Name</ion-label>
-          <ion-input class="form-field" formControlName="full_name" type="text"></ion-input>
+          <ion-input class="form-field" formControlName="full_name" type="text" [readonly]="profileInfo.pan"></ion-input>
         </div>
       </ion-item>
       <div class="validation-error">
@@ -135,13 +135,19 @@
       <ion-item class="no-style">
         <div class="custom-inner">
           <ion-label class="formlebel">Country</ion-label>
+          <ion-input class="form-field" formControlName="country"  type="text" [readonly]="true"></ion-input>
+        </div>
+      </ion-item>
+      <!-- <ion-item class="no-style">
+        <div class="custom-inner">
+          <ion-label class="formlebel">Country</ion-label>
           <ion-select interface="modal" placeholder="Select Country" formControlName="country" class="form-field">
             <ion-select-option *ngFor="let country of countries" [value]="country.name">
               {{ country.name }}
             </ion-select-option>
           </ion-select>
         </div>
-      </ion-item>
+      </ion-item> -->
       <div class="validation-error">
         <span *ngIf="submitted && f['country'].errors">
           <div *ngIf="f['country'].errors['required']">Please select a country</div>

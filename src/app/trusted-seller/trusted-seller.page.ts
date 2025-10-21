@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PageTitleService } from '../services/page-title.service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { LoaderService } from '../services/loader.service';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-trusted-seller',
   templateUrl: './trusted-seller.page.html',
@@ -195,7 +196,7 @@ export class TrustedSellerPage implements OnInit {
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_live_tAxyS0mxwv0GGX',
+        key: environment.Razor_Pay_KeyId,
         amount: this.getTotalPrice() * 100, // Convert to paise for Razorpay
         currency: 'INR',
         name: 'Global Rubber Hub',

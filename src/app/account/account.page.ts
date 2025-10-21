@@ -20,6 +20,7 @@ import { LoaderService } from '../services/loader.service';
 // ReferralService removed - using simple localStorage approach
 import { SocialShareModalComponent } from '../components/social-share-modal/social-share-modal.component';
 import { HelpSupportModalComponent } from '../components/help-support-modal/help-support-modal.component';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -387,7 +388,7 @@ export class AccountPage implements OnInit, OnDestroy {
 
       // Initialize Razorpay payment directly
       const options = {
-        key: 'rzp_live_tAxyS0mxwv0GGX',
+        key: environment.Razor_Pay_KeyId,
         amount: this.totalWithGst * 100, // include GST
         currency: 'INR',
         name: 'Global Rubber Hub',
