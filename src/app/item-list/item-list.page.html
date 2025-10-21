@@ -100,9 +100,13 @@
                 <label>Selling Price</label>
                 <strong>{{item.price}}/{{getUOMText(item.uom_id)}}</strong>
               </div>
-              <div class="item">
+              <!-- <div class="item">
                 <label>Trade Volume</label>
                 <strong>{{item.quantity}} {{getUOMText(item.uom_id)}}</strong>
+              </div> -->
+              <div class="item">
+                <label>Trade Volume</label>
+                <strong>{{item.remaining_stock}} {{getUOMText(item.uom_id)}}</strong>
               </div>
             </div>
 

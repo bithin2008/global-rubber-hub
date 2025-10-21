@@ -24,6 +24,8 @@ export class LoaderService {
     this.loadingSubject.next(false);
   }
 
+ 
+
   /**
    * Get current loading state
    */

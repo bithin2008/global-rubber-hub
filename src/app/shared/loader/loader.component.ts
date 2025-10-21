@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoaderService } from '../../services/loader.service';
 import { Subscription } from 'rxjs';
@@ -7,8 +7,9 @@ import { Subscription } from 'rxjs';
   selector: 'app-loader',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="loader-overlay" *ngIf="isLoading">
+    <div class="loader-overlay" [class.hidden]="!isLoading">
       <div class="loader-container">
         <img src="assets/img/ajax-loader.gif" alt="Loading...">
         <span class="ion-text-center">Please wait</span>
@@ -28,6 +29,13 @@ import { Subscription } from 'rxjs';
       align-items: center;
       justify-content: center;
       z-index: 99999;
+      transition: opacity 0.1s ease-out;
+    }
+
+    .loader-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+      display: none;
     }
 
     .loader-container {
@@ -88,12 +96,16 @@ export class LoaderComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private subscription: Subscription = new Subscription();
 
-  constructor(private loaderService: LoaderService) { }
+  constructor(
+    private loaderService: LoaderService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.subscription.add(
       this.loaderService.loading$.subscribe(loading => {
         this.isLoading = loading;
+        this.cdr.markForCheck();
       })
     );
   }

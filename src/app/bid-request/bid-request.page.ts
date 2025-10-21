@@ -39,6 +39,7 @@ export class BidRequestPage implements OnInit {
   public orderBy: string = 'desc';
   public fallbackImg: string = 'assets/img/item-placeholder.jpg';
   public isSearchVisible: boolean = false;
+  public profileDetails: any = {};
   private handleOutsideClick: any;
   constructor(
     public router: Router,
@@ -66,9 +67,30 @@ export class BidRequestPage implements OnInit {
   async ngOnInit() {
     // Check authentication on component initialization
     await this.authGuardService.checkTokenAndAuthenticate();
-    
+    this.getProfileData();
 
     
+  }
+
+  getProfileData() {
+    this.loaderService.show();
+    let url = 'user/profile';
+    this.commonService.get(url).subscribe(
+      (response: any) => {
+        this.loaderService.hide();
+        if (response.code == 200) {
+          this.profileDetails = response.user;
+        } else {
+          this.showToast('error', response.message, '', 3500, '');
+        }
+      },
+      (error) => {
+        this.loaderService.hide();
+        console.log('error ts: ', error.error);
+        // this.toastr.error(error);
+      }
+    );
+
   }
 
     // Convert UOM ID to display text
@@ -299,7 +321,7 @@ export class BidRequestPage implements OnInit {
   private submitBidStatus(item: any, bidStatus: number, cancelRejectionReason?: string) {
     const url = 'bids/add';
     const data = {
-      item_id: item.id,
+      item_id: item.item_id,
       id: item.id,
       bid_amount: item.bid_amount,
       actual_bid_amount: item.actual_bid_amount,

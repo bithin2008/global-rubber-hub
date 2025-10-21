@@ -75,7 +75,7 @@ export class BidModalComponent implements OnInit {
   
 
     // Initialize the reactive form
-    const maxAllowedQuantity = Number(this.item?.in_stock ?? Number.MAX_SAFE_INTEGER);
+    const maxAllowedQuantity = Number(this.item?.remaining_stock ?? Number.MAX_SAFE_INTEGER);
 
     this.bidForm = this.formBuilder.group({
       bid_amount: [this.item.bid_amount?this.item.bid_amount:null ,[Validators.required, Validators.min(0.01), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
@@ -150,7 +150,7 @@ export class BidModalComponent implements OnInit {
 
     const formValues = this.bidForm.value;
     const bidData = {
-      item_id: this.item.id,
+      item_id: this.isEdit? this.item.item_id :this.item.id,
       bid_amount: parseFloat(formValues.bid_amount),
       bid_quantity: parseFloat(formValues.bid_quantity),
       actual_bid_amount: parseFloat(this.item.price),

@@ -2,7 +2,7 @@
   <div class="popupOuter">
     <div class="popup-wrapper">
       <div class="popup-header">
-        <h2>Place Your Bid</h2>
+        <h2>{{ isEdit ? 'Edit Your Bid' : 'Place Your Bid' }}</h2>
         <img src="assets/img/icons/cancel.svg" alt="" title="" (click)="dismiss()">
       </div>
 
@@ -14,7 +14,7 @@
         </div>
         <div class="info-row">
           <span>In Stock</span>
-          <span class="bold">{{item?.in_stock | number:'1.2-2'}} {{getUOMText(item?.uom_id)}}</span>
+          <span class="bold">{{item?.remaining_stock | number:'1.2-2'}} {{getUOMText(item?.uom_id)}}</span>
         </div>
         <div class="info-row">
           <span>Listed By</span>
@@ -62,7 +62,7 @@
           <span *ngIf="submitted && f['bid_quantity'].errors">
             <span *ngIf="f['bid_quantity'].errors['required']">Quantity is required</span>
             <span *ngIf="f['bid_quantity'].errors['min']">Quantity must be at least 1</span>
-            <span *ngIf="f['bid_quantity'].errors['max']">Quantity cannot exceed {{ item?.in_stock | number:'1.2-2' }}
+            <span *ngIf="f['bid_quantity'].errors['max']">Quantity cannot exceed {{ item?.remaining_stock | number:'1.2-2' }}
               {{ getUOMText(item?.uom_id) }}</span>
             <span *ngIf="f['bid_quantity'].errors['pattern']">Please enter a valid number</span>
           </span>
@@ -93,8 +93,8 @@
           <div class="button-content" [class.loading]="isSubmitting">
             <ion-spinner *ngIf="isSubmitting" name="crescent" class="button-spinner">
             </ion-spinner>
-            <span [class.hidden]="isSubmitting">Submit</span>
-            <span *ngIf="isSubmitting" class="loading-text">Submitting...</span>
+            <span [class.hidden]="isSubmitting">{{ isEdit ? 'Update' : 'Submit' }}</span>
+            <span *ngIf="isSubmitting" class="loading-text">{{ isEdit ? 'Updating...' : 'Submitting...' }}</span>
           </div>
         </ion-button>
       </form>
