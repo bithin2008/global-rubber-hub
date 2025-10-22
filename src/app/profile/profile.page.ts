@@ -499,9 +499,13 @@ export class ProfilePage implements OnInit {
   }
 
   private checkCameraAvailability(): boolean {
-    // Check if we're on a mobile device or web with camera support
-    if (!this.platform.is('mobile') && !this.platform.is('pwa')) {
-      console.log('Camera check: Not on mobile device or PWA');
+    // Check if we're on a mobile device, PWA, or Android/iOS
+    const isMobile = this.platform.is('mobile') || this.platform.is('pwa') || 
+                     this.platform.is('android') || this.platform.is('ios') ||
+                     this.platform.is('capacitor');
+    
+    if (!isMobile) {
+      console.log('Camera check: Not on mobile device, PWA, or native platform');
       return false;
     }
 
@@ -605,7 +609,7 @@ export class ProfilePage implements OnInit {
       console.log('Image webPath:', image.webPath);
       console.log('Image path:', image.path);
 
-      if (image.webPath) {
+      if (image && image.webPath) {
         // Show image cropper modal
         await this.openImageCropper(image.webPath);
       } else {
@@ -630,6 +634,12 @@ export class ProfilePage implements OnInit {
       if (error.message && (error.message.includes('hardware') || error.message.includes('Hardware'))) {
         this.showToast('error', 'Camera hardware not available. Please try selecting from gallery instead.', '', 4000, '/profile');
         this.openFileInputWithSource('library');
+        return;
+      }
+
+      // Handle any other camera errors
+      if (error.message && error.message.includes('User cancelled')) {
+        console.log('User cancelled camera operation');
         return;
       }
 

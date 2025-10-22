@@ -88,6 +88,10 @@
         <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.826183488369-itvh47edlesonfsq06vrgphvmkpf70ja" />
         <param name="WEB_APPLICATION_CLIENT_ID" value="826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com" />
     </plugin>
+    <plugin name="cordova-plugin-camera" source="npm">
+        <param name="CAMERA_USAGE_DESCRIPTION" value="This app needs access to camera to take photos for items" />
+        <param name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="This app needs access to photo library to select images for items" />
+    </plugin>
     <allow-intent href="globalrubberhub:*" />
     <platform name="ios">
         <config-file parent="com.apple.developer.associated-domains" target="*-Debug.plist">

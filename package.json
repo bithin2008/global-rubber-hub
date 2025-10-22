@@ -24,7 +24,6 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@awesome-cordova-plugins/app-version": "^8.1.0",
     "@awesome-cordova-plugins/core": "^8.1.0",
     "@capacitor/android": "^5.7.8",
     "@capacitor/app": "7.0.2",
@@ -41,7 +40,6 @@
     "@ionic-native/play-install-referrer": "^5.36.0",
     "@ionic/angular": "^8.0.0",
     "@ionic/storage-angular": "^4.0.0",
-    "cordova-plugin-app-update": "^2.0.2",
     "cordova-sqlite-storage": "^7.0.0",
     "firebase": "^12.4.0",
     "ionicons": "^7.0.0",
@@ -77,8 +75,6 @@
     "@typescript-eslint/parser": "^8.18.0",
     "cordova": "^12.0.0",
     "cordova-android": "^14.0.1",
-    "cordova-plugin-app-version": "^0.1.14",
-    "cordova-plugin-appversion": "^1.0.0",
     "cordova-plugin-camera": "^8.0.0",
     "cordova-plugin-customurlscheme": "^5.0.2",
     "cordova-plugin-device": "2.0.2",
@@ -88,7 +84,6 @@
     "cordova-plugin-play-installreferrer": "^1.0.2",
     "cordova-plugin-splashscreen": "5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
-    "cordova-plugin-universal-links": "^0.3.0",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -105,7 +100,9 @@
   },
   "description": "An Ionic project",
   "cordova": {
-    "platforms": [],
+    "platforms": [
+      "android"
+    ],
     "plugins": {
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -119,11 +116,8 @@
         "ANDROID_HOST": "globalrubberhub.com",
         "ANDROID_PATHPREFIX": "/"
       },
-      "cordova-plugin-universal-links": {},
       "cordova-plugin-googleplus": {},
-      "cordova-plugin-play-installreferrer": {},
-      "cordova-plugin-app-version": {},
-      "cordova-plugin-app-update": {}
+      "cordova-plugin-play-installreferrer": {}
     }
   }
 }

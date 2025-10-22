@@ -10,34 +10,31 @@ import { SimpleReferrerService } from './services/simple-referrer.service';
 import { Router } from '@angular/router';
 import { LoaderComponent } from './shared/loader/loader.component';
 import { PushNotificationService } from './services/push-notification.service';
-import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet, LoaderComponent],
-  providers: [AppVersion]
 })
 export class AppComponent {
   constructor(
     private platform: Platform,
     private router: Router,
-    private appVersion: AppVersion,
     private deepLinkService: DeepLinkService,
     private simpleReferrerService: SimpleReferrerService,
     private pushNotificationService: PushNotificationService
   ) {
     this.initializeApp();
     this.listenForDeepLinks();
-    this.appVersion.getVersionNumber().then(version => {
-      console.log('App Version:', version);
-      const storedVersion = localStorage.getItem('app_version');
-      if (storedVersion !== version) {
-        localStorage.clear(); // or only remove auth-related keys
-        localStorage.setItem('app_version', version);
-      }
-    });
+    // App version handling removed - using config.xml version instead
+    const appVersion = '1.0.5'; // From config.xml
+    console.log('App Version:', appVersion);
+    const storedVersion = localStorage.getItem('app_version');
+    if (storedVersion !== appVersion) {
+      localStorage.clear(); // or only remove auth-related keys
+      localStorage.setItem('app_version', appVersion);
+    }
   }
 
   initializeApp() {
