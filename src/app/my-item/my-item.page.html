@@ -48,8 +48,8 @@
         </ion-avatar>
         <ion-label>
           <h4 *ngIf="item.item_name">{{item.item_name}}</h4>
-          <p *ngIf="item.company_name">{{item.company_name}}</p>
-          <p *ngIf="item.full_name">{{item.full_name}}</p>
+          <!-- <p *ngIf="item.company_name">{{item.company_name}}</p>
+          <p *ngIf="item.full_name">{{item.full_name}}</p> -->
           <h3 *ngIf="item.price">Price: ₹{{item.price}} </h3>
           <p>Quantity: {{item.quantity}} ({{getUOMText(item.uom_id)}})</p>
         </ion-label>

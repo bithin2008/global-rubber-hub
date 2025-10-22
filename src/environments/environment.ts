@@ -5,7 +5,7 @@
 export const environment = {  
   production: false,
   API_ENDPOINT: 'https://globalrubberhub.com/api/v1/',
-  Razor_Pay_KeyId: 'rzp_test_pukxv7Ki2WgVYL',
+  Razor_Pay_KeyId: 'rzp_live_tAxyS0mxwv0GGX',//rzp_test_pukxv7Ki2WgVYL',
   firebase: {
     // apiKey: 'AIzaSyDbr69b8iu44y3WPF4GlF2jLABWuCPHP-U',
     // authDomain: 'global-rubber-hub-c754f.firebaseapp.com',

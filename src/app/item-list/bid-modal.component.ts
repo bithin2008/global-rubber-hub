@@ -88,7 +88,7 @@ export class BidModalComponent implements OnInit {
           Validators.pattern(/^\d+(\.\d{1,2})?$/)
         ]
       ],
-      remark: [this.isEdit?this.item.description:'', [Validators.maxLength(150)]]
+      remark: [this.isEdit?this.item.remark:'', [Validators.maxLength(150)]]
     });
 
     // Note: Fields are made readonly via HTML [readonly] attribute when isEdit is true
