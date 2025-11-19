@@ -1,0 +1,281 @@
+@use "sass:math";
+@use "sass:map";
+@use "sass:meta";
+@use "./../project/colors" as *;
+
+// --------------------------------
+// Variables
+// --------------------------------
+$allPrefix: ('webkit','apple','khtml','moz','rim','xv','ms','o');
+$norPrefix: ('webkit','moz','ms');
+
+// --------------------------------
+// Prefix Mixins
+// --------------------------------
+@mixin prefix($property, $value, $prefixes: ()) {
+  @each $prefix in $prefixes {
+    #{'-' + $prefix + '-' + $property}: $value;
+  }
+  #{$property}: $value;
+}
+
+@mixin prefixAll($declarations, $prefixes: ()) {
+  @each $property, $value in $declarations {
+    @each $prefix in $prefixes {
+      #{'-' + $prefix + '-' + $property}: $value;
+    }
+    #{$property}: $value;
+  }
+}
+
+// Transition / Transform
+@mixin transition($transition...) {
+  @include prefix(transition, $transition, $norPrefix);
+}
+@mixin transition-delay($transition-delay) {
+  @include prefix(transition-delay, $transition-delay, $norPrefix);
+}
+@mixin transform-origin($v1, $v2) {
+  @include prefix(transform-origin, $v1 $v2, $norPrefix);
+}
+@mixin transition-timing-function($tim) {
+  @include prefix(transition-timing-function, $tim, $norPrefix);
+}
+@mixin transform($transform) {
+  @include prefix(transform, $transform, $norPrefix);
+}
+@mixin transform-origin($origin) {
+  @include prefix(transform-origin, $origin, $norPrefix);
+}
+
+// Object fit/position
+@mixin object($fit, $posi) {
+  width: 100%;
+  -o-object-fit: $fit;
+  object-fit: $fit;
+  -o-object-position: $posi;
+  object-position: $posi;
+}
+
+// --------------------------------
+// Image Filters
+// --------------------------------
+@mixin imgW() {
+  -webkit-filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1);
+}
+@mixin imgB() {
+  -webkit-filter: saturate(0%) grayscale(100%) brightness(69%) contrast(1000%);
+}
+@mixin imgG() {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+@mixin imgN() {
+  -webkit-filter: brightness(100%) invert(0);
+  filter: brightness(100%) invert(0);
+}
+
+// --------------------------------
+// Placeholder
+// --------------------------------
+@mixin optional-at-root($sel) {
+  @at-root #{if(not &, $sel, selector-append(&, $sel))} {
+    @content;
+  }
+}
+
+@mixin placeholder {
+  @include optional-at-root('::-webkit-input-placeholder') { @content; }
+  @include optional-at-root(':-moz-placeholder') { @content; }
+  @include optional-at-root('::-moz-placeholder') { @content; }
+  @include optional-at-root(':-ms-input-placeholder') { @content; }
+  .placeholder { @content; }
+}
+
+// --------------------------------
+// Selection
+// --------------------------------
+@mixin selection {
+  ::-webkit-selection { @content; }
+  ::-moz-selection { @content; }
+  ::selection { @content; }
+}
+
+// --------------------------------
+// Clearfix
+// --------------------------------
+@mixin clearfix() {
+  clear: both;
+  &::after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+}
+
+// --------------------------------
+// Center Positioning
+// --------------------------------
+@mixin center($position) {
+  position: absolute;
+
+  @if $position == 'Y' {
+    top: 50%;
+    transform: translateY(-50%);
+  } @else if $position == 'X' {
+    left: 50%;
+    transform: translateX(-50%);
+  } @else if $position == 'XY' {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+// --------------------------------
+// Height Helpers
+// --------------------------------
+@mixin fullH($adjust: '') {
+  @if ($adjust != '') {
+    height: calc(100vh #{$adjust});
+    height: calc(calc(var(--vh, 1vh) * 100) #{$adjust});
+  } @else {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+@mixin minH($adjust: '') {
+  @if ($adjust != '') {
+    min-height: calc(100vh #{$adjust});
+    min-height: calc(calc(var(--vh, 1vh) * 100) #{$adjust});
+  } @else {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+@mixin maxH($adjust: '') {
+  @if ($adjust != '') {
+    max-height: calc(100vh #{$adjust});
+    max-height: calc(calc(var(--vh, 1vh) * 100) #{$adjust});
+  } @else {
+    max-height: 100vh;
+    max-height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+// --------------------------------
+// Utility Functions
+// --------------------------------
+@function toRem($value) {
+  @if unitless($value) {
+    @return ($value / 16) * 1rem;
+  }
+  @return $value;
+}
+
+@function toPercentage($value, $width) {
+  @return percentage($value / $width);
+}
+
+// --------------------------------
+// Color Utility (from colors.scss)
+// --------------------------------
+@function color($key) {
+  $map: if(meta.global-variable-exists(colors), meta.global-variable-get(colors), $allColors);
+
+  @if map.has-key($map, $key) {
+    @return map.get($map, $key);
+  }
+
+  @warn "Unknown `#{$key}` in color map.";
+  @return null;
+}
+
+// --------------------------------
+// Clamp Utility
+// --------------------------------
+@mixin clamp($props, $min, $max, $max-vp: 1920) {
+  $vw: math.div(100 * $max, $max-vp);
+
+  @if ($props == 'paddingY') {
+    padding: $min 0;
+    padding: clamp(#{$min}, #{$vw}vw, #{$max}) 0;
+  }
+  @else if ($props == 'marginY') {
+    margin: $min 0;
+    margin: clamp(#{$min}, #{$vw}vw, #{$max}) 0;
+  }
+  @else if ($props == 'font-size') {
+    #{$props}: clamp(#{$min}, #{$vw}vw, #{$max});
+  }
+  @else if ($props == 'width') {
+    width: $min;
+    flex: 0 0 $min;
+    width: clamp(#{$min}, #{$vw}vw, #{$max});
+    flex: 0 0 clamp(#{$min}, #{$vw}vw, #{$max});
+  }
+  @else {
+    #{$props}: $min;
+    #{$props}: clamp(#{$min}, #{$vw}vw, #{$max});
+  }
+}
+
+// --------------------------------
+// Profile Picture
+// --------------------------------
+@mixin profilePic($w: 85px) {
+  width: $w;
+  height: $w;
+  flex: 0 0 $w;
+  border-radius: 50%;
+  background-color: color(dsilver);
+  border: 2px solid color(dsilver);
+  position: relative;
+  overflow: hidden;
+
+  img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: top;
+
+    &[src=""] {
+      display: none;
+    }
+  }
+}
+
+// --------------------------------
+// Grid System
+// --------------------------------
+@mixin d-grid($col, $gap: '') {
+  display: grid;
+  grid-template-columns: repeat($col, minmax(0, 1fr));
+  @if $gap != '' {
+    grid-gap: $gap;
+    gap: $gap;
+  }
+}
+
+// --------------------------------
+// Negative Margin Utility
+// --------------------------------
+@for $i from 1 through 12 {
+  .margin-top-minus-#{$i} {
+    margin-top: #{1 - $i}rem;
+  }
+}
+
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+@mixin font-size($px) {
+  $rem: (strip-unit($px) / 16) * 1rem;
+  font-size: $rem;
+}

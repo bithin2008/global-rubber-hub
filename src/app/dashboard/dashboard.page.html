@@ -56,14 +56,14 @@
       </div>
 
 
-      <div class="more-card" *ngIf="(dashboardData?.topSellerItems?.results?.length || 0) > 3">
+      <div class="more-card" *ngIf="(dashboardData?.topSellerItems?.results?.length || 0) > 3" (click)="goToLiveBids('seller')">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-        <figure class="compIcon" *ngFor="let ts of (dashboardData.topSellerItems.results | slice:3:7)" (click)="openBidModal(ts)">
+        <figure class="compIcon" *ngFor="let ts of (dashboardData.topSellerItems.results | slice:3:7)">
             <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
-        <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('seller')">
+        <ion-button fill="clear" class="btn no-style see-more-btn" >
           See More <img src="assets/img/icons/arrow_yellow.svg" />
         </ion-button>
       </div>
@@ -99,14 +99,14 @@
         </p>
         <h3>₹{{ item?.price || '0' }}</h3>
       </div>
-      <div class="more-card" *ngIf="(dashboardData?.topBuyerItems?.results?.length || 0) > 3">
+      <div class="more-card" *ngIf="(dashboardData?.topBuyerItems?.results?.length || 0) > 3"  (click)="goToLiveBids('buyer')">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-        <figure class="compIcon" *ngFor="let ts of (dashboardData.topBuyerItems.results | slice:3:7)" (click)="openBidModal(ts)">
+        <figure class="compIcon" *ngFor="let ts of (dashboardData.topBuyerItems.results | slice:3:7)" >
             <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
-        <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('buyer')">
+        <ion-button fill="clear" class="btn no-style see-more-btn">
           See More <img src="assets/img/icons/arrow_yellow.svg" />
         </ion-button>
       </div>
@@ -134,14 +134,14 @@
         </p>
         <h3>₹{{ item?.price || '0' }}</h3>
       </div>
-      <div class="more-card" *ngIf="(dashboardData?.recentListedItems?.results?.length || 0) > 3">
+      <div class="more-card" *ngIf="(dashboardData?.recentListedItems?.results?.length || 0) > 3" (click)="goToLiveBids('')">
         <div class="title">More Wanted Items</div>
         <div class="logo-group">
-          <figure class="compIcon" *ngFor="let ts of (dashboardData.recentListedItems.results | slice:3:7)" (click)="openBidModal(ts)">
+          <figure class="compIcon" *ngFor="let ts of (dashboardData.recentListedItems.results | slice:3:7)">
             <img [src]="ts?.item_image?.[0]" (error)="onImageError($event)" />
           </figure>
         </div>
-        <ion-button fill="clear" class="btn no-style see-more-btn" (click)="goToLiveBids('')">
+        <ion-button fill="clear" class="btn no-style see-more-btn" >
           See More <img src="assets/img/icons/arrow_yellow.svg" />
         </ion-button>
       </div>

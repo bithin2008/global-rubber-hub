@@ -1,0 +1,44 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:2:1-11:12
+INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:2:1-11:12
+	package
+		INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml
+	xmlns:amazon
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:3:1-57
+	xmlns:android
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:2:11-69
+application
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:4:1-8:15
+provider#org.apache.cordova.camera.FileProvider
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:1-7:12
+	android:grantUriPermissions
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:160-194
+	android:authorities
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:65-134
+	android:exported
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:135-159
+	android:name
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:11-64
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:3-112
+	android:resource
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:65-110
+	android:name
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:14-64
+uses-permission#android.permission.GET_ACCOUNTS
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:9:1-66
+	android:name
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:9:18-64
+uses-permission#android.permission.USE_CREDENTIALS
+ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:10:1-69
+	android:name
+		ADDED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:10:18-67
+uses-sdk
+INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml
+INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml

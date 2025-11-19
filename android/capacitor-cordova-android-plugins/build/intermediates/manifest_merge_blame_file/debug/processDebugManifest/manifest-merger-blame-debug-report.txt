@@ -1,0 +1,36 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:amazon="http://schemas.amazon.com/apk/res/android"
+3    xmlns:android="http://schemas.android.com/apk/res/android"
+4    package="capacitor.cordova.android.plugins" >
+5
+6    <uses-sdk android:minSdkVersion="23" />
+7
+8    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+8-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:9:1-66
+8-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:9:18-64
+9    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+9-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:10:1-69
+9-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:10:18-67
+10
+11    <application>
+11-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:4:1-8:15
+12        <provider
+12-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:1-7:12
+13            android:name="org.apache.cordova.camera.FileProvider"
+13-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:11-64
+14            android:authorities="${applicationId}.cordova.plugin.camera.provider"
+14-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:65-134
+15            android:exported="false"
+15-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:135-159
+16            android:grantUriPermissions="true" >
+16-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:5:160-194
+17            <meta-data
+17-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:3-112
+18                android:name="android.support.FILE_PROVIDER_PATHS"
+18-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:14-64
+19                android:resource="@xml/camera_provider_paths" />
+19-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:6:65-110
+20        </provider>
+21    </application>
+22
+23</manifest>

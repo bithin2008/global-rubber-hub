@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -9,6 +9,7 @@ import {
   IonLabel,
   IonTextarea,
   IonSpinner,
+  IonIcon,
   ModalController
 } from '@ionic/angular/standalone';
 import { CommonService } from '../services/common-service';
@@ -16,6 +17,9 @@ import { ToastModalComponent } from '../toast-modal/toast-modal.component';
 import { LoaderService } from '../services/loader.service';
 import { Subscription } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
+import { register } from 'swiper/element/bundle';
+import { ImageLightboxComponent } from '../shared/image-lightbox/image-lightbox.component';
+import { ShareModalComponent } from '../shared/share-modal/share-modal.component';
 @Component({
   selector: 'app-bid-modal',
   templateUrl: './bid-modal.component.html',
@@ -31,8 +35,10 @@ import { ProfileService } from '../services/profile.service';
     IonInput,
     IonLabel,
     IonTextarea,
-    IonSpinner
-  ]
+    IonSpinner,
+    IonIcon
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class BidModalComponent implements OnInit {
   @Input() item: any;
@@ -42,6 +48,7 @@ export class BidModalComponent implements OnInit {
   public isEdit: boolean = false;
   public isSubmitting: boolean = false; // Variable to control button loader
   public profileData: any = null; // Store the complete profile data
+  public fallbackImg: string = 'https://globalrubberhub.com/public/backend/assets/images/default_item_image.jpeg';
 
   constructor(
     private modalController: ModalController,
@@ -54,6 +61,14 @@ export class BidModalComponent implements OnInit {
   ngOnInit() {
 
     console.log(this.item);
+
+    // Register swiper
+    register();
+
+    // Initialize swiper event listeners after view is ready
+    setTimeout(() => {
+      this.initializeSwiperEvents();
+    }, 1000);
 
     // Check if this is an edit mode (item has bid_quantity and bid_amount values)
    // if (this.item && this.item.bid_quantity && this.item.bid_amount) {
@@ -88,7 +103,7 @@ export class BidModalComponent implements OnInit {
           Validators.pattern(/^\d+(\.\d{1,2})?$/)
         ]
       ],
-      remark: [this.isEdit?this.item.remark:'', [Validators.maxLength(150)]]
+      remark: [this.isEdit?this.item.remark?this.item.remark:this.item.description:'', [Validators.maxLength(150)]]
     });
 
     // Note: Fields are made readonly via HTML [readonly] attribute when isEdit is true
@@ -129,6 +144,12 @@ export class BidModalComponent implements OnInit {
       if (modalElement) {
         modalElement.style.setProperty('--bottom', '20px');
       }
+      
+      // Scroll content to top to ensure header is visible
+      const contentElement = document.querySelector('ion-content.modal-content') as any;
+      if (contentElement) {
+        contentElement.scrollToTop(0);
+      }
     }, 100);
   }
 
@@ -150,7 +171,7 @@ export class BidModalComponent implements OnInit {
 
     const formValues = this.bidForm.value;
     const bidData = {
-      item_id: this.isEdit? this.item.item_id :this.item.id,
+      item_id: this.isEdit? this.item.item_id?this.item.item_id: this.item.id:this.item.id,
       bid_amount: parseFloat(formValues.bid_amount),
       bid_quantity: parseFloat(formValues.bid_quantity),
       actual_bid_amount: parseFloat(this.item.price),
@@ -165,7 +186,8 @@ export class BidModalComponent implements OnInit {
       actual_bid_amount: this.item.actual_bid_amount? this.item.actual_bid_amount: bidData.actual_bid_amount,
       remark: bidData.remark,
       cancel_rejection_reason: null,
-      added_by: this.profileData.id
+      added_by: this.profileData.id,
+      bid_status: 0,
     }
     if(this.isEdit){
       data.id = this.item.id;
@@ -226,5 +248,109 @@ export class BidModalComponent implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  initializeSwiperEvents() {
+    // Add event listeners to all swiper containers
+    const swiperContainers = document.querySelectorAll('swiper-container');
+    swiperContainers.forEach((container: any) => {
+      container.addEventListener('slidechange', (event: any) => {
+        this.handleSlideChange(event);
+      });
+    });
+  }
+
+  handleSlideChange(event: any) {
+    const swiper = event.detail[0];
+    const activeIndex = swiper.activeIndex;
+    const slides = swiper.slides;
+    
+    // Pause all videos first
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach((video: HTMLVideoElement) => {
+      video.pause();
+    });
+    
+    // For video slides, we just pause them since we use play button overlay
+    // No automatic playing since user needs to click the play button
+  }
+
+  async openLightbox(images: string[], startIndex: number = 0) {
+    const modal = await this.modalController.create({
+      component: ImageLightboxComponent,
+      componentProps: { images, startIndex },
+      cssClass: 'image-lightbox-modal'
+    });
+    return await modal.present();
+  }
+
+  async openVideoLightbox(videoUrl: string) {
+    const modal = await this.modalController.create({
+      component: ImageLightboxComponent,
+      componentProps: { 
+        images: [videoUrl], 
+        startIndex: 0,
+        isVideo: true 
+      },
+      cssClass: 'video-lightbox-modal'
+    });
+    return await modal.present();
+  }
+
+  onThumbnailError(event: Event) {
+    const target = event.target as HTMLImageElement | null;
+    if (target && target.src !== this.fallbackImg) {
+      target.src = this.fallbackImg;
+    }
+  }
+
+  onVideoError(event: Event) {
+    console.log('Video failed to load:', event);
+    // You can add fallback handling here if needed
+  }
+
+  isTrustedValid(item: any): boolean {
+    if (!item || item.is_trusted !== 1) {
+      return false;
+    }
+
+    if (!item.trusted_package_expiry) {
+      return false;
+    }
+
+    const expiryDate = new Date(item.trusted_package_expiry);
+    const currentDate = new Date();
+
+    return expiryDate > currentDate;
+  }
+
+  // Share functionality using custom modal
+  async shareItem(item: any) {
+    try {
+      if (!item || !item.item_image || item.item_image.length === 0) {
+        console.error('Item or item images not available for sharing');
+        return;
+      }
+
+      // Prepare share data
+      const blob = await fetch(item.item_image[0]).then(res => res.blob());
+      const file = new File([blob], "item.jpg", { type: blob.type });
+      const shareData = {
+        title: `${item.item_name} for ${item.item_listed_for == 1 ? 'Sale' : 'Buy'}  ${item.city ? 'in ' + item.city : ''}`,
+        text: `Check out this ${item.item_name} - ${item.description || 'Available now!'}`,
+        files: [file],
+        url: item.item_share_url
+      };
+
+      const modal = await this.modalController.create({
+        component: ShareModalComponent,
+        componentProps: { shareData },
+        cssClass: 'share-modal'
+      });
+
+      return await modal.present();
+    } catch (error) {
+      console.error('Error sharing item:', error);
+    }
   }
 } 
