@@ -3,7 +3,7 @@
 3    xmlns:android="http://schemas.android.com/apk/res/android"
 4    package="capacitor.cordova.android.plugins" >
 5
-6    <uses-sdk android:minSdkVersion="23" />
+6    <uses-sdk android:minSdkVersion="22" />
 7
 8    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 8-->D:\Global Rubber Hub\global-rubber-hub\android\capacitor-cordova-android-plugins\src\main\AndroidManifest.xml:9:1-66

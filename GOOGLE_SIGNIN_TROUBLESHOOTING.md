@@ -60,8 +60,12 @@ When you test Google Sign-In, look for these debug messages:
 ## Common Error Solutions:
 
 ### ApiException: 10 (DEVELOPER_ERROR)
-- **Cause:** Missing or incorrect SHA-1 fingerprint
-- **Solution:** Add SHA-1 to both Firebase and Google Cloud Console
+- **Cause:** Missing or incorrect SHA-1 fingerprint, or incorrect REVERSED_CLIENT_ID configuration
+- **Solution:** 
+  1. Add SHA-1 to both Firebase and Google Cloud Console
+  2. Verify REVERSED_CLIENT_ID in config.xml matches your Android OAuth client ID (reversed format)
+  3. Ensure REVERSED_CLIENT_ID uses Android client ID, not web client ID
+  4. Format: `com.googleusercontent.apps.{PROJECT_ID}-{CLIENT_ID_SUFFIX}`
 
 ### ApiException: 7 (NETWORK_ERROR)
 - **Cause:** Network connectivity issues

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.globalrubber.hub" version="1.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.globalrubber.hub" version="1.0.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Global Rubber Hub</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -85,7 +85,7 @@
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
     <plugin name="cordova-plugin-googleplus" source="npm">
-        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.826183488369-itvh47edlesonfsq06vrgphvmkpf70ja" />
+        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.826183488369-9cb19ikmqo929a92crssfchglsnpm0m4" />
         <param name="WEB_APPLICATION_CLIENT_ID" value="826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com" />
     </plugin>
     <plugin name="cordova-plugin-camera" source="npm">

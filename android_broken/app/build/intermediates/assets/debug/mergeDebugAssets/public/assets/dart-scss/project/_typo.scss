@@ -1,0 +1,89 @@
+@use './../abstracts/mixin' as *;
+@use "sass:list" as *;
+@use "sass:math" as *;
+@use "sass:map";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root{
+  --fs-root: max(toVwRem(16));
+  --ff-body: "Inter", sans-serif;
+}
+
+@media(min-width: 1900px){
+  :root{
+    --fs-root: max(toVwRem(18));
+  }
+}
+
+$base-rem: 16;
+$viewport-width: 1600; 
+@function toVwRem($px) {
+  $rem: calc($px / $base-rem * 0.8rem);
+  $vw: calc(($px / $viewport-width) * 100vw);
+ // @return max(#{$vw}, #{$rem});
+  @return max($vw, $rem);
+}
+@function toVw($px) {
+  $vw: calc(($px / $viewport-width) * 100vw);
+  @return #{$vw};
+}
+
+$allFontWeight:(
+    t   :  100,  // thin
+    l   :  300,  // light
+    r   :  400,  // regular
+    b   :  700  // bold
+);
+
+@mixin fw($key) {
+    
+font-weight: map.get($allFontWeight, $key);
+}
+
+// //-- FONT WEIGHT CLASS --//
+@each $fwName, $fwValue in $allFontWeight{
+    .fw--#{$fwName}{
+        font-weight: $fwValue;
+    }
+}
+
+
+.descc {
+    line-height: 1.6;
+    & > * + *{
+      margin-top: 1em;
+    }
+}
+
+.h1{
+  line-height: 1.2;
+}
+
+.h2{
+  line-height: 1.2;
+}
+
+.h3{
+  line-height: 1.25;
+}
+
+.h4{
+  line-height: 1.35;
+}
+
+.h5{
+  line-height: 1.5;
+}
+
+.h7{
+  line-height: 1.5;
+}
+
+.h8{
+  line-height: 1.6;
+}
+
+.p{
+  font-size: 1rem;
+}

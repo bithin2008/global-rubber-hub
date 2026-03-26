@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "826183488369",
+    "project_id": "global-rubber-hub-c754f",
+    "storage_bucket": "global-rubber-hub-c754f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826183488369:android:3074175a90a1984c829cd0",
+        "android_client_info": {
+          "package_name": "com.globalrubber.hub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826183488369-9cb19ikmqo929a92crssfchglsnpm0m4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.globalrubber.hub",
+            "certificate_hash": "0475955ff9f86a69a3878eb842b41f6e989e1bc8"
+          }
+        },
+        {
+          "client_id": "826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbr69b8iu44y3WPF4GlF2jLABWuCPHP-U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+
+

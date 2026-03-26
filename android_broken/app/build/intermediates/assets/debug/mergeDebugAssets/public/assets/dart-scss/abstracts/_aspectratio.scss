@@ -1,0 +1,33 @@
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+  &::before {
+    content: '';
+    display: block;
+    padding-top: calc(#{$height} / #{$width} * 100%);
+  }
+  > * {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    object-fit: cover;
+    object-position: top;
+  }
+}
+
+.aspect-12-9 {
+  @include aspect-ratio(12, 9);
+}
+
+.aspect-16-9 {
+  @include aspect-ratio(16, 9);
+}
+
+.aspect-4-3 {
+  @include aspect-ratio(4, 3);
+}
+
+.aspect-1-1 {
+  @include aspect-ratio(1, 1);
+}

@@ -159,6 +159,9 @@ export class LoginPage implements OnInit, OnDestroy {
     }
     this.initializeForms();
 
+    // Initialize SocialLogin for Google Sign-In
+    await this.firebaseService.initializeSocialLogin();
+
     // Get device information
   //  this.getDeviceInformation();
     
@@ -997,10 +1000,13 @@ export class LoginPage implements OnInit, OnDestroy {
       } else {
         this.showToast('error', response.message || 'Google Sign-In failed', '', 2000, '');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.loaderService.hide();
       console.error('Google Sign-In Error:', error);
-      this.showToast('error', 'Google Sign-In failed. Please try again.', '', 2000, '');
+      
+      // Show more specific error message
+      const errorMessage = error?.message || 'Google Sign-In failed. Please try again.';
+      this.showToast('error', errorMessage, '', 3000, '');
     }
   }
 

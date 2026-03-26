@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">826183488369-itvh47edlesonfsq06vrgphvmkpf70ja.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">826183488369</string>
+    <string name="google_api_key" translatable="false">AIzaSyDbr69b8iu44y3WPF4GlF2jLABWuCPHP-U</string>
+    <string name="google_app_id" translatable="false">1:826183488369:android:3074175a90a1984c829cd0</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDbr69b8iu44y3WPF4GlF2jLABWuCPHP-U</string>
+    <string name="google_storage_bucket" translatable="false">global-rubber-hub-c754f.firebasestorage.app</string>
+    <string name="project_id" translatable="false">global-rubber-hub-c754f</string>
+</resources>

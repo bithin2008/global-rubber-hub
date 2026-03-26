@@ -1,0 +1,407 @@
+@use './../abstracts/mixin' as *; 
+@use './../project/colors' as *; 
+@use './../project/typo' as *; 
+
+
+.c2as{
+    display: grid;
+    grid-gap: 0.5em;
+    gap: 0.5em;
+
+    @media(min-width: 576px){
+        display: inline-grid;
+        grid-auto-flow: column;
+    }
+}
+
+.arrow-circle{
+    width: max(6vw,6rem);
+    height: max(6vw,6rem);
+    border: 2px solid white;
+    display: grid;
+    place-content: center;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    transition: border var(--animation-slow), transform var(--animation-slow);
+
+    svg{
+        width: max(3.4vw,3.4rem);
+        height: max(3.4vw,3.4rem);
+        fill: white;
+        transform: rotate(-45deg);
+
+        .path-1,
+        .path-2{
+            transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .path-2{
+            transform: translate(-150%);
+        }
+    }
+
+    .btn-fill {
+        // background: color(themeBlue);
+        position: absolute;
+        width: 150%;
+        height: 200%;
+        border-radius: 50%;
+        top: -50%;
+        left: -25%;
+        transform: translate3d(0,-76%,0);
+        will-change: transform;
+        transition: background-color var(--animation-slow);
+        z-index: -1;
+    }
+
+    &:hover{
+        // border: 2px solid color(themeBlue);
+        transform: scale(1.1);
+
+        .circle-bg{
+            transform: translate(-20%, -20%);
+        }
+
+        svg{
+            .path-1{
+                transform: translate(150%);
+            }
+
+            .path-2{
+                transform: translate(0%);
+            }
+        }
+    }
+
+    &.version\:minimal{
+        --c2a-fs: 0.9rem;
+        --btn-size: 0.4em 1.4em;
+        width: max(2vw,2rem);
+        height: max(2vw,2rem);
+        border: 1px solid black;
+
+        svg{
+            width: max(1.2vw,1.2rem);
+            height: max(1.2vw,1.2rem);
+            fill: black;
+        }
+    }
+}
+
+.c2a, .c2a-arw{
+    display: inline-grid;
+    align-items: center;
+    justify-content: center;
+    grid-gap: 0.4em;
+    gap: 0.4em;
+    font-size: var(--c2a-fs, 0.98rem);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--animation-slow);
+    overflow: hidden;
+
+    svg{
+        width: var(--ico-size, 1em);
+        height: var(--ico-size, 1em);
+        transform: rotate(0) scale(1);
+        transition: all var(--animation-slow);
+        will-change: transform;
+    }
+
+    span{
+        transition: all var(--animation-slow);
+    }
+
+    span > svg{
+        display: block;
+    }
+
+    &:hover{
+        svg{
+            transform: rotate(90deg) scale(60);
+        }
+        span{
+            color: black;
+            position: relative;
+            z-index: 1;
+            transform: translateX(-.6em);
+        }
+    }
+    &.justify\:between{
+        justify-content: space-between;
+    }
+    &.justify\:around{
+        justify-content: space-around;
+    }
+}
+
+.c2a-v2{
+    display: inline-grid;
+    align-items: center;
+    justify-content: center;
+    grid-gap: 0.4em;
+    gap: 0.4em;
+    --c2a-fs: 0.98rem;
+    padding: var(--btn-size, 0.6em 1.4em);
+    border: 1px solid transparent;
+    border-radius: 10rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--animation-slow);
+    overflow: hidden;
+
+    svg{
+        width: var(--ico-size, 1.3em);
+        height: var(--ico-size, 1.2em);
+        transform: translateX(0);
+        transition: all var(--animation-slow);
+        will-change: transform;
+    }
+
+    &:hover{
+        svg{
+            transform: translateX(5px);
+        }
+    }
+
+    &.outline{
+        border-color: currentColor;  
+        &:hover,
+        &:focus{
+            border-color: transparent;
+        }
+    }
+    &.hvr\:outline{
+        &:hover,
+        &:focus{
+            background-color: transparent !important;
+            border-color: currentColor;
+        }
+    }
+    &.size\:minimal{
+        --c2a-fs: 0.9rem;
+        --btn-size: 0.4em 1.4em;
+    }
+    &.size\:expandedX{
+        --c2a-fs: 1.15rem;
+        --btn-size: 0.7em 2em;
+    }
+    &.radius\:expandedx{
+        --c2a-radius: 0.2em;
+    }
+    &.radius\:expandedX{
+        --c2a-radius: 1.2em;
+    }
+    &.radius\:expandedX2{
+        --c2a-radius: 2.2em;
+    }
+    // &:active{
+    //     transition: transform 0.2s;
+    //     transform: scale(0.9);
+    // }
+    &.case\:up{
+        --c2a-fs: 0.88rem;
+    }
+}
+
+.c2a-arw--TR{
+    --ico-size: 1.5em;
+    &:hover{
+        svg{
+            transform: translate(0.3em, -0.3em);
+        }
+    }
+}
+
+
+.c2a-arw--left{
+    &:hover{
+        svg{
+            transform: translateX(-10px);
+        }
+    }
+}
+
+
+.c2a--inline{
+    grid-auto-flow: column;
+}
+
+.c2a-arw--on-hvr{
+    svg{
+        opacity: 0;
+    }
+    &:hover{
+        svg{
+            opacity: 1;
+        }
+    }
+}
+
+.c2a-parent:hover{
+    .c2a-arw svg{
+        opacity: 1;
+        transform: translateX(10px);
+    }
+    .c2a-arw--left svg{
+        opacity: 1;
+        transform: translateX(-10px);
+    }
+    .c2a-arw--TR svg{
+        transform: translate(0.3em, -0.3em);
+    }
+}
+
+
+.c2a{
+    --c2a-fs: 0.98rem;
+    padding: var(--btn-size, 0.6em 1.4em);
+    border: 1px solid transparent;
+    border-radius: 10rem;
+    cursor: pointer;
+
+    @media (min-width: 2560px){
+        --c2a-fs: max(1vw,1rem);
+    }
+
+    &.outline{
+        border-color: currentColor;  
+        &:hover,
+        &:focus{
+            border-color: transparent;
+        }
+    }
+    &.hvr\:outline{
+        &:hover,
+        &:focus{
+            background-color: transparent !important;
+            border-color: currentColor;
+        }
+    }
+    &.size\:minimal{
+        --c2a-fs: 0.9rem;
+        --btn-size: 0.4em 1.4em;
+    }
+    &.size\:expandedX{
+        --c2a-fs: 1.15rem;
+        --btn-size: 0.7em 2em;
+    }
+    &.radius\:expandedx{
+        --c2a-radius: 0.2em;
+    }
+    &.radius\:expandedX{
+        --c2a-radius: 1.2em;
+    }
+    &.radius\:expandedX2{
+        --c2a-radius: 2.2em;
+    }
+    // &:active{
+    //     transition: transform 0.2s;
+    //     transform: scale(0.9);
+    // }
+    &.case\:up{
+        --c2a-fs: 0.88rem;
+    }
+}
+
+.ico-rounded{
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0.45em 0.35em 0.45em 0.55em;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    svg{
+        width: auto;
+    }
+}
+
+.c2a-underline{
+    display: inline-block;
+    font-size: var(--c2a-fs);
+    line-height: 1;
+    padding-bottom: 0.4em;
+    position: relative;
+
+    &::before,
+    &::after{
+        content: '';
+        position: absolute;
+        bottom: 1px;
+        height: 1px;
+        background-color: currentColor;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+    &::before{
+        width: 100%;
+        left: 0;
+    }
+    &::after{
+        width: 0;
+        right: 0;
+    }
+    
+
+    &:hover{
+        &::before{
+            width: 0;
+            left: auto;
+            right: 0;
+        }
+        &::after{
+            width: 100%;
+            left: 0;
+            right: auto;
+            transition-delay: 0.35s;
+        }
+    }
+}
+
+
+.c2a-video{
+    width: 3rem;
+    display: inline-block;
+}
+
+.c2a-text{
+    @include fw(m);
+    position: relative;
+    display: inline-block;
+    &:after{
+        content: '';
+        height: 1px;
+        width: 100%;
+        background-color: transparent;
+        opacity: 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transition: .3s;
+    }
+    &:hover{
+        &:after{
+            content: '';
+            height: 1px;
+            width: 100%;
+            opacity: 1;
+            position: absolute;
+            bottom: 3px;
+            left: 0;
+            transition: .3s;
+        }
+    }
+}
+
+
+@media(max-width: 575px){
+    .c2a{
+        width: 100%;
+        display: grid;
+    }
+    .c2a-underline{
+        --c2a-fs: 18px;
+    }
+}

@@ -1,0 +1,164 @@
+// Breakpoints
+$breakpoints: (
+  "xs": 0,
+  "sm": 675px,
+  "md": 768px,
+  "md2": 875px,
+  "lg": 1024px,
+  "xl": 1280px,
+  // "2xl": 1536px
+);
+
+// Mixin for responsive utilities
+@mixin respond-variants($selector, $property, $value) {
+  .#{$selector} {
+    #{$property}: $value;
+  }
+
+  @each $breakpoint, $size in $breakpoints {
+    @media (max-width: #{$size}) {
+      #{".#{$breakpoint}\\:#{$selector}"} {
+        #{$property}: $value !important;
+      }
+    }
+  }
+}
+
+// Static utility
+.grid-gap--0 {
+  gap: 0 !important;
+}
+
+// Gap Utilities
+@for $i from 1 through 10 {
+  @include respond-variants("gap-#{$i}", gap, #{$i * 1rem});
+  @include respond-variants("row-gap-#{$i}", row-gap, #{$i * 1rem});
+}
+
+// Grid Columns Count
+@for $i from 1 through 12 {
+  @include respond-variants("grid-cols-#{$i}", grid-template-columns, repeat(#{$i}, 1fr));
+}
+
+@for $i from 1 through 3 {
+  @include respond-variants("col-span-#{$i}", grid-column, span #{$i} / span #{$i});
+}
+
+// Custom Grid Templates
+$grid-column-templates: (
+  "1fr-auto": "1fr auto",
+  "auto-1fr": "auto 1fr",
+  "1fr-2fr": "1fr 2fr",
+  "2fr-1fr": "2fr 1fr",
+  "auto-auto": "auto auto",
+  "1fr-auto-1fr": "1fr auto 1fr"
+);
+
+@each $name, $value in $grid-column-templates {
+  @include respond-variants("grid-cols-#{$name}", grid-template-columns, #{$value});
+}
+
+// Justify Content
+$justify-options: (
+  "start": flex-start,
+  "center": center,
+  "end": flex-end,
+  "between": space-between,
+  "around": space-around,
+  "evenly": space-evenly
+);
+
+@each $key, $val in $justify-options {
+  @include respond-variants("justify-#{$key}", justify-content, $val);
+}
+
+// Align Items
+$items-options: (
+  "start": flex-start,
+  "center": center,
+  "end": flex-end,
+  "stretch": stretch,
+  "baseline": baseline
+);
+
+@each $key, $val in $items-options {
+  @include respond-variants("items-#{$key}", align-items, $val);
+}
+
+// Justify Items
+$justify-items-options: (
+  "start": start,
+  "center": center,
+  "end": end,
+  "stretch": stretch
+);
+
+@each $key, $val in $justify-items-options {
+  @include respond-variants("justify-items-#{$key}", justify-items, $val);
+}
+
+// Align Content & Place Content
+$content-options: (
+  "start": flex-start,
+  "center": center,
+  "end": flex-end,
+  "between": space-between,
+  "around": space-around,
+  "evenly": space-evenly,
+  "stretch": stretch
+);
+
+@each $key, $val in $content-options {
+  @include respond-variants("content-#{$key}", align-content, $val);
+  @include respond-variants("place-content-#{$key}", align-content, $val);
+}
+
+// Place Items
+$place-options: (
+  "start": start,
+  "center": center,
+  "end": end,
+  "stretch": stretch,
+  "between": space-between
+);
+
+@each $key, $val in $place-options {
+  @include respond-variants("place-items-#{$key}", place-items, $val);
+}
+
+// Align Self
+$self-align-options: (
+  "auto": auto,
+  "start": flex-start,
+  "center": center,
+  "end": flex-end,
+  "stretch": stretch,
+  "baseline": baseline
+);
+
+@each $key, $val in $self-align-options {
+  @include respond-variants("align-self-#{$key}", align-self, $val);
+}
+
+// Justify Self
+$self-justify-options: (
+  "auto": auto,
+  "start": start,
+  "center": center,
+  "end": end,
+  "stretch": stretch
+);
+
+@each $key, $val in $self-justify-options {
+  @include respond-variants("justify-self-#{$key}", justify-self, $val);
+}
+
+// Order Utilities
+@for $i from 0 through 10 {
+  @include respond-variants("order-#{$i}", order, #{$i});
+}
+
+// Negative Orders (Optional)
+@for $i from 1 through 5 {
+  @include respond-variants("order--#{$i}", order, -#{$i});
+}
