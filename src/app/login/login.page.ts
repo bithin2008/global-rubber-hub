@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController, IonSegment, IonSegmentButton, IonLabel, IonItem, IonIcon, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonInput, ModalController, IonSegment, IonSegmentButton, IonLabel, IonItem, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
 import { AlertController, MenuController } from '@ionic/angular';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonService } from '../services/common-service';
@@ -43,7 +43,6 @@ import { Device } from '@ionic-native/device/ngx';
     IonLabel,
     IonItem,
     IonIcon,
-    IonSpinner,
     NgOtpInputComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

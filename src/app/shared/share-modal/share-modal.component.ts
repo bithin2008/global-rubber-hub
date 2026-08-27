@@ -6,8 +6,6 @@ import {
   IonContent, 
   IonHeader, 
   IonIcon, 
-  IonItem, 
-  IonLabel,
   IonList, 
   IonTitle, 
   IonToolbar,
@@ -27,8 +25,6 @@ import {
     IonContent,
     IonHeader,
     IonIcon,
-    IonItem,
-    IonLabel,
     IonList,
     IonTitle,
     IonToolbar

@@ -2,7 +2,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonImg, IonItem, IonSelect, IonSelectOption, IonInput, ModalController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -21,7 +21,7 @@ import { TextModalComponent } from '../shared/text-modal/text-modal.component';
   templateUrl: './bid-history.page.html',
   styleUrls: ['./bid-history.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
+  imports: [IonContent, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonButton, IonItem, IonSelect, IonSelectOption, IonInput, HeaderComponent, FooterComponent],
 })
 export class BidHistoryPage implements OnInit {
   public filterWarning: boolean = false;
@@ -279,6 +279,13 @@ export class BidHistoryPage implements OnInit {
       this.page = 0;
       this.itemList = [];
       this.getItemList();
+    }
+  }
+
+
+  navigateToUserItems(item: any) {
+    if (item?.added_by) {
+      this.router.navigate(['/item-list'], { queryParams: { added_by: item.added_by } });
     }
   }
 

@@ -1,0 +1,11 @@
+{
+  "android": {
+    "release": {
+      "keystore": "global-rubber-hub.keystore",
+      "storePassword": "GRH@2025**",
+      "alias": "grh-prod",
+      "password": "GRH@2025**",
+      "keystoreType": ""
+    }
+  }
+}

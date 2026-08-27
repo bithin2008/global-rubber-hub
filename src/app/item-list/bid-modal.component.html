@@ -71,9 +71,9 @@
       <form class="form" [formGroup]="bidForm" (ngSubmit)="submitBid()">
         <ion-item class="no-style">
           <div class="custom-inner">
-            <ion-label class="formlebel">Your bid price (₹/{{getUOMText(item.uom_id)}})<span
+            <ion-label class="formlebel">Your Bid Price (₹/{{getUOMText(item.uom_id)}})<span
                 class="required">*</span></ion-label>
-            <ion-input class="form-field" type="number" formControlName="bid_amount" placeholder="190.00">
+            <ion-input class="form-field" type="number" formControlName="bid_amount" placeholder="Enter your bid price">
             </ion-input>
           </div>
         </ion-item>
@@ -89,7 +89,7 @@
           <div class="custom-inner">
             <ion-label class="formlebel">Quantity Interested ({{getUOMText(item.uom_id)}})<span
                 class="required">*</span></ion-label>
-            <ion-input class="form-field" type="number" formControlName="bid_quantity" placeholder="50">
+            <ion-input class="form-field" type="number" formControlName="bid_quantity" placeholder="Enter quantity interested in {{getUOMText(item.uom_id)}} ">
             </ion-input>
 
           </div>

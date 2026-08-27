@@ -3,7 +3,7 @@ import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { panValidator, formatPanInput } from '../validators/pan.validator';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform, IonSpinner } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonTitle, IonInput, ModalController, ActionSheetController, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, Platform, IonSpinner } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../services/common-service';
 import { ToastModalComponent } from '../toast-modal/toast-modal.component';
@@ -21,7 +21,7 @@ import { LoaderService } from '../services/loader.service';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent, IonSpinner]
+  imports: [IonButton, IonContent, IonInput, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, FormsModule, ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent, IonSpinner]
 })
 export class ProfilePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;

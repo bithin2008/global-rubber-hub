@@ -44,10 +44,10 @@
 
       <div class="other-list" *ngIf="itemList.length > 0">
         <ion-item class="no-style clickable" *ngFor="let item of itemList; let i= index">
-          <ion-avatar slot="start">
+          <ion-avatar slot="start" (click)="navigateToUserItems(item)">
             <img [src]="item.item_image[0]" (error)="onImageError($event)" />
           </ion-avatar>
-          <ion-label>
+          <ion-label class="clickable" (click)="navigateToUserItems(item)">
             <h4 *ngIf="item.item_name">{{item.item_name}}</h4>
             <p *ngIf="item.company_name">{{item.company_name}}</p>
             <p *ngIf="item.full_name">{{item.full_name}}</p>

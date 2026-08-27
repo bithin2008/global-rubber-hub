@@ -2,7 +2,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton,IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonImg, IonItem, IonSelect, IonSelectOption, IonInput, ModalController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -20,7 +20,7 @@ import { PageTitleService } from '../services/page-title.service';
   templateUrl: './my-item.page.html',
   styleUrls: ['./my-item.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
+  imports: [IonContent, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonButton, IonItem, IonSelect, IonSelectOption, IonInput, HeaderComponent, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MyItemPage implements OnInit{
@@ -97,7 +97,11 @@ export class MyItemPage implements OnInit{
     }
   }
 
-  
+  navigateToUserItems(item: any) {
+    if (item?.id) {
+      this.router.navigate(['/item-list'], { queryParams: { id: item.id } });
+    }
+  }
 
   async handleRefresh(e:any) {
     this.searchField = '';

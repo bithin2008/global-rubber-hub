@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './trusted-seller.page.html',
   styleUrls: ['./trusted-seller.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule, HeaderComponent, FooterComponent]
+  imports: [IonicModule, FormsModule, CommonModule]
 
 })
 export class TrustedSellerPage implements OnInit {

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/c
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonIcon, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonCard, IonList, IonButton, IonIcon, IonCardContent, IonImg, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController } from '@ionic/angular/standalone';
 import { BidModalComponent } from './bid-modal.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, MenuController, PopoverController } from '@ionic/angular';
@@ -26,7 +26,7 @@ import { LoaderService } from '../services/loader.service';
   templateUrl: './item-list.page.html',
   styleUrls: ['./item-list.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, CommonModule, NgIf, NgFor, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
+  imports: [IonContent, CommonModule, NgIf, NgFor, FormsModule, IonCard, IonButton, IonCardContent, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ItemListPage implements OnInit, OnDestroy {
@@ -74,17 +74,29 @@ export class ItemListPage implements OnInit, OnDestroy {
         console.log('Token parameter:', params['token']);
         this.token = params['token'];
       }
+      if (params['added_by']) {
+        this.page = 0;
+        this.itemList = [];
+        this.showMyItems({ added_by: +params['added_by'] });
+      }
+      if (params['id']) {
+        this.page = 0;
+        this.itemList = [];
+        this.showMyItems({ id: +params['id'] });
+      }
     });
 
     activatedRoute.params.subscribe(val => {
       this.pageTitleService.setPageTitle('Live Bid');
       this.handleSearchToggle();
+      const addedBy = this.activatedRoute.snapshot.queryParamMap.get('added_by');
+      const id = this.activatedRoute.snapshot.queryParamMap.get('id');
       if (this.token) {
         this.commonService.get(`items/market/${this.token}`)
           .subscribe((res: any) => {
             this.itemList = res.results;
           });
-      } else {
+      } else if (!addedBy && !id) {
         this.getItemList();
       }
     });
@@ -123,13 +135,13 @@ export class ItemListPage implements OnInit, OnDestroy {
     const swiper = event.detail[0];
     const activeIndex = swiper.activeIndex;
     const slides = swiper.slides;
-    
+
     // Pause all videos first
     const allVideos = document.querySelectorAll('video');
     allVideos.forEach((video: HTMLVideoElement) => {
       video.pause();
     });
-    
+
     // For video slides, we just pause them since we use play button overlay
     // No automatic playing since user needs to click the play button
   }
@@ -167,8 +179,13 @@ export class ItemListPage implements OnInit, OnDestroy {
   }
 
   showMyItems(item: any) {
-    this.itemList = []
-    this.getItemList(item.added_by)
+    this.page = 0;
+    this.itemList = [];
+    if (item.added_by) {
+      this.getItemList(item.added_by);
+    } else {
+      this.getItemList(item.id);
+    }
   }
 
   getItemList(user_id?: number) {
@@ -230,10 +247,10 @@ export class ItemListPage implements OnInit, OnDestroy {
   async openVideoLightbox(videoUrl: string) {
     const modal = await this.modalController.create({
       component: ImageLightboxComponent,
-      componentProps: { 
-        images: [videoUrl], 
+      componentProps: {
+        images: [videoUrl],
         startIndex: 0,
-        isVideo: true 
+        isVideo: true
       },
       cssClass: 'video-lightbox-modal'
     });
@@ -446,13 +463,13 @@ export class ItemListPage implements OnInit, OnDestroy {
           // Set profile image if available, otherwise show placeholder
           if (response.user.profile_image && response.user.profile_image.trim() !== '') {
             // Update the service so header reflects the change
-           // this.profileService.updateProfileImage(response.user.profile_image);
-          }  
-          
+            // this.profileService.updateProfileImage(response.user.profile_image);
+          }
+
           if (response.user.points !== undefined && response.user.points !== null) {
             this.walletService.updateWalletBalance(parseFloat(response.user.points));
           }// Update user name in service if available
-                
+
         } else {
           this.showToast('error', response.message, '', 3500, '/profile');
         }

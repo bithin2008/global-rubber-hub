@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonTextarea, ModalController } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonItem, IonLabel, IonTextarea, ModalController } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-reject-reason-modal',
@@ -12,9 +12,6 @@ import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLab
     CommonModule,
     ReactiveFormsModule,
     IonContent,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonItem,
     IonLabel,
     IonTextarea,

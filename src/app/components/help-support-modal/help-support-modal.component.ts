@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonTextarea, IonIcon, ModalController, IonCard, IonCardContent } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, ModalController, IonCard, IonCardContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-help-support-modal',
   templateUrl: './help-support-modal.component.html',
   styleUrls: ['./help-support-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonTextarea, IonIcon, IonCard, IonCardContent]
+  imports: [CommonModule, FormsModule, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonCard, IonCardContent]
 })
 export class HelpSupportModalComponent implements OnInit {
   public contactForm = {

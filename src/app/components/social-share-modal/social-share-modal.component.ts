@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonItem, IonLabel, IonInput, IonButtons } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonInput, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   close, 
@@ -30,8 +30,6 @@ import {
     IonToolbar, 
     IonButton, 
     IonIcon, 
-    IonItem, 
-    IonLabel, 
     IonInput, 
     IonButtons,
     CommonModule, 

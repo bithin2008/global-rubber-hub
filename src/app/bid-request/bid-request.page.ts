@@ -2,7 +2,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthGuardService } from '../services/auth-guard.service';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonCardContent, IonImg, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, ModalController, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonList, IonButton, IonLabel, IonIcon, IonAvatar, IonImg, IonItem, IonSelect, IonSelectOption, IonInput, ModalController, AlertController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MenuController, PopoverController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
@@ -21,7 +21,7 @@ import { LoaderService } from '../services/loader.service';
   templateUrl: './bid-request.page.html',
   styleUrls: ['./bid-request.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonCard, IonButton, IonCardContent, IonButtons, IonItem, IonSelect, IonSelectOption, IonInput, IonInfiniteScroll, IonInfiniteScrollContent, HeaderComponent, FooterComponent],
+  imports: [IonContent, IonIcon, IonLabel, IonAvatar, CommonModule, FormsModule, IonButton, IonItem, IonSelect, IonSelectOption, IonInput, HeaderComponent, FooterComponent],
 })
 export class BidRequestPage implements OnInit {
 
@@ -357,6 +357,12 @@ export class BidRequestPage implements OnInit {
 
   rejectBid(item: any) {
     this.submitBidStatus(item, 2);
+  }
+
+  navigateToUserItems(item: any) {
+    if (item?.added_by) {
+      this.router.navigate(['/item-list'], { queryParams: { added_by: item.added_by } });
+    }
   }
 
   async showToast(
